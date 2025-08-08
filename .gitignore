@@ -1,0 +1,47 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches y logs
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+.env/
+
+# Archivos de entorno y secretos
+.env
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Uvicorn / logs / cobertura
+*.pid
+*.cover
+.coverage
+htmlcov/
+
+# Otros archivos temporales
+*.tmp
+*.bak
+*.orig
+
+# Mis archivos personales
+
+rafa_context.txt
