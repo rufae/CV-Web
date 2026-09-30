@@ -748,13 +748,14 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `test(resilience): chaos scenarios and recovery measurements`
 - **Cierre 2026-09-30:** `tests/chaos/test_chaos.py` (ambos proveedores caídos → error controlado con 2 failovers; torre lenta → failover al Dell antes del primer token; corte a mitad sin cambiar de proveedor; timeout de primer token controlado) y `docs/resilience.md` con la tabla de escenarios y su evidencia (los ya cubiertos por `test_health/router/contact/store/chat_sse`). Evidencia: **175/175 tests**. La medición de tiempos reales (apagar torre en pleno stream, cortar Tailscale, disco lleno, reinicio del HP) y la carga con `scripts/load_smoke.py` quedan para el game day en el nodo.
 
-### T7.9 · Documentación final y README de portfolio `[ ]` · M
+### T7.9 · Documentación final y README de portfolio `[x]` · M
 - **Ficheros:** `README.md`, `docs/{architecture,runbook,privacy,evaluation,security,resilience}.md`, `docs/adr/*`, `SECURITY.md`, `LICENSE`.
 - **Pasos:** README orientado a reclutadores (qué demuestra, capturas/GIF del chat, diagrama, métricas reales de evaluación, cómo reproducir); `runbook.md` con operaciones habituales (reindexar, cambiar de modelo, rotar claves, apagar/encender la torre, restaurar, desplegar y revertir); ADR de cada decisión D1–D9 y sus desviaciones; licencia del código (contenido personal excluido) y política de reporte de vulnerabilidades.
 - **Aceptación:** una persona ajena puede levantar el proyecto en local con el README en < 30 min; los enlaces no están rotos.
 - **Commit:** `docs: portfolio README, runbook and architecture decision records`
+- **Cierre 2026-09-30:** `README.md` raíz orientado a portfolio (qué demuestra, arquitectura, quickstart, estructura, enlaces y licencia) con badges de CI; `SECURITY.md` (reporte y medidas); `LICENSE` MIT con **excepción de contenido personal**; `docs/` completo (architecture, runbook, security, evaluation, privacy, accessibility, resilience, api, ADRs 0001-0006) y `docs/release-v1.0-checklist.md`. Pendiente: capturas/GIF reales y publicación del repo con la release.
 
-### T7.10 · Plan de mantenimiento recurrente `[ ]` · S
+### T7.10 · Plan de mantenimiento recurrente `[x]` · S
 - **Ficheros:** `.github/renovate.json` (o `dependabot.yml`), `.github/workflows/scheduled.yml`, `docs/runbook.md` (sección Mantenimiento).
 - **Pasos:** actualizaciones automáticas de dependencias agrupadas; auditoría semanal (`pip-audit`, `npm audit`, `gitleaks`); evaluación nocturna o semanal **con inferencia real** (job autoalojado vía Tailscale) que archiva el informe y alerta ante regresiones; regla: **ningún cambio de modelo (`LLM_*_MODEL`, `EMBED_MODEL`) sin pasar antes la evaluación**, y un cambio de `EMBED_MODEL` exige reindexado completo.
 
@@ -767,12 +768,14 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 
 - **Aceptación:** el primer ciclo automático se ejecuta y deja informes; el calendario queda en el runbook.
 - **Commit:** `ci(maintenance): dependency automation and scheduled evaluation`
+- **Cierre 2026-09-30:** `.github/renovate.json` (agrupado lunes, lockfile maintenance y etiqueta `evaluación-obligatoria` para `chromadb`/`google-genai`); workflow `scheduled.yml` (lunes: pip-audit + npm audit + gitleaks; job manual `eval-with-inference` con runner autoalojado vía Tailscale que archiva el informe). Regla operativa: **ningún cambio de `LLM_*_MODEL`/`EMBED_MODEL` sin pasar la evaluación** y cambio de `EMBED_MODEL` exige reindexado completo; calendario semanal/mensual/trimestral/semestral en el runbook. Pendiente: configurar el runner autoalojado y el primer ciclo automático.
 
-### T7.11 · Release v1.0 y cierre de la migración `[ ]` · S
+### T7.11 · Release v1.0 y cierre de la migración `[~]` · S
 - 🏁 **Hito M4: v1.0 publicada.**
 - **Pasos:** recorrer la checklist del Apéndice E; etiquetar `v1.0.0` y generar *release notes*; apagar definitivamente Render y Vercel y redirigir el dominio antiguo; actualizar el enlace en el CV, LinkedIn y GitHub; archivar el informe de evaluación de la release.
 - **Aceptación:** checklist completa con evidencia enlazada; el dominio antiguo redirige; no queda ningún servicio en nube dependiendo de datos personales.
 - **Commit:** `chore(release): v1.0.0`
+- **Parcial 2026-09-30 (decisión del usuario: desplegar después):** `docs/release-v1.0-checklist.md` con el Apéndice E y su estado (✅ en código / ⏳ en el nodo). Render y Vercel ya están apagados; los enlaces del CV/LinkedIn se actualizan al desplegar. **Pendiente:** desplegar en el HP, completar la checklist, etiquetar `v1.0.0` (requiere permiso explícito) y archivar los repos antiguos.
 
 ---
 
