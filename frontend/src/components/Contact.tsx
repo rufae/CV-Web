@@ -7,7 +7,7 @@ import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { toast } from 'sonner';
 import { 
-  Mail, Phone, MapPin, Send, Github, Linkedin, 
+  Mail, MapPin, Send, Github, Linkedin, 
   Twitter, MessageSquare, User, FileText 
 } from 'lucide-react';
 
@@ -54,12 +54,6 @@ export const Contact: React.FC = () => {
       label: "Email",
       value: "rafaelcastanoblanca1805@gmail.com",
       href: "mailto:rafaelcastanoblanca1805@gmail.com"
-    },
-    {
-      icon: <Phone className="w-5 h-5" />,
-      label: "Teléfono",
-      value: "[telefono-eliminado]",
-      href: "tel:[telefono-eliminado]"
     },
     {
       icon: <MapPin className="w-5 h-5" />,
