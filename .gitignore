@@ -1,0 +1,13 @@
+# Secretos / entorno
+.env
+.env.*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
