@@ -215,7 +215,7 @@ PASSWORD_APPLICATION=
 - **Commit:** `docs(config): add env templates and configuration reference`
 - **Cierre 2026-09-30:** plantillas `backend/.env.example` (variables usadas hoy + reservadas F2-F7 claramente marcadas) y `frontend/.env.example`; `docs/architecture.md` con componentes, rutas y referencia de configuración. Añadidas a la plantilla `RAFA_CONTEXT_PATH` y `GEMINI_MODEL` (no figuraban en el listado del plan). Corregido el `.gitignore` raíz (`!.env.example`) para poder versionar las plantillas. Evidencia: plantilla copiada a `.env` con `APP_ENV=production` arranca (health 200, `/docs` 404) y sin `GOOGLE_API_KEY` falla con `RuntimeError` claro; `.env` de prueba eliminado.
 
-### T1.5 · Andamiaje de calidad frontend y poda `[ ]` · M
+### T1.5 · Andamiaje de calidad frontend y poda `[x]` · M
 - **Contexto:** F4, F5, F2, F8, F11. 46 componentes `ui/` y ~25 dependencias sin uso.
 - **Ficheros:** `frontend/package.json`, `frontend/src/components/ui/*`, `App.css`, `Attributions.md`, `public/vite.svg`, `README.md`, `services/api.ts`, `ChatBot.tsx`.
 - **Pasos:**
@@ -225,6 +225,7 @@ PASSWORD_APPLICATION=
   4. Añadir `prettier`, `eslint-plugin-jsx-a11y`, `vitest`; scripts `typecheck`, `test`, `format`.
 - **Aceptación:** `npm ci && npm run lint && npm run typecheck && npm run build` en verde; `npm audit --omit=dev` sin altas; JS gzip igual o menor que 147 kB.
 - **Commit:** `chore(frontend): prune unused UI kit and dependencies, fix audit findings`
+- **Cierre 2026-09-30:** eliminados 44 componentes `ui/` (quedan los 11 usados) y sus dependencias (`depcheck`: sin issues); **axios sustituido por `fetch` y desinstalado** (el plan lo situaba en T5.7: se adelanta por presupuesto de bundle y porque SSE lo requiere en T5.2); fuera `console.log`; `onKeyPress`→`onKeyDown`; añadidos prettier (config + ignore), `eslint-plugin-jsx-a11y` y vitest con scripts `typecheck`/`test`/`format`; borrados `App.css`, `Attributions.md`, `vite.svg` y README de plantilla; corregidas 3 reglas nuevas (alt redundante, `heading-has-content` en `CardTitle`, expresión constante en test). Evidencia: `npm ci && lint && typecheck && test (2) && build` en verde; JS gzip **132,92 kB** (≤147; antes 153,32 tras el refresh de deps y 147,26 original) y CSS 29,06 kB; `npm audit --omit=dev`: 0 vulnerabilidades. Nota: queda 1 vulnerabilidad alta **solo dev** (`picomatch` vía `tailwindcss@3.4`) sin fix no-breaking; seguimiento en T7.10.
 
 ### T1.6 · Reparar el sistema de diseño (Tailwind + variables) `[ ]` · M
 - **Contexto:** F1/F11. `hsl(var(--accent))` con `--accent: #1E90FF` es CSS inválido; faltan tokens; hay variables duplicadas; aviso de CSS anidado en `global.css:99-149`.

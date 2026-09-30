@@ -1,87 +1,85 @@
 import React from 'react';
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Progress } from './ui/progress';
-import { 
-  Server, Brain, Settings, Layout, Download
-} from 'lucide-react';
+import { Server, Brain, Settings, Layout, Download } from 'lucide-react';
 import { Button } from './ui/button';
 
 export const Skills: React.FC = () => {
   const skillCategories = [
     {
       id: 1,
-      title: "Frontend Development",
+      title: 'Frontend Development',
       icon: <Layout className="w-5 h-5" />,
-      color: "text-blue-500",
+      color: 'text-blue-500',
       skills: [
-        { name: "React", level: 90, icon: "⚛️" },
-        { name: "Angular", level: 85, icon: "🅰️" },
-        { name: "HTML/CSS", level: 95, icon: "🌐" },
-        { name: "JavaScript", level: 90, icon: "🟨" },
-        { name: "TypeScript", level: 85, icon: "🔷" },
-        { name: "Tailwind CSS", level: 90, icon: "💨" }
-      ]
+        { name: 'React', level: 90, icon: '⚛️' },
+        { name: 'Angular', level: 85, icon: '🅰️' },
+        { name: 'HTML/CSS', level: 95, icon: '🌐' },
+        { name: 'JavaScript', level: 90, icon: '🟨' },
+        { name: 'TypeScript', level: 85, icon: '🔷' },
+        { name: 'Tailwind CSS', level: 90, icon: '💨' },
+      ],
     },
     {
       id: 2,
-      title: "Backend Development",
+      title: 'Backend Development',
       icon: <Server className="w-5 h-5" />,
-      color: "text-green-500",
+      color: 'text-green-500',
       skills: [
-        { name: "Java", level: 90, icon: "☕" },
-        { name: "Spring Boot", level: 85, icon: "🍃" },
-        { name: "Node.js", level: 80, icon: "🟢" },
-        { name: "Python", level: 75, icon: "🐍" },
-        { name: "REST APIs", level: 90, icon: "🔗" },
-        { name: "MySQL", level: 80, icon: "🗄️" }
-      ]
+        { name: 'Java', level: 90, icon: '☕' },
+        { name: 'Spring Boot', level: 85, icon: '🍃' },
+        { name: 'Node.js', level: 80, icon: '🟢' },
+        { name: 'Python', level: 75, icon: '🐍' },
+        { name: 'REST APIs', level: 90, icon: '🔗' },
+        { name: 'MySQL', level: 80, icon: '🗄️' },
+      ],
     },
     {
       id: 3,
-      title: "Tools & Technologies",
+      title: 'Tools & Technologies',
       icon: <Settings className="w-5 h-5" />,
-      color: "text-purple-500",
+      color: 'text-purple-500',
       skills: [
-        { name: "Git", level: 90, icon: "📝" },
-        { name: "Docker", level: 70, icon: "🐳" },
-        { name: "Networking", level: 75, icon: "🌐" },
-        { name: "Linux", level: 70, icon: "🐧" },
-        { name: "AWS", level: 60, icon: "☁️" },
-        { name: "Figma", level: 75, icon: "🎨" }
-      ]
+        { name: 'Git', level: 90, icon: '📝' },
+        { name: 'Docker', level: 70, icon: '🐳' },
+        { name: 'Networking', level: 75, icon: '🌐' },
+        { name: 'Linux', level: 70, icon: '🐧' },
+        { name: 'AWS', level: 60, icon: '☁️' },
+        { name: 'Figma', level: 75, icon: '🎨' },
+      ],
     },
     {
       id: 4,
-      title: "Learning & Emerging",
+      title: 'Learning & Emerging',
       icon: <Brain className="w-5 h-5" />,
-      color: "text-orange-500",
+      color: 'text-orange-500',
       skills: [
-        { name: "Artificial Intelligence", level: 60, icon: "🤖" },
-        { name: "Machine Learning", level: 55, icon: "📊" },
-        { name: "React Native", level: 70, icon: "📱" },
-        { name: "GraphQL", level: 50, icon: "📈" },
-        { name: "Kubernetes", level: 40, icon: "⚙️" },
-        { name: "TensorFlow", level: 45, icon: "🧠" }
-      ]
-    }
+        { name: 'Artificial Intelligence', level: 60, icon: '🤖' },
+        { name: 'Machine Learning', level: 55, icon: '📊' },
+        { name: 'React Native', level: 70, icon: '📱' },
+        { name: 'GraphQL', level: 50, icon: '📈' },
+        { name: 'Kubernetes', level: 40, icon: '⚙️' },
+        { name: 'TensorFlow', level: 45, icon: '🧠' },
+      ],
+    },
   ];
 
   const getSkillLevelColor = (level: number) => {
-    if (level >= 90) return "bg-green-500";
-    if (level >= 80) return "bg-blue-500";
-    if (level >= 70) return "bg-yellow-500";
-    if (level >= 60) return "bg-orange-500";
-    return "bg-red-500";
+    if (level >= 90) return 'bg-green-500';
+    if (level >= 80) return 'bg-blue-500';
+    if (level >= 70) return 'bg-yellow-500';
+    if (level >= 60) return 'bg-orange-500';
+    return 'bg-red-500';
   };
 
   const getSkillLevelText = (level: number) => {
-    if (level >= 90) return "Expert";
-    if (level >= 80) return "Advanced";
-    if (level >= 70) return "Intermediate";
-    if (level >= 60) return "Learning";
-    return "Beginner";
+    if (level >= 90) return 'Expert';
+    if (level >= 80) return 'Advanced';
+    if (level >= 70) return 'Intermediate';
+    if (level >= 60) return 'Learning';
+    return 'Beginner';
   };
 
   return (
@@ -97,7 +95,7 @@ export const Skills: React.FC = () => {
           <h2 className="mb-4">Habilidades</h2>
           <div className="w-20 h-1 bg-accent mx-auto rounded-full" />
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-            Mis competencias técnicas organizadas por categoría, desde desarrollo frontend y backend 
+            Mis competencias técnicas organizadas por categoría, desde desarrollo frontend y backend
             hasta tecnologías emergentes y herramientas especializadas.
           </p>
         </motion.div>
@@ -120,7 +118,7 @@ export const Skills: React.FC = () => {
                     {category.title}
                   </CardTitle>
                 </CardHeader>
-                
+
                 <CardContent>
                   <div className="space-y-6">
                     {category.skills.map((skill, skillIndex) => (
@@ -138,8 +136,8 @@ export const Skills: React.FC = () => {
                             <span className="font-medium">{skill.name}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Badge 
-                              variant="outline" 
+                            <Badge
+                              variant="outline"
                               className={`text-xs ${getSkillLevelColor(skill.level).replace('bg-', 'border-')}`}
                             >
                               {getSkillLevelText(skill.level)}
@@ -147,18 +145,15 @@ export const Skills: React.FC = () => {
                             <span className="text-sm text-muted-foreground">{skill.level}%</span>
                           </div>
                         </div>
-                        
+
                         <div className="relative">
-                          <Progress 
-                            value={0} 
-                            className="h-2"
-                          />
+                          <Progress value={0} className="h-2" />
                           <motion.div
                             className={`absolute top-0 left-0 h-2 rounded-full ${getSkillLevelColor(skill.level)}`}
                             initial={{ width: 0 }}
                             whileInView={{ width: `${skill.level}%` }}
                             viewport={{ once: true }}
-                            transition={{ duration: 1, delay: skillIndex * 0.1, ease: "easeOut" }}
+                            transition={{ duration: 1, delay: skillIndex * 0.1, ease: 'easeOut' }}
                           />
                         </div>
                       </motion.div>
@@ -218,7 +213,8 @@ export const Skills: React.FC = () => {
               <div className="text-6xl">📄</div>
               <h3>Download My CV</h3>
               <p className="text-muted-foreground max-w-md">
-                Get a detailed overview of my experience, education, and technical skills in PDF format.
+                Get a detailed overview of my experience, education, and technical skills in PDF
+                format.
               </p>
               <Button
                 size="lg"
@@ -231,7 +227,6 @@ export const Skills: React.FC = () => {
                   Download CV
                 </a>
               </Button>
-
             </div>
           </Card>
         </motion.div>

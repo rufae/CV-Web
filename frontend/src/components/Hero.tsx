@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import { Button } from './ui/button';
 import { Download, Eye, MessageSquare } from 'lucide-react';
 
@@ -8,7 +8,7 @@ export const Hero: React.FC = () => {
     'const developer = new FullStack("Rafael");',
     'developer.setPassions(["Technology", "AI", "Football"]);',
     'developer.build(awesome_projects);',
-    'if (developer.isReady()) { developer.launch(); }'
+    'if (developer.isReady()) { developer.launch(); }',
   ];
 
   const particles = Array.from({ length: 20 }, (_, i) => ({
@@ -19,7 +19,10 @@ export const Hero: React.FC = () => {
   }));
 
   return (
-    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden hero-gradient">
+    <section
+      id="hero"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden hero-gradient"
+    >
       {/* Animated Background Particles */}
       <div className="absolute inset-0 overflow-hidden">
         {particles.map((particle) => (
@@ -38,7 +41,7 @@ export const Hero: React.FC = () => {
               duration: 3 + Math.random() * 2,
               delay: particle.delay,
               repeat: Infinity,
-              ease: "easeInOut",
+              ease: 'easeInOut',
             }}
           />
         ))}
@@ -51,8 +54,8 @@ export const Hero: React.FC = () => {
             key={index}
             className="absolute text-xs text-muted-foreground/40 font-mono"
             style={{
-              left: `${10 + (index * 20)}%`,
-              top: `${20 + (index * 15)}%`,
+              left: `${10 + index * 20}%`,
+              top: `${20 + index * 15}%`,
             }}
             initial={{ opacity: 0, x: -50 }}
             animate={{
@@ -63,7 +66,7 @@ export const Hero: React.FC = () => {
               duration: 8,
               delay: index * 1.5,
               repeat: Infinity,
-              ease: "linear",
+              ease: 'linear',
             }}
           >
             {line}
@@ -76,19 +79,17 @@ export const Hero: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
+          transition={{ duration: 0.8, ease: 'easeOut' }}
         >
-          <motion.h1 
+          <motion.h1
             className="mb-6 leading-tight"
             style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)' }}
           >
-            Hi, I'm{' '}
-            <span className="text-gradient font-bold">Rafael</span>
+            Hi, I'm <span className="text-gradient font-bold">Rafael</span>
             <br />
             <span className="block mt-2">
-              Full Stack Developer passionate about{' '}
-              <span className="text-accent">technology</span> and{' '}
-              <span className="text-accent">AI</span>
+              Full Stack Developer passionate about <span className="text-accent">technology</span>{' '}
+              and <span className="text-accent">AI</span>
             </span>
           </motion.h1>
 
@@ -98,7 +99,8 @@ export const Hero: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            Building innovative web solutions with modern technologies and a passion for clean, efficient code.
+            Building innovative web solutions with modern technologies and a passion for clean,
+            efficient code.
           </motion.p>
 
           <motion.div
@@ -110,12 +112,14 @@ export const Hero: React.FC = () => {
             <Button
               size="lg"
               className="bg-accent hover:bg-accent/90 text-accent-foreground glow-pulse min-w-[200px]"
-              onClick={() => document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() =>
+                document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
+              }
             >
               <Eye className="w-4 h-4 mr-2" />
               View Projects
             </Button>
-            
+
             <Button
               size="lg"
               variant="outline"
@@ -128,12 +132,13 @@ export const Hero: React.FC = () => {
               </a>
             </Button>
 
-            
             <Button
               size="lg"
               variant="outline"
               className="min-w-[200px]"
-              onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() =>
+                document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+              }
             >
               <MessageSquare className="w-4 h-4 mr-2" />
               Contact
@@ -146,13 +151,13 @@ export const Hero: React.FC = () => {
       <motion.div
         className="absolute top-20 right-20 w-20 h-20 border-2 border-accent rounded-lg opacity-20"
         animate={{ rotate: 360 }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
       />
-      
+
       <motion.div
         className="absolute bottom-32 left-20 w-12 h-12 bg-accent rounded-full opacity-20"
         animate={{ scale: [1, 1.2, 1] }}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
       />
 
       {/* Scroll Indicator */}

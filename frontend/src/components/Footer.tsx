@@ -1,33 +1,33 @@
 import React from 'react';
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, Heart, ArrowUp } from 'lucide-react';
 import { Button } from './ui/button';
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
-  
+
   const socialLinks = [
     {
-      name: "GitHub",
+      name: 'GitHub',
       icon: <Github className="w-4 h-4" />,
-      url: "https://github.com/rafael"
+      url: 'https://github.com/rafael',
     },
     {
-      name: "LinkedIn",
+      name: 'LinkedIn',
       icon: <Linkedin className="w-4 h-4" />,
-      url: "https://www.linkedin.com/in/rafael-castaño-blanca/"
+      url: 'https://www.linkedin.com/in/rafael-castaño-blanca/',
     },
     {
-      name: "Email",
+      name: 'Email',
       icon: <Mail className="w-4 h-4" />,
-      url: "mailto:rafaelcastanoblanca1805@gmail.com"
-    }
+      url: 'mailto:rafaelcastanoblanca1805@gmail.com',
+    },
   ];
 
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
   };
 
@@ -66,7 +66,8 @@ export const Footer: React.FC = () => {
             <div className="space-y-3">
               <h3 className="text-gradient">Rafael</h3>
               <p className="text-muted-foreground">
-                Full Stack Developer apasionado por crear soluciones innovadoras con tecnologías modernas.
+                Full Stack Developer apasionado por crear soluciones innovadoras con tecnologías
+                modernas.
               </p>
             </div>
           </motion.div>
@@ -81,17 +82,19 @@ export const Footer: React.FC = () => {
           >
             <h4 className="mb-4">Enlaces rápidos</h4>
             <div className="space-y-2">
-              {['Sobre mí', 'Experiencia', 'Proyectos', 'Habilidades', 'Contacto'].map((link, index) => (
-                <motion.a
-                  key={link}
-                  href={`#${['about', 'experience', 'projects', 'skills', 'contact'][index]}`}
-                  className="block text-sm text-muted-foreground hover:text-accent transition-colors"
-                  whileHover={{ x: 2 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                >
-                  {link}
-                </motion.a>
-              ))}
+              {['Sobre mí', 'Experiencia', 'Proyectos', 'Habilidades', 'Contacto'].map(
+                (link, index) => (
+                  <motion.a
+                    key={link}
+                    href={`#${['about', 'experience', 'projects', 'skills', 'contact'][index]}`}
+                    className="block text-sm text-muted-foreground hover:text-accent transition-colors"
+                    whileHover={{ x: 2 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                  >
+                    {link}
+                  </motion.a>
+                ),
+              )}
             </div>
           </motion.div>
 
@@ -140,12 +143,12 @@ export const Footer: React.FC = () => {
           <div className="flex items-center gap-1">
             © {currentYear} Rafael. Todos los derechos reservados.
           </div>
-          
+
           <div className="flex items-center gap-1">
             Hecho con
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }}
             >
               <Heart className="w-4 h-4 text-red-500 fill-current" />
             </motion.div>
@@ -162,8 +165,7 @@ export const Footer: React.FC = () => {
           transition={{ duration: 0.6, delay: 0.5 }}
         >
           <p className="text-xs text-muted-foreground">
-            Construido con React, TypeScript, Tailwind CSS y Motion • 
-            Alojado en Vercel • 
+            Construido con React, TypeScript, Tailwind CSS y Motion • Alojado en Vercel •
             <span className="text-accent"> Siempre en evolución</span>
           </p>
         </motion.div>

@@ -147,7 +147,7 @@ export const ChatBot: React.FC = () => {
               <Input
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
+                onKeyDown={handleKeyPress}
                 placeholder="Escribe tu pregunta..."
                 className="flex-1 text-base text-black bg-input-background placeholder:text-muted-foreground"
                 disabled={isTyping}

@@ -61,7 +61,7 @@ function App() {
                 >
                   {item}
                 </a>
-              )
+              ),
             )}
           </div>
         </nav>

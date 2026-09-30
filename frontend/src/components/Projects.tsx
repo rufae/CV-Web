@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -10,45 +10,52 @@ export const Projects: React.FC = () => {
   const projects = [
     {
       id: 1,
-      name: "Swapify",
-      description: "Plataforma de comercio electrónico completa con carrito de compras, sistema de pagos y panel de administración. Incluye autenticación de usuarios y gestión de inventario.",
-      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=300&fit=crop",
-      technologies: ["React", "Node.js", "Express", "MongoDB", "Stripe", "Tailwind CSS"],
-      githubUrl: "https://github.com/rafael/ecommerce-platform",
-      liveUrl: "https://ecommerce-demo.vercel.app",
-      type: "Full Stack",
-      icon: <Globe className="w-5 h-5" />
+      name: 'Swapify',
+      description:
+        'Plataforma de comercio electrónico completa con carrito de compras, sistema de pagos y panel de administración. Incluye autenticación de usuarios y gestión de inventario.',
+      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=300&fit=crop',
+      technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'Stripe', 'Tailwind CSS'],
+      githubUrl: 'https://github.com/rafael/ecommerce-platform',
+      liveUrl: 'https://ecommerce-demo.vercel.app',
+      type: 'Full Stack',
+      icon: <Globe className="w-5 h-5" />,
     },
     {
       id: 2,
-      name: "Powerzone",
-      description: "Aplicación de gestión de tareas con funcionalidades de colaboración en tiempo real, notificaciones push y sincronización entre dispositivos.",
-      image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=300&fit=crop",
-      technologies: ["Angular", "Java", "Spring Boot", "PostgreSQL", "WebSocket", "PWA"],
-      githubUrl: "https://github.com/rafael/task-manager",
-      liveUrl: "https://taskmanager-demo.netlify.app",
-      type: "Full Stack",
-      icon: <Code className="w-5 h-5" />
+      name: 'Powerzone',
+      description:
+        'Aplicación de gestión de tareas con funcionalidades de colaboración en tiempo real, notificaciones push y sincronización entre dispositivos.',
+      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=300&fit=crop',
+      technologies: ['Angular', 'Java', 'Spring Boot', 'PostgreSQL', 'WebSocket', 'PWA'],
+      githubUrl: 'https://github.com/rafael/task-manager',
+      liveUrl: 'https://taskmanager-demo.netlify.app',
+      type: 'Full Stack',
+      icon: <Code className="w-5 h-5" />,
     },
     {
       id: 3,
-      name: "CV Web",
-      description: "Aplicación móvil del clima con diseño responsive, geolocalización y pronósticos detallados. Incluye widgets personalizables y notificaciones.",
-      image: "https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=600&h=300&fit=crop",
-      technologies: ["React Native", "TypeScript", "Weather API", "AsyncStorage", "Expo"],
-      githubUrl: "https://github.com/rafael/weather-app",
-      liveUrl: "https://expo.dev/@rafael/weather-app",
-      type: "Full Stack",
-      icon: <Smartphone className="w-5 h-5" />
-    }
+      name: 'CV Web',
+      description:
+        'Aplicación móvil del clima con diseño responsive, geolocalización y pronósticos detallados. Incluye widgets personalizables y notificaciones.',
+      image: 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=600&h=300&fit=crop',
+      technologies: ['React Native', 'TypeScript', 'Weather API', 'AsyncStorage', 'Expo'],
+      githubUrl: 'https://github.com/rafael/weather-app',
+      liveUrl: 'https://expo.dev/@rafael/weather-app',
+      type: 'Full Stack',
+      icon: <Smartphone className="w-5 h-5" />,
+    },
   ];
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'Full Stack': return 'bg-accent text-accent-foreground';
-      case 'AI/ML': return 'bg-purple-500 text-white';
-      case 'Mobile': return 'bg-green-500 text-white';
-      default: return 'bg-secondary text-secondary-foreground';
+      case 'Full Stack':
+        return 'bg-accent text-accent-foreground';
+      case 'AI/ML':
+        return 'bg-purple-500 text-white';
+      case 'Mobile':
+        return 'bg-green-500 text-white';
+      default:
+        return 'bg-secondary text-secondary-foreground';
     }
   };
 
@@ -65,8 +72,8 @@ export const Projects: React.FC = () => {
           <h2 className="mb-4">Proyectos</h2>
           <div className="w-20 h-1 bg-accent mx-auto rounded-full" />
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-            Una selección de proyectos en los que he trabajado, demostrando mis habilidades en desarrollo full stack, 
-            inteligencia artificial y tecnologías modernas.
+            Una selección de proyectos en los que he trabajado, demostrando mis habilidades en
+            desarrollo full stack, inteligencia artificial y tecnologías modernas.
           </p>
         </motion.div>
 
@@ -96,36 +103,27 @@ export const Projects: React.FC = () => {
                         <Github className="w-4 h-4 mr-1" />
                         Code
                       </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => window.open(project.liveUrl, '_blank')}
-                      >
+                      <Button size="sm" onClick={() => window.open(project.liveUrl, '_blank')}>
                         <ExternalLink className="w-4 h-4 mr-1" />
                         Demo
                       </Button>
                     </div>
                   </div>
                   <div className="absolute top-4 left-4">
-                    <Badge className={getTypeColor(project.type)}>
-                      {project.type}
-                    </Badge>
+                    <Badge className={getTypeColor(project.type)}>{project.type}</Badge>
                   </div>
                 </div>
-                
+
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <div className="p-2 bg-accent/10 rounded-lg text-accent">
-                      {project.icon}
-                    </div>
+                    <div className="p-2 bg-accent/10 rounded-lg text-accent">{project.icon}</div>
                     {project.name}
                   </CardTitle>
                 </CardHeader>
-                
+
                 <CardContent>
-                  <p className="text-muted-foreground mb-4 line-clamp-3">
-                    {project.description}
-                  </p>
-                  
+                  <p className="text-muted-foreground mb-4 line-clamp-3">{project.description}</p>
+
                   <div className="space-y-4">
                     <div>
                       <h5 className="font-medium mb-2">Stack Tecnológico</h5>
@@ -145,7 +143,7 @@ export const Projects: React.FC = () => {
                         ))}
                       </div>
                     </div>
-                    
+
                     <div className="flex gap-2">
                       <Button
                         variant="outline"

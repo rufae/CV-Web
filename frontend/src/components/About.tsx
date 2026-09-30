@@ -1,17 +1,17 @@
 import React from 'react';
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import { Card, CardContent } from './ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Code2, Gamepad2, Brain, Coffee, Music, Trophy } from 'lucide-react';
 
 export const About: React.FC = () => {
   const funFacts = [
-    { icon: <Gamepad2 className="w-4 h-4" />, text: "Loves football", color: "bg-green-500" },
-    { icon: <Brain className="w-4 h-4" />, text: "Always learning AI", color: "bg-accent" },
-    { icon: <Coffee className="w-4 h-4" />, text: "Coffee enthusiast", color: "bg-amber-500" },
-    { icon: <Music className="w-4 h-4" />, text: "Coding with music", color: "bg-purple-500" },
-    { icon: <Code2 className="w-4 h-4" />, text: "Clean code advocate", color: "bg-emerald-500" },
-    { icon: <Trophy className="w-4 h-4" />, text: "Problem solver", color: "bg-orange-500" },
+    { icon: <Gamepad2 className="w-4 h-4" />, text: 'Loves football', color: 'bg-green-500' },
+    { icon: <Brain className="w-4 h-4" />, text: 'Always learning AI', color: 'bg-accent' },
+    { icon: <Coffee className="w-4 h-4" />, text: 'Coffee enthusiast', color: 'bg-amber-500' },
+    { icon: <Music className="w-4 h-4" />, text: 'Coding with music', color: 'bg-purple-500' },
+    { icon: <Code2 className="w-4 h-4" />, text: 'Clean code advocate', color: 'bg-emerald-500' },
+    { icon: <Trophy className="w-4 h-4" />, text: 'Problem solver', color: 'bg-orange-500' },
   ];
 
   return (
@@ -41,14 +41,13 @@ export const About: React.FC = () => {
               <motion.div
                 className="relative"
                 whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
                 <Avatar className="w-40 h-40 border-4 border-accent/20">
-                  <AvatarImage 
-                    src="/RAFAEL.png" 
-                    alt="Rafael"
-                  />
-                  <AvatarFallback className="text-2xl bg-accent text-accent-foreground">RA</AvatarFallback>
+                  <AvatarImage src="/RAFAEL.png" alt="Rafael" />
+                  <AvatarFallback className="text-2xl bg-accent text-accent-foreground">
+                    RA
+                  </AvatarFallback>
                 </Avatar>
                 <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 border-4 border-background rounded-full" />
               </motion.div>
@@ -64,10 +63,11 @@ export const About: React.FC = () => {
               <h3 className="text-2xl">Rafael</h3>
               <p className="text-accent">21 años • Full Stack Developer</p>
               <p className="text-muted-foreground leading-relaxed">
-                Soy un desarrollador Full Stack de 21 años que ha estudiado CFGS en Desarrollo de Aplicaciones 
-                Multiplataforma (DAM). Actualmente trabajo como desarrollador después de haber terminado mis 
-                prácticas y conseguir un contrato. Me apasiona la programación, la inteligencia artificial 
-                y el fútbol. Siempre estoy buscando nuevos desafíos y oportunidades para crecer profesionalmente.
+                Soy un desarrollador Full Stack de 21 años que ha estudiado CFGS en Desarrollo de
+                Aplicaciones Multiplataforma (DAM). Actualmente trabajo como desarrollador después
+                de haber terminado mis prácticas y conseguir un contrato. Me apasiona la
+                programación, la inteligencia artificial y el fútbol. Siempre estoy buscando nuevos
+                desafíos y oportunidades para crecer profesionalmente.
               </p>
             </motion.div>
           </motion.div>
@@ -93,9 +93,7 @@ export const About: React.FC = () => {
                       transition={{ duration: 0.4, delay: index * 0.1 }}
                       whileHover={{ scale: 1.02 }}
                     >
-                      <div className={`p-2 rounded-full text-white ${fact.color}`}>
-                        {fact.icon}
-                      </div>
+                      <div className={`p-2 rounded-full text-white ${fact.color}`}>{fact.icon}</div>
                       <span className="text-sm font-medium">{fact.text}</span>
                     </motion.div>
                   ))}

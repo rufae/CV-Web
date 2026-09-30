@@ -1,29 +1,36 @@
 import React, { useState } from 'react';
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { toast } from 'sonner';
-import { 
-  Mail, MapPin, Send, Github, Linkedin, 
-  Twitter, MessageSquare, User, FileText 
+import {
+  Mail,
+  MapPin,
+  Send,
+  Github,
+  Linkedin,
+  Twitter,
+  MessageSquare,
+  User,
+  FileText,
 } from 'lucide-react';
 
-import { sendContactForm } from '../services/api';  
+import { sendContactForm } from '../services/api';
 
 export const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    message: ''
+    message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,7 +44,7 @@ export const Contact: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      await sendContactForm(formData);  // <-- Llamada real al backend
+      await sendContactForm(formData); // <-- Llamada real al backend
       toast.success('¡Mensaje enviado correctamente! Te responderé pronto.');
       setFormData({ name: '', email: '', message: '' });
     } catch (error) {
@@ -51,43 +58,43 @@ export const Contact: React.FC = () => {
   const contactInfo = [
     {
       icon: <Mail className="w-5 h-5" />,
-      label: "Email",
-      value: "rafaelcastanoblanca1805@gmail.com",
-      href: "mailto:rafaelcastanoblanca1805@gmail.com"
+      label: 'Email',
+      value: 'rafaelcastanoblanca1805@gmail.com',
+      href: 'mailto:rafaelcastanoblanca1805@gmail.com',
     },
     {
       icon: <MapPin className="w-5 h-5" />,
-      label: "Ubicación",
-      value: "Sevilla, España",
-      href: "https://maps.google.com/?q=Seville,Spain"
-    }
+      label: 'Ubicación',
+      value: 'Sevilla, España',
+      href: 'https://maps.google.com/?q=Seville,Spain',
+    },
   ];
 
   const socialLinks = [
     {
-      name: "GitHub",
+      name: 'GitHub',
       icon: <Github className="w-5 h-5" />,
-      url: "https://github.com/rafael",
-      color: "hover:text-gray-600"
+      url: 'https://github.com/rafael',
+      color: 'hover:text-gray-600',
     },
     {
-      name: "LinkedIn",
+      name: 'LinkedIn',
       icon: <Linkedin className="w-5 h-5" />,
-      url: "https://www.linkedin.com/in/rafael-castaño-blanca/",
-      color: "hover:text-blue-600"
+      url: 'https://www.linkedin.com/in/rafael-castaño-blanca/',
+      color: 'hover:text-blue-600',
     },
     {
-      name: "Twitter",
+      name: 'Twitter',
       icon: <Twitter className="w-5 h-5" />,
-      url: "https://twitter.com/rafael_dev",
-      color: "hover:text-blue-400"
+      url: 'https://twitter.com/rafael_dev',
+      color: 'hover:text-blue-400',
     },
     {
-      name: "Email",
+      name: 'Email',
       icon: <Mail className="w-5 h-5" />,
-      url: "mailto:rafaelcastanoblanca1805@gmail.com",
-      color: "hover:text-red-500"
-    }
+      url: 'mailto:rafaelcastanoblanca1805@gmail.com',
+      color: 'hover:text-red-500',
+    },
   ];
 
   return (
@@ -103,8 +110,8 @@ export const Contact: React.FC = () => {
           <h2 className="mb-4">Contacto</h2>
           <div className="w-20 h-1 bg-accent mx-auto rounded-full" />
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-            ¿Tienes un proyecto en mente o quieres colaborar? Me encantaría escuchar sobre tu idea 
-            y explorar cómo podemos trabajar juntos.
+            ¿Tienes un proyecto en mente o quieres colaborar? Me encantaría escuchar sobre tu idea y
+            explorar cómo podemos trabajar juntos.
           </p>
         </motion.div>
 
@@ -186,7 +193,7 @@ export const Contact: React.FC = () => {
                         <motion.div
                           className="w-4 h-4 border-2 border-current border-t-transparent rounded-full mr-2"
                           animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                         />
                         Enviando...
                       </>
