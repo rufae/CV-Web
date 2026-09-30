@@ -1,0 +1,24 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", ":dependencyDashboard"],
+  "timezone": "Europe/Madrid",
+  "schedule": ["before 6am on monday"],
+  "packageRules": [
+    {
+      "groupName": "frontend minor/patch",
+      "matchPaths": ["frontend/package.json"],
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "groupName": "backend minor/patch",
+      "matchPaths": ["backend/requirements.txt"],
+      "matchUpdateTypes": ["minor", "patch"]
+    },
+    {
+      "description": "Ningún cambio de modelo LLM/embeddings sin pasar la evaluación (T7.10)",
+      "matchPackageNames": ["chromadb", "google-genai"],
+      "labels": ["evaluación-obligatoria"]
+    }
+  ],
+  "lockFileMaintenance": { "enabled": true }
+}
