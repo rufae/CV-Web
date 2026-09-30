@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 380" role="img" aria-label="Arquitectura de CV Web">
+  <defs>
+    <style>
+      .box { fill: #0f172a; stroke: #1e90ff; stroke-width: 2; rx: 10; }
+      .box-alt { fill: #101f38; stroke: #38bdf8; stroke-width: 2; rx: 10; }
+      .label { fill: #e2e8f0; font-family: 'Segoe UI', sans-serif; font-size: 16px; }
+      .small { fill: #93a4bd; font-family: 'Segoe UI', sans-serif; font-size: 12px; }
+      .arrow { stroke: #64748b; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #475569; stroke-width: 2; stroke-dasharray: 6 5; fill: none; marker-end: url(#arrow); }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b" />
+    </marker>
+  </defs>
+
+  <rect x="10" y="10" width="940" height="360" fill="#0b1220" rx="14" />
+
+  <rect class="box" x="40" y="150" width="150" height="70" />
+  <text class="label" x="115" y="180" text-anchor="middle">Visitante</text>
+  <text class="small" x="115" y="200" text-anchor="middle">HTTPS</text>
+
+  <rect class="box" x="250" y="130" width="180" height="110" />
+  <text class="label" x="340" y="165" text-anchor="middle">Caddy · nodo HP</text>
+  <text class="small" x="340" y="190" text-anchor="middle">TLS, cabeceras</text>
+  <text class="small" x="340" y="210" text-anchor="middle">SSE sin buffering</text>
+
+  <rect class="box-alt" x="490" y="80" width="220" height="90" />
+  <text class="label" x="600" y="112" text-anchor="middle">FastAPI + estáticos</text>
+  <text class="small" x="600" y="134" text-anchor="middle">/api/chat · /api/contact · /api/status</text>
+  <text class="small" x="600" y="152" text-anchor="middle">rate limit · prompt · output guard</text>
+
+  <rect class="box" x="490" y="240" width="220" height="80" />
+  <text class="label" x="600" y="270" text-anchor="middle">Chroma (cvweb_public)</text>
+  <text class="small" x="600" y="292" text-anchor="middle">solo lectura · ingesta offline</text>
+  <text class="small" x="600" y="310" text-anchor="middle">Public/ + cv_public: true</text>
+
+  <rect class="box" x="770" y="60" width="150" height="80" />
+  <text class="label" x="845" y="92" text-anchor="middle">Torre GPU</text>
+  <text class="small" x="845" y="114" text-anchor="middle">Ollama (P1)</text>
+
+  <rect class="box" x="770" y="170" width="150" height="80" />
+  <text class="label" x="845" y="202" text-anchor="middle">Nodo Dell</text>
+  <text class="small" x="845" y="224" text-anchor="middle">Ollama + bge-m3 (P2)</text>
+
+  <rect class="box" x="770" y="280" width="150" height="60" />
+  <text class="label" x="845" y="305" text-anchor="middle">Gemini</text>
+  <text class="small" x="845" y="325" text-anchor="middle">opcional, off</text>
+
+  <path class="arrow" d="M 190 185 L 245 185" />
+  <path class="arrow" d="M 430 165 L 485 130" />
+  <path class="arrow" d="M 600 170 L 600 235" />
+  <path class="dash" d="M 830 110 L 715 115" />
+  <path class="dash" d="M 830 205 L 715 145" />
+  <path class="dash" d="M 845 275 L 715 165" />
+
+  <text class="small" x="480" y="345" text-anchor="middle">Tailscale (LLM local nunca expuesto a Internet)</text>
+</svg>

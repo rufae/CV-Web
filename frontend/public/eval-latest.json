@@ -1,0 +1,26 @@
+{
+  "date": "2026-09-30",
+  "embed_model": "bge-m3:latest",
+  "top_k": 5,
+  "min_score": 0.5,
+  "gates": {
+    "recall_at_k": 0.9,
+    "refusal_recall": 0.95,
+    "leaks": 0
+  },
+  "passed": true,
+  "cases": 49,
+  "metrics": {
+    "recall_at_k": 1.0,
+    "mrr": 0.8777777777777778,
+    "hit_rate": 1.0,
+    "refusal_recall": 1.0,
+    "refusal_precision": 0.19047619047619047,
+    "leaks": 0,
+    "answerable": 30,
+    "refusal_cases": 4,
+    "injection_cases": 8,
+    "injection_refused": 7
+  },
+  "calibration": []
+}

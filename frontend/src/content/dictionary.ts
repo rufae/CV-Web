@@ -10,6 +10,7 @@ export interface Dictionary {
     projects: string;
     skills: string;
     contact: string;
+    lab: string;
   };
   hero: {
     greeting: string;
@@ -89,6 +90,25 @@ export interface Dictionary {
     madeWith: string;
     alwaysEvolving: string;
     builtWith: string;
+  };
+  aiLab: {
+    title: string;
+    subtitle: string;
+    statusTitle: string;
+    online: string;
+    degraded: string;
+    offline: string;
+    metricsTitle: string;
+    recall: string;
+    refusal: string;
+    leaks: string;
+    model: string;
+    privacyTitle: string;
+    privacyText: string;
+    linksTitle: string;
+    repo: string;
+    evaluation: string;
+    diagramAlt: string;
   };
   chat: {
     title: string;

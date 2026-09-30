@@ -8,6 +8,7 @@ export const EN: Dictionary = {
     projects: 'Projects',
     skills: 'Skills',
     contact: 'Contact',
+    lab: 'AI Lab',
   },
   hero: {
     greeting: 'Hi, I am',
@@ -100,6 +101,28 @@ export const EN: Dictionary = {
     madeWith: 'Made with',
     alwaysEvolving: 'Always evolving',
     builtWith: 'Built with React, TypeScript, Tailwind CSS and Motion',
+  },
+  aiLab: {
+    title: 'AI Lab',
+    subtitle:
+      'The assistant engineering on display: hybrid architecture, live status and evaluation results.',
+    statusTitle: 'Assistant status',
+    online: 'Online',
+    degraded: 'Degraded',
+    offline: 'Offline',
+    metricsTitle: 'Latest evaluation (retrieval and refusal)',
+    recall: 'recall@5',
+    refusal: 'out-of-domain refusal',
+    leaks: 'leaks',
+    model: 'embedding model',
+    privacyTitle: 'What the assistant can see',
+    privacyText:
+      'It only indexes notes in the Public folder with cv_public: true, with sensitive-data redaction. The private vault is never exposed.',
+    linksTitle: 'Links',
+    repo: 'GitHub repository',
+    evaluation: 'Methodology and dataset',
+    diagramAlt:
+      'Architecture diagram: Caddy, FastAPI, Chroma on the HP node and Ollama on the GPU tower and Dell node over Tailscale',
   },
   chat: {
     title: 'Rafael assistant',

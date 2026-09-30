@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 
 import { About } from '@/features/about/About';
+import { AiLab } from '@/features/ai-lab/AiLab';
 import { Contact } from '@/features/contact/Contact';
 import { Experience } from '@/features/experience/Experience';
 import { Footer } from '@/features/footer/Footer';
@@ -16,7 +17,15 @@ import { Toaster } from '@/shared/ui/sonner';
 import { ThemeContext } from './theme-context';
 
 const Chat = lazy(() => import('@/features/chat/Chat'));
-const SECTIONS = ['hero', 'about', 'experience', 'projects', 'skills', 'contact'] as const;
+const SECTIONS = [
+  'hero',
+  'about',
+  'experience',
+  'projects',
+  'skills',
+  'ai-lab',
+  'contact',
+] as const;
 
 function AppContent() {
   const { lang, t, setLang } = useI18n();
@@ -69,6 +78,7 @@ function AppContent() {
     t.nav.experience,
     t.nav.projects,
     t.nav.skills,
+    t.nav.lab,
     t.nav.contact,
   ];
 
@@ -137,6 +147,7 @@ function AppContent() {
           <Experience />
           <Projects />
           <Skills />
+          <AiLab />
           <Contact />
         </main>
 

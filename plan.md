@@ -642,12 +642,13 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `feat(i18n): Spanish and English content with typed dictionaries`
 - **Cierre 2026-09-30:** diccionario tipado ES/EN (`content/{dictionary,es,en}.ts`; un test garantiza que ambos tienen exactamente las mismas claves), contexto ligero `shared/lib/i18n.ts` + `I18nProvider` (detección `localStorage`/`navigator.language`, `<html lang>`, `title` y `description` dinámicos), selector ES/EN en la cabecera sin recarga, textos de todas las secciones, formulario y chat migrados a `t.*`, starters y `lang` del chat por idioma (`useChat(lang)`); eliminado `content/starters.ts`. Evidencia: 44/44 tests, lint/typecheck/build/prerender en verde. Desviación: los mensajes de validación del formulario siguen en español y el contenido de `facts.json` es canónico ES hasta que el vault real incluya notas EN.
 
-### T6.4 · Panel "AI Lab" `[ ]` · M
+### T6.4 · Panel "AI Lab" `[x]` · M
 - **Contexto:** convierte la ingeniería invisible en argumento de contratación.
 - **Ficheros:** `features/ai-lab/*`, `public/eval-latest.json` (copiado en build desde `eval/reports/`), `public/architecture.svg`.
 - **Pasos:** sección con (a) diagrama de arquitectura propio en SVG, (b) estado en vivo desde `/api/status` (sondeo cada 30 s solo con la pestaña visible), (c) métricas de la última evaluación (recall@k, rechazo, fugas = 0), (d) explicación breve de qué información puede ver el asistente (política de T3.1), (e) enlaces al repositorio, ADRs y `docs/evaluation.md`.
 - **Aceptación:** con la API caída el panel degrada a datos estáticos sin errores en consola; los números mostrados coinciden con el último informe; contenido accesible y responsive.
 - **Commit:** `feat(ai-lab): architecture, live status and evaluation showcase`
+- **Cierre 2026-09-30:** sección `features/ai-lab/AiLab.tsx` con diagrama propio (`public/architecture.svg`: Caddy → FastAPI → Chroma en el HP y Ollama en torre/Dell por Tailscale), estado en vivo desde `/api/status` (sondeo 30 s solo con pestaña visible; si la API cae muestra “Sin conexión” sin errores), métricas del último informe copiado en build (`scripts/copy-eval.mjs` → `public/eval-latest.json`), tarjeta de política de datos y enlaces (repo, `docs/evaluation.md`). Ancla `#ai-lab` añadida a navegación y scrollspy con i18n. Evidencia: `AiLab.test.tsx` (jsdom: datos vivos y degradación) — 46/46 tests, build+prerender con la sección en el HTML.
 
 ### T6.5 · Rendimiento (Lighthouse ≥ 95) `[ ]` · M
 - **Ficheros:** `vite.config.ts`, `index.html`, `deploy/Caddyfile`, `size-limit.config.json`, `lighthouserc.json`.
