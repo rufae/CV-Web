@@ -775,7 +775,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Pasos:** recorrer la checklist del Apéndice E; etiquetar `v1.0.0` y generar *release notes*; apagar definitivamente Render y Vercel y redirigir el dominio antiguo; actualizar el enlace en el CV, LinkedIn y GitHub; archivar el informe de evaluación de la release.
 - **Aceptación:** checklist completa con evidencia enlazada; el dominio antiguo redirige; no queda ningún servicio en nube dependiendo de datos personales.
 - **Commit:** `chore(release): v1.0.0`
-- **Parcial 2026-09-30 (decisión del usuario: desplegar después):** `docs/release-v1.0-checklist.md` con el Apéndice E y su estado (✅ en código / ⏳ en el nodo). Render y Vercel ya están apagados; los enlaces del CV/LinkedIn se actualizan al desplegar. **Pendiente:** desplegar en el HP, completar la checklist, etiquetar `v1.0.0` (requiere permiso explícito) y archivar los repos antiguos.
+- **Parcial 2026-09-30 (decisión del usuario: desplegar después):** `docs/release-v1.0-checklist.md` con el Apéndice E y su estado (✅ en código / ⏳ en el nodo); `docs/deployment-guide.md` con los comandos exactos para `nodochicohp`; **tag anotado `v1.0.0` creado y publicado** (con permiso del usuario) aun con el despliegue pendiente. Render y Vercel ya están apagados; los enlaces del CV/LinkedIn se actualizan al desplegar. **Pendiente:** desplegar, completar la checklist y archivar los repos antiguos.
 
 ---
 
