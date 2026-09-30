@@ -39,6 +39,10 @@ class Settings(BaseSettings):
     llm_first_token_timeout_s: float = 15.0
     llm_max_concurrency: int = 2
 
+    # RAG (F3)
+    vault_path: str = ""
+    public_vault_dir: str = "Public"
+
     email: str = ""
     password_application: str = ""
 

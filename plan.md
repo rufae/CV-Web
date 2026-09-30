@@ -333,11 +333,12 @@ PASSWORD_APPLICATION=
 - **Commit:** `docs(privacy): define public vault allow-list policy`
 - **Cierre 2026-09-30:** política en `docs/adr/0001-public-vault-allowlist.md` (carpeta `Public/` con subcarpetas propuestas `sobre-mi/`, `experiencia/`, `proyectos/`, `stack/`, `certificaciones/`; **doble puerta** `Public/` + `cv_public: true`; deny-list explícita; redacción de patrones sensibles como red de seguridad; limpieza de sintaxis Obsidian; ingesta solo lectura) y plantilla `docs/templates/public-note.md`. `docs/privacy.md` actualizado (sección 4 nueva y renumeración). Decisión delegada por el usuario ("propón tú la carpeta"); revisable antes de T3.2.
 
-### T3.2 · Extracción y filtrado `[ ]` · M
+### T3.2 · Extracción y filtrado `[x]` · M
 - **Ficheros:** `backend/scripts/ingest_public_vault.py`, `app/rag/ingest.py`, `tests/unit/test_ingest_filter.py`, `tests/fixtures/vault/`.
 - **Pasos:** recorrer `VAULT_PATH` aplicando la política de T3.1; parsear frontmatter y Markdown; **limpiar sintaxis Obsidian** (`[[wikilinks]]` a notas no públicas se degradan a texto plano; embeds y comentarios `%%…%%` fuera; callouts a texto); redacción de patrones sensibles como red de seguridad; producir un manifiesto (`ruta`, `hash`, `updated`).
 - **Aceptación:** vault de prueba con *canarios* (cadenas únicas en notas privadas, en notas sin `cv_public` y en notas con enlace a privadas) → ninguna aparece en la salida; test que **falla** si se filtra un canario; sin efectos en el vault original (solo lectura).
 - **Commit:** `feat(rag): add allow-list vault extraction with sensitive-data redaction`
+- **Cierre 2026-09-30:** `app/rag/ingest.py` aplica la doble puerta (`Public/` + `cv_public: true`), deny-list, limpieza Obsidian (wikilinks sin alias → solo el nombre de la nota, sin carpetas; embeds y `%%comentarios%%` fuera; callouts a texto), redacción (email, teléfono ES, DNI/NIE, IBAN y fecha de nacimiento), manifiesto determinista (`ruta → sha256`) y **solo lectura** sobre el vault. CLI `scripts/ingest_public_vault.py` (`--vault`, `--public-dir`, `--dry-run`, `--manifest`). `Settings` gana `VAULT_PATH` y `PUBLIC_VAULT_DIR`; añadida dependencia `python-frontmatter` con lock. Evidencia: vault fixture con canarios — `test_ingest_filter.py` (7 tests: no fugas, redacción, limpieza, manifiesto determinista y vault intacto), CLI en dry-run → 3 notas públicas y 5 redacciones; 50/50 tests, mypy estricto en 38 ficheros (ahora incluye `scripts/`).
 
 ### T3.3 · Chunking consciente de Markdown `[ ]` · M
 - **Ficheros:** `app/rag/chunking.py`, `tests/unit/test_chunking.py`.

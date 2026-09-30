@@ -18,8 +18,9 @@
    `Public/` está excluida por defecto.
 4. **Redacción como red de seguridad:** aunque estén en una nota pública, se
    eliminan emails, teléfonos, DNI/NIE, IBAN y fechas de nacimiento detectadas.
-5. **Limpieza de sintaxis Obsidian:** los `[[wikilinks]]` a notas no públicas se
-   degradan a texto plano; se eliminan embeds (`![[...]]`), bloques de comentario
+5. **Limpieza de sintaxis Obsidian:** los `[[wikilinks]]` se degradan a texto plano
+   (alias si existe; si no, solo el **nombre** de la nota, sin carpeta, para no
+   revelar rutas privadas); se eliminan embeds (`![[...]]`), bloques de comentario
    `%%...%%` y callouts se convierten a texto.
 6. La ingesta es **de solo lectura** sobre el vault original.
 
