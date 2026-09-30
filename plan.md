@@ -148,12 +148,13 @@ CV-Web/
 - **Commit:** `chore(security): remove personal context from history and rotate credentials`
 - **Cierre 2026-09-30:** Render y Vercel eliminados (proyectos borrados; URLs devuelven 404) y sin API key activa en Gemini ⇒ las claves ya no residen en terceros. Historia purgada también para la copia en raíz (`rafa_context.txt`, rama lateral del subtree), con reemplazo de teléfono/fecha en todo el historial de texto (`--replace-text`). `rafa_context.txt` movido a `/home/rafael/PROYECTOS/CVWEB.private/` (ADR-0006). Contraseña de aplicación de Gmail: regenerar al configurar el HP (T1.9).
 
-### T1.2 · Andamiaje de calidad backend `[ ]` · M
+### T1.2 · Andamiaje de calidad backend `[x]` · M
 - **Contexto:** sin linters, tipos ni tests (B10).
 - **Ficheros:** `backend/pyproject.toml`, `backend/requirements.lock`, `backend/tests/`, `.pre-commit-config.yaml`.
 - **Pasos:** configurar `ruff` (lint+format), `mypy --strict` en `app/`, `pytest` + `pytest-asyncio` + `httpx`; fijar versiones (`uv pip compile` o `pip-compile`); **eliminar `google-generativeai`** (B7); añadir `pre-commit`.
 - **Aceptación:** `ruff check`, `mypy`, `pytest` (con un test trivial) pasan en un venv limpio; `pip install -r requirements.lock` reproducible.
 - **Commit:** `build(backend): add ruff, mypy, pytest and pin dependencies`
+- **Cierre 2026-09-30:** `pyproject.toml` con ruff (E/F/I/UP/B/SIM/RUF), `mypy --strict` sobre `app/` y `tests/`, pytest con `asyncio_mode=auto`; locks con hashes (`uv pip compile`, `requirements.lock` + `requirements-dev.lock`); `google-generativeai` eliminado; `.pre-commit-config.yaml` (ruff + hooks básicos; mypy en *stage* manual porque requiere el venv activo). Desviaciones: se creó `backend/app/__init__.py` vacío como placeholder hasta T1.3 y los módulos planos heredados (`main.py`, `ia.py`, `form_email.py`) se excluyen de ruff hasta que T1.3 los retire. Evidencia: `ruff check`/`format --check`, `mypy --strict` y `pytest` en verde en un venv limpio instalado desde los locks.
 
 ### T1.3 · Reestructurar el backend (feature-first) `[ ]` · M
 - **Contexto:** `main.py`, `ia.py`, `form_email.py` planos, con lectura de fichero a nivel de import y arranque condicionado a la clave (B1, R6).

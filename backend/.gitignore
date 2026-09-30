@@ -45,3 +45,8 @@ htmlcov/
 # Mis archivos personales
 ayuda.md
 rafa_context.txt
+
+# Caches de herramientas
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
