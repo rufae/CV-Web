@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useI18n } from '@/shared/lib/i18n';
 
 import { FACTS } from '@/content/facts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -34,6 +35,7 @@ const PROJECT_ICONS: Record<string, React.ReactNode> = {
 };
 
 export const Projects: React.FC = () => {
+  const { t } = useI18n();
   const projects: Project[] = FACTS.projects.map((fact, index) => ({
     id: index + 1,
     name: fact.name,
@@ -68,12 +70,9 @@ export const Projects: React.FC = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="mb-4">Proyectos</h2>
+          <h2 className="mb-4">{t.projects.title}</h2>
           <div className="w-20 h-1 bg-accent mx-auto rounded-full" />
-          <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-            Una selección de proyectos en los que he trabajado, demostrando mis habilidades en
-            desarrollo full stack, inteligencia artificial y tecnologías modernas.
-          </p>
+          <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">{t.projects.subtitle}</p>
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-8">
@@ -127,7 +126,7 @@ export const Projects: React.FC = () => {
 
                   <div className="space-y-4">
                     <div>
-                      <h5 className="font-medium mb-2">Stack Tecnológico</h5>
+                      <h5 className="font-medium mb-2">{t.projects.stackTitle}</h5>
                       <div className="flex flex-wrap gap-2">
                         {project.technologies.map((tech, idx) => (
                           <motion.div
@@ -153,7 +152,7 @@ export const Projects: React.FC = () => {
                         onClick={() => window.open(project.githubUrl, '_blank')}
                       >
                         <Github className="w-4 h-4 mr-1" />
-                        View on GitHub
+                        {t.projects.viewGithub}
                       </Button>
                       {project.liveUrl && (
                         <Button
@@ -162,7 +161,7 @@ export const Projects: React.FC = () => {
                           onClick={() => window.open(project.liveUrl, '_blank')}
                         >
                           <ExternalLink className="w-4 h-4 mr-1" />
-                          Live Demo
+                          {t.projects.liveDemo}
                         </Button>
                       )}
                     </div>
@@ -186,7 +185,7 @@ export const Projects: React.FC = () => {
             onClick={() => window.open('https://github.com/rufae', '_blank')}
           >
             <Github className="w-4 h-4 mr-2" />
-            Ver más proyectos en GitHub
+            {t.projects.viewMore}
           </Button>
         </motion.div>
       </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useI18n } from '@/shared/lib/i18n';
 
 import { FACTS } from '@/content/facts';
 import { Card, CardContent } from '@/shared/ui/card';
@@ -7,14 +8,19 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Code2, Gamepad2, Brain, Coffee, Music, Trophy } from 'lucide-react';
 
 export const About: React.FC = () => {
-  const funFacts = [
-    { icon: <Gamepad2 className="w-4 h-4" />, text: 'Loves football', color: 'bg-green-500' },
-    { icon: <Brain className="w-4 h-4" />, text: 'Always learning AI', color: 'bg-accent' },
-    { icon: <Coffee className="w-4 h-4" />, text: 'Coffee enthusiast', color: 'bg-amber-500' },
-    { icon: <Music className="w-4 h-4" />, text: 'Coding with music', color: 'bg-purple-500' },
-    { icon: <Code2 className="w-4 h-4" />, text: 'Clean code advocate', color: 'bg-emerald-500' },
-    { icon: <Trophy className="w-4 h-4" />, text: 'Problem solver', color: 'bg-orange-500' },
+  const { t } = useI18n();
+  const funFactStyles = [
+    { icon: <Gamepad2 className="w-4 h-4" />, color: 'bg-green-500' },
+    { icon: <Brain className="w-4 h-4" />, color: 'bg-accent' },
+    { icon: <Coffee className="w-4 h-4" />, color: 'bg-amber-500' },
+    { icon: <Music className="w-4 h-4" />, color: 'bg-purple-500' },
+    { icon: <Code2 className="w-4 h-4" />, color: 'bg-emerald-500' },
+    { icon: <Trophy className="w-4 h-4" />, color: 'bg-orange-500' },
   ];
+  const funFacts = funFactStyles.map((style, index) => ({
+    ...style,
+    text: t.about.facts[index],
+  }));
 
   return (
     <section id="about" className="py-20 px-6">
@@ -26,7 +32,7 @@ export const About: React.FC = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="mb-4">Sobre mí</h2>
+          <h2 className="mb-4">{t.about.title}</h2>
           <div className="w-20 h-1 bg-accent mx-auto rounded-full" />
         </motion.div>
 
@@ -79,7 +85,7 @@ export const About: React.FC = () => {
           >
             <Card className="p-6">
               <CardContent className="p-0">
-                <h4 className="mb-6 text-center">Fun Facts About Me</h4>
+                <h4 className="mb-6 text-center">{t.about.funFactsTitle}</h4>
                 <div className="grid grid-cols-2 gap-4">
                   {funFacts.map((fact, index) => (
                     <motion.div
@@ -109,15 +115,15 @@ export const About: React.FC = () => {
             >
               <Card className="p-4 text-center hover:shadow-lg transition-shadow">
                 <div className="text-2xl mb-2">2+</div>
-                <div className="text-sm text-muted-foreground">Years Learning</div>
+                <div className="text-sm text-muted-foreground">{t.about.yearsLearning}</div>
               </Card>
               <Card className="p-4 text-center hover:shadow-lg transition-shadow">
                 <div className="text-2xl mb-2">10+</div>
-                <div className="text-sm text-muted-foreground">Projects Built</div>
+                <div className="text-sm text-muted-foreground">{t.about.projectsBuilt}</div>
               </Card>
               <Card className="p-4 text-center hover:shadow-lg transition-shadow">
                 <div className="text-2xl mb-2">5+</div>
-                <div className="text-sm text-muted-foreground">Technologies</div>
+                <div className="text-sm text-muted-foreground">{t.about.technologies}</div>
               </Card>
             </motion.div>
           </motion.div>

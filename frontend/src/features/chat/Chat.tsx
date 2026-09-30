@@ -6,10 +6,12 @@ import type { ChatMessage } from './chatReducer';
 import { ChatLauncher } from './ChatLauncher';
 import { ChatPanel } from './ChatPanel';
 import './chat.css';
+import { useI18n } from '@/shared/lib/i18n';
 import { useChat } from './useChat';
 
 export default function Chat() {
-  const { state, send, stop, retry, reset } = useChat();
+  const { lang } = useI18n();
+  const { state, send, stop, retry, reset } = useChat(lang);
   const [open, setOpen] = useState(false);
   const wasOpen = useRef(false);
 

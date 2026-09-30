@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useI18n } from '@/shared/lib/i18n';
 
 import { FACTS } from '@/content/facts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -43,6 +44,7 @@ const SKILL_EMOJI: Record<string, string> = {
 };
 
 export const Skills: React.FC = () => {
+  const { t } = useI18n();
   const skillCategories = FACTS.skills.map((category, index) => ({
     id: index + 1,
     title: category.title,
@@ -64,11 +66,11 @@ export const Skills: React.FC = () => {
   };
 
   const getSkillLevelText = (level: number) => {
-    if (level >= 90) return 'Expert';
-    if (level >= 80) return 'Advanced';
-    if (level >= 70) return 'Intermediate';
-    if (level >= 60) return 'Learning';
-    return 'Beginner';
+    if (level >= 90) return t.skills.levels.expert;
+    if (level >= 80) return t.skills.levels.advanced;
+    if (level >= 70) return t.skills.levels.intermediate;
+    if (level >= 60) return t.skills.levels.learning;
+    return t.skills.levels.beginner;
   };
 
   return (
@@ -81,7 +83,7 @@ export const Skills: React.FC = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="mb-4">Habilidades</h2>
+          <h2 className="mb-4">{t.skills.title}</h2>
           <div className="w-20 h-1 bg-accent mx-auto rounded-full" />
           <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
             Mis competencias técnicas organizadas por categoría, desde desarrollo frontend y backend
@@ -164,25 +166,25 @@ export const Skills: React.FC = () => {
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-center">Skills Overview</CardTitle>
+              <CardTitle className="text-center">{t.skills.overviewTitle}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                 <div className="space-y-2">
                   <div className="text-2xl">15+</div>
-                  <div className="text-sm text-muted-foreground">Technologies</div>
+                  <div className="text-sm text-muted-foreground">{t.skills.technologies}</div>
                 </div>
                 <div className="space-y-2">
                   <div className="text-2xl">8+</div>
-                  <div className="text-sm text-muted-foreground">Expert Level</div>
+                  <div className="text-sm text-muted-foreground">{t.skills.expertLevel}</div>
                 </div>
                 <div className="space-y-2">
                   <div className="text-2xl">3+</div>
-                  <div className="text-sm text-muted-foreground">Learning AI/ML</div>
+                  <div className="text-sm text-muted-foreground">{t.skills.learningAi}</div>
                 </div>
                 <div className="space-y-2">
                   <div className="text-2xl">24/7</div>
-                  <div className="text-sm text-muted-foreground">Always Learning</div>
+                  <div className="text-sm text-muted-foreground">{t.skills.alwaysLearning}</div>
                 </div>
               </div>
             </CardContent>
@@ -200,7 +202,7 @@ export const Skills: React.FC = () => {
           <Card className="inline-block p-8">
             <div className="space-y-4">
               <div className="text-6xl">📄</div>
-              <h3>Download My CV</h3>
+              <h3>{t.skills.downloadTitle}</h3>
               <p className="text-muted-foreground max-w-md">
                 Get a detailed overview of my experience, education, and technical skills in PDF
                 format.
@@ -213,7 +215,7 @@ export const Skills: React.FC = () => {
               >
                 <a href="/curriculum-vitae.pdf" download="Rafael_CV.pdf">
                   <Download className="w-4 h-4 mr-2" />
-                  Download CV
+                  {t.skills.download}
                 </a>
               </Button>
             </div>

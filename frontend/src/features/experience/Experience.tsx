@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useI18n } from '@/shared/lib/i18n';
 
 import { FACTS } from '@/content/facts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -7,6 +8,7 @@ import { Badge } from '@/shared/ui/badge';
 import { Building2, Calendar, MapPin, Users, Code, Network } from 'lucide-react';
 
 export const Experience: React.FC = () => {
+  const { t } = useI18n();
   const experiences = FACTS.experience.map((fact, index) => ({
     id: index + 1,
     title: fact.role,
@@ -30,7 +32,7 @@ export const Experience: React.FC = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="mb-4">Experiencia</h2>
+          <h2 className="mb-4">{t.experience.title}</h2>
           <div className="w-20 h-1 bg-accent mx-auto rounded-full" />
         </motion.div>
 
@@ -88,7 +90,7 @@ export const Experience: React.FC = () => {
                       <div className="mb-6">
                         <h5 className="font-medium mb-3 flex items-center gap-2">
                           <Users className="w-4 h-4" />
-                          Responsabilidades
+                          {t.experience.responsibilities}
                         </h5>
                         <ul className="space-y-2">
                           {exp.responsibilities.map((resp, idx) => (
@@ -110,7 +112,7 @@ export const Experience: React.FC = () => {
                       <div>
                         <h5 className="font-medium mb-3 flex items-center gap-2">
                           <Network className="w-4 h-4" />
-                          Tecnologías utilizadas
+                          {t.experience.technologies}
                         </h5>
                         <div className="flex flex-wrap gap-2">
                           {exp.technologies.map((tech, idx) => (
@@ -149,7 +151,7 @@ export const Experience: React.FC = () => {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 text-green-600 rounded-full border border-green-500/20">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-            <span className="text-sm font-medium">Currently employed and loving it!</span>
+            <span className="text-sm font-medium">{t.experience.current}</span>
           </div>
         </motion.div>
       </div>

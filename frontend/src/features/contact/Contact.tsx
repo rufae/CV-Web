@@ -20,9 +20,11 @@ import {
 
 import { sendContactForm } from '@/shared/api/client';
 import { ApiError } from '@/shared/api/client';
+import { useI18n } from '@/shared/lib/i18n';
 import { validateForm } from './validation';
 
 export const Contact: React.FC = () => {
+  const { t } = useI18n();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -49,7 +51,7 @@ export const Contact: React.FC = () => {
 
     try {
       await sendContactForm({ ...formData, honeypot });
-      toast.success('¡Mensaje enviado correctamente! Te responderé pronto.');
+      toast.success(t.contact.sent);
       setFormData({ name: '', email: '', message: '' });
       setHoneypot('');
     } catch (error) {
@@ -76,8 +78,8 @@ export const Contact: React.FC = () => {
     },
     {
       icon: <MapPin className="w-5 h-5" />,
-      label: 'Ubicación',
-      value: 'Sevilla, España',
+      label: t.contact.locationLabel,
+      value: t.contact.locationValue,
       href: 'https://maps.google.com/?q=Seville,Spain',
     },
   ];
@@ -119,12 +121,9 @@ export const Contact: React.FC = () => {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="mb-4">Contacto</h2>
+          <h2 className="mb-4">{t.contact.title}</h2>
           <div className="w-20 h-1 bg-accent mx-auto rounded-full" />
-          <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-            ¿Tienes un proyecto en mente o quieres colaborar? Me encantaría escuchar sobre tu idea y
-            explorar cómo podemos trabajar juntos.
-          </p>
+          <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">{t.contact.subtitle}</p>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12">
@@ -139,7 +138,7 @@ export const Contact: React.FC = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <MessageSquare className="w-5 h-5 text-accent" />
-                  Envíame un mensaje
+                  {t.contact.formTitle}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -147,14 +146,14 @@ export const Contact: React.FC = () => {
                   <div className="space-y-2">
                     <Label htmlFor="name" className="flex items-center gap-2">
                       <User className="w-4 h-4" />
-                      Nombre completo
+                      {t.contact.name}
                     </Label>
                     <Input
                       id="name"
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Tu nombre"
+                      placeholder={t.contact.namePlaceholder}
                       className="transition-all duration-200 focus:ring-2 focus:ring-accent"
                       required
                     />
@@ -163,7 +162,7 @@ export const Contact: React.FC = () => {
                   <div className="space-y-2">
                     <Label htmlFor="email" className="flex items-center gap-2">
                       <Mail className="w-4 h-4" />
-                      Email
+                      {t.contact.email}
                     </Label>
                     <Input
                       id="email"
@@ -171,7 +170,7 @@ export const Contact: React.FC = () => {
                       type="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="tu@email.com"
+                      placeholder={t.contact.emailPlaceholder}
                       className="transition-all duration-200 focus:ring-2 focus:ring-accent"
                       required
                     />
@@ -180,14 +179,14 @@ export const Contact: React.FC = () => {
                   <div className="space-y-2">
                     <Label htmlFor="message" className="flex items-center gap-2">
                       <FileText className="w-4 h-4" />
-                      Mensaje
+                      {t.contact.message}
                     </Label>
                     <Textarea
                       id="message"
                       name="message"
                       value={formData.message}
                       onChange={handleInputChange}
-                      placeholder="Cuéntame sobre tu proyecto o idea..."
+                      placeholder={t.contact.messagePlaceholder}
                       rows={6}
                       className="transition-all duration-200 focus:ring-2 focus:ring-accent resize-none text-black"
                       required
@@ -223,12 +222,12 @@ export const Contact: React.FC = () => {
                           animate={{ rotate: 360 }}
                           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                         />
-                        Enviando...
+                        {t.contact.sending}
                       </>
                     ) : (
                       <>
                         <Send className="w-4 h-4 mr-2" />
-                        Enviar mensaje
+                        {t.contact.send}
                       </>
                     )}
                   </Button>
@@ -248,7 +247,7 @@ export const Contact: React.FC = () => {
             {/* Contact Information */}
             <Card>
               <CardHeader>
-                <CardTitle>Información de contacto</CardTitle>
+                <CardTitle>{t.contact.infoTitle}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -279,7 +278,7 @@ export const Contact: React.FC = () => {
             {/* Social Links */}
             <Card>
               <CardHeader>
-                <CardTitle>Redes sociales</CardTitle>
+                <CardTitle>{t.contact.socialTitle}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
@@ -319,10 +318,8 @@ export const Contact: React.FC = () => {
                   <div className="flex items-center gap-3">
                     <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
                     <div>
-                      <div className="font-medium text-green-600">Disponible para proyectos</div>
-                      <div className="text-sm text-muted-foreground">
-                        Actualmente abierto a nuevas oportunidades y colaboraciones
-                      </div>
+                      <div className="font-medium text-green-600">{t.contact.availableTitle}</div>
+                      <div className="text-sm text-muted-foreground">{t.contact.availableText}</div>
                     </div>
                   </div>
                 </CardContent>

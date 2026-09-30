@@ -4,6 +4,7 @@ import { Send, Square } from 'lucide-react';
 import { MAX_MESSAGE_CHARS } from '@/shared/api/types';
 import { Button } from '@/shared/ui/button';
 import { Textarea } from '@/shared/ui/textarea';
+import { useI18n } from '@/shared/lib/i18n';
 
 interface ComposerProps {
   disabled: boolean;
@@ -13,6 +14,7 @@ interface ComposerProps {
 }
 
 export function Composer({ disabled, streaming, onSend, onStop }: ComposerProps) {
+  const { t } = useI18n();
   const [text, setText] = useState('');
 
   const submit = () => {
@@ -36,11 +38,11 @@ export function Composer({ disabled, streaming, onSend, onStop }: ComposerProps)
               submit();
             }
           }}
-          placeholder="Escribe tu pregunta…"
+          placeholder={t.chat.inputPlaceholder}
           rows={1}
           maxLength={MAX_MESSAGE_CHARS}
           disabled={disabled}
-          aria-label="Mensaje para el asistente"
+          aria-label={t.chat.inputPlaceholder}
           className="max-h-32 min-h-10 flex-1 resize-none bg-input-background text-base"
         />
         {streaming ? (
@@ -49,7 +51,7 @@ export function Composer({ disabled, streaming, onSend, onStop }: ComposerProps)
             size="icon"
             variant="outline"
             onClick={onStop}
-            aria-label="Detener la respuesta"
+            aria-label={t.chat.stop}
           >
             <Square className="h-4 w-4" />
           </Button>
@@ -59,7 +61,7 @@ export function Composer({ disabled, streaming, onSend, onStop }: ComposerProps)
             size="icon"
             onClick={submit}
             disabled={disabled || text.trim() === ''}
-            aria-label="Enviar mensaje"
+            aria-label={t.chat.send}
             className="bg-accent text-accent-foreground hover:bg-accent/90"
           >
             <Send className="h-4 w-4" />

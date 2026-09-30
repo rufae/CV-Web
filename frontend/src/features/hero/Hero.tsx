@@ -1,9 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useI18n } from '@/shared/lib/i18n';
 import { Button } from '@/shared/ui/button';
 import { Download, Eye, MessageSquare } from 'lucide-react';
 
 export const Hero: React.FC = () => {
+  const { t } = useI18n();
   const codeLines = [
     'const developer = new FullStack("Rafael");',
     'developer.setPassions(["Technology", "AI", "Football"]);',
@@ -85,11 +87,11 @@ export const Hero: React.FC = () => {
             className="mb-6 leading-tight"
             style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)' }}
           >
-            Hi, I'm <span className="text-gradient font-bold">Rafael</span>
+            {t.hero.greeting} <span className="text-gradient font-bold">Rafael</span>
             <br />
             <span className="block mt-2">
-              Full Stack Developer passionate about <span className="text-accent">technology</span>{' '}
-              and <span className="text-accent">AI</span>
+              {t.hero.passion} <span className="text-accent">technology</span> and{' '}
+              <span className="text-accent">AI</span>
             </span>
           </motion.h1>
 
@@ -99,8 +101,7 @@ export const Hero: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.3 }}
           >
-            Building innovative web solutions with modern technologies and a passion for clean,
-            efficient code.
+            {t.hero.subtitle}
           </motion.p>
 
           <motion.div
@@ -117,7 +118,7 @@ export const Hero: React.FC = () => {
               }
             >
               <Eye className="w-4 h-4 mr-2" />
-              View Projects
+              {t.hero.viewProjects}
             </Button>
 
             <Button
@@ -128,7 +129,7 @@ export const Hero: React.FC = () => {
             >
               <a href="/curriculum-vitae.pdf" download="Rafael_CV.pdf">
                 <Download className="w-4 h-4 mr-2" />
-                Download CV
+                {t.hero.downloadCv}
               </a>
             </Button>
 
@@ -141,7 +142,7 @@ export const Hero: React.FC = () => {
               }
             >
               <MessageSquare className="w-4 h-4 mr-2" />
-              Contact
+              {t.hero.contact}
             </Button>
           </motion.div>
         </motion.div>

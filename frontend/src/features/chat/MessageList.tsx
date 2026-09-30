@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import type { ChatMessage, ChatState } from './chatReducer';
 import { MessageBubble } from './MessageBubble';
+import { useI18n } from '@/shared/lib/i18n';
 import { Starters } from './Starters';
 
 interface MessageListProps {
@@ -11,6 +12,7 @@ interface MessageListProps {
 }
 
 export function MessageList({ state, onFeedback, onSelectStarter }: MessageListProps) {
+  const { t } = useI18n();
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [stickToBottom, setStickToBottom] = useState(true);
@@ -41,9 +43,7 @@ export function MessageList({ state, onFeedback, onSelectStarter }: MessageListP
     >
       {state.messages.length === 0 && (
         <div className="py-4">
-          <p className="mb-3 text-center text-sm text-muted-foreground">
-            Pregúntame por su experiencia, proyectos o stack técnico.
-          </p>
+          <p className="mb-3 text-center text-sm text-muted-foreground">{t.chat.empty}</p>
           <Starters onSelect={onSelectStarter} />
         </div>
       )}

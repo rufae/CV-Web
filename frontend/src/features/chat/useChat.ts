@@ -3,6 +3,7 @@ import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { streamChat } from '@/shared/api/chatStream';
 import { ApiError } from '@/shared/api/client';
 import type { ErrorData, ServerEvent } from '@/shared/api/types';
+import type { Lang } from '@/content/types';
 
 import {
   buildHistory,
@@ -49,7 +50,7 @@ export interface UseChat {
   reset: () => void;
 }
 
-export function useChat(): UseChat {
+export function useChat(lang: Lang = 'es'): UseChat {
   const [state, dispatch] = useReducer(chatReducer, initialChatState, (initial): ChatState => ({
     ...initial,
     messages: chatPersistence.load(),
@@ -105,7 +106,7 @@ export function useChat(): UseChat {
 
       try {
         await streamChat(
-          { message: trimmed, history: buildHistory(stateRef.current.messages) },
+          { message: trimmed, history: buildHistory(stateRef.current.messages), lang },
           {
             signal: controller.signal,
             onEvent: (event) => {
@@ -145,7 +146,7 @@ export function useChat(): UseChat {
         abortRef.current = null;
       }
     },
-    [flushTokens, scheduleFlush],
+    [flushTokens, scheduleFlush, lang],
   );
 
   const send = useCallback((text: string) => run(text), [run]);

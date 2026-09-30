@@ -3,6 +3,7 @@ import { Check, Copy, ThumbsDown, ThumbsUp } from 'lucide-react';
 
 import type { ChatMessage } from './chatReducer';
 import { renderMarkdown } from './markdown';
+import { useI18n } from '@/shared/lib/i18n';
 import { SourceChips } from './SourceChips';
 
 interface MessageBubbleProps {
@@ -11,6 +12,7 @@ interface MessageBubbleProps {
 }
 
 export function MessageBubble({ message, onFeedback }: MessageBubbleProps) {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   const isUser = message.role === 'user';
 
@@ -46,7 +48,7 @@ export function MessageBubble({ message, onFeedback }: MessageBubbleProps) {
             <button
               type="button"
               onClick={() => void copy()}
-              aria-label="Copiar respuesta"
+              aria-label={t.chat.copy}
               className="flex h-11 w-11 items-center justify-center rounded transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:h-7 sm:w-7"
             >
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
@@ -56,7 +58,7 @@ export function MessageBubble({ message, onFeedback }: MessageBubbleProps) {
                 <button
                   type="button"
                   onClick={() => onFeedback(message, 'up')}
-                  aria-label="Respuesta útil"
+                  aria-label={t.chat.useful}
                   className="flex h-11 w-11 items-center justify-center rounded transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:h-7 sm:w-7"
                 >
                   <ThumbsUp className="h-4 w-4" />
@@ -64,7 +66,7 @@ export function MessageBubble({ message, onFeedback }: MessageBubbleProps) {
                 <button
                   type="button"
                   onClick={() => onFeedback(message, 'down')}
-                  aria-label="Respuesta no útil"
+                  aria-label={t.chat.notUseful}
                   className="flex h-11 w-11 items-center justify-center rounded transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:h-7 sm:w-7"
                 >
                   <ThumbsDown className="h-4 w-4" />

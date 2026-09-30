@@ -9,6 +9,7 @@ import { Composer } from './Composer';
 import { MessageList } from './MessageList';
 import { statusView } from './statusView';
 import { useApiStatus } from './useApiStatus';
+import { useI18n } from '@/shared/lib/i18n';
 import { useFocusTrap } from './useFocusTrap';
 
 interface ChatPanelProps {
@@ -40,6 +41,7 @@ export function ChatPanel({
     return () => window.removeEventListener('keydown', handleKey);
   }, [onClose]);
 
+  const { t } = useI18n();
   const panelRef = useRef<HTMLElement>(null);
   const previousStatus = useRef(state.status);
   const [announcement, setAnnouncement] = useState('');
@@ -80,11 +82,9 @@ export function ChatPanel({
           </div>
           <div>
             <h3 id="chat-title" className="font-semibold">
-              Asistente de Rafael
+              {t.chat.title}
             </h3>
-            <p className="text-xs opacity-90">
-              Asistente de IA; solo responde con información pública del portfolio
-            </p>
+            <p className="text-xs opacity-90">{t.chat.disclaimer}</p>
           </div>
         </div>
         <div className="flex items-center gap-1">
@@ -92,7 +92,7 @@ export function ChatPanel({
             variant="ghost"
             size="icon"
             onClick={onReset}
-            aria-label="Nueva conversación"
+            aria-label={t.chat.newConversation}
             className="text-accent-foreground hover:bg-white/10"
           >
             <RotateCcw className="h-4 w-4" />
@@ -101,7 +101,7 @@ export function ChatPanel({
             variant="ghost"
             size="icon"
             onClick={onClose}
-            aria-label="Cerrar el asistente"
+            aria-label={t.chat.close}
             className="text-accent-foreground hover:bg-white/10"
           >
             <X className="h-4 w-4" />
@@ -113,7 +113,7 @@ export function ChatPanel({
       {showRetry && (
         <div className="px-4 pt-2">
           <Button size="sm" variant="outline" onClick={() => void onRetry()}>
-            Reintentar
+            {t.chat.retry}
           </Button>
         </div>
       )}

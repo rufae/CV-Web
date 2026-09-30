@@ -1,9 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useI18n } from '@/shared/lib/i18n';
 import { Github, Linkedin, Mail, Heart, ArrowUp } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 
 export const Footer: React.FC = () => {
+  const { t } = useI18n();
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
@@ -65,10 +67,7 @@ export const Footer: React.FC = () => {
           >
             <div className="space-y-3">
               <h3 className="text-gradient">Rafael</h3>
-              <p className="text-muted-foreground">
-                Full Stack Developer apasionado por crear soluciones innovadoras con tecnologías
-                modernas.
-              </p>
+              <p className="text-muted-foreground">{t.footer.tagline}</p>
             </div>
           </motion.div>
 
@@ -80,7 +79,7 @@ export const Footer: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h4 className="mb-4">Enlaces rápidos</h4>
+            <h4 className="mb-4">{t.footer.quickLinks}</h4>
             <div className="space-y-2">
               {['Sobre mí', 'Experiencia', 'Proyectos', 'Habilidades', 'Contacto'].map(
                 (link, index) => (
@@ -106,7 +105,7 @@ export const Footer: React.FC = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <h4 className="mb-4">Sígueme</h4>
+            <h4 className="mb-4">{t.footer.follow}</h4>
             <div className="flex justify-center md:justify-end gap-3">
               {socialLinks.map((social, index) => (
                 <motion.a
@@ -141,11 +140,11 @@ export const Footer: React.FC = () => {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <div className="flex items-center gap-1">
-            © {currentYear} Rafael. Todos los derechos reservados.
+            © {currentYear} Rafael. {t.footer.rights}
           </div>
 
           <div className="flex items-center gap-1">
-            Hecho con
+            {t.footer.madeWith}{' '}
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }}
@@ -165,8 +164,7 @@ export const Footer: React.FC = () => {
           transition={{ duration: 0.6, delay: 0.5 }}
         >
           <p className="text-xs text-muted-foreground">
-            Construido con React, TypeScript, Tailwind CSS y Motion •{' '}
-            <span className="text-accent">Siempre en evolución</span>
+            {t.footer.builtWith} • <span className="text-accent">{t.footer.alwaysEvolving}</span>
           </p>
         </motion.div>
       </div>

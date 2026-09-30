@@ -1,12 +1,13 @@
 import { Sparkles } from 'lucide-react';
 
-import { STARTERS } from '@/content/starters';
+import { useI18n } from '@/shared/lib/i18n';
 
 interface StartersProps {
   onSelect: (text: string) => void;
 }
 
 export function Starters({ onSelect }: StartersProps) {
+  const { t } = useI18n();
   return (
     <div className="space-y-2">
       <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
@@ -14,7 +15,7 @@ export function Starters({ onSelect }: StartersProps) {
         Prueba con…
       </p>
       <div className="flex flex-col gap-2">
-        {STARTERS.map((starter) => (
+        {t.chat.starters.map((starter) => (
           <button
             key={starter}
             type="button"

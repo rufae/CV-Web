@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { AlertTriangle, WifiOff } from 'lucide-react';
 
 import type { ChatStatus as ChatStatusValue } from './chatReducer';
-import { formatRetry, statusView, type LlmState } from './statusView';
+import { useI18n } from '@/shared/lib/i18n';
+import { statusView, type LlmState } from './statusView';
 
 interface ChatStatusProps {
   chat: ChatStatusValue;
@@ -11,6 +12,7 @@ interface ChatStatusProps {
 }
 
 export function ChatStatus({ chat, retryAfter, llm }: ChatStatusProps) {
+  const { t } = useI18n();
   const [remaining, setRemaining] = useState(retryAfter);
 
   useEffect(() => {
@@ -37,34 +39,36 @@ export function ChatStatus({ chat, retryAfter, llm }: ChatStatusProps) {
       {view.offline && (
         <p className="flex flex-wrap items-center gap-1.5 bg-amber-500/10 px-4 py-2 text-sm text-amber-700 dark:text-amber-400">
           <WifiOff className="h-4 w-4" />
-          El asistente está en mantenimiento.
+          {t.chat.offline}{' '}
           <a href="#contact" className="underline">
-            Escríbeme por el formulario
+            {t.chat.contact}
           </a>
           .
         </p>
       )}
       {view.degraded && !view.offline && (
         <p className="bg-amber-500/10 px-4 py-2 text-sm text-amber-700 dark:text-amber-400">
-          Respuestas algo más lentas de lo normal.
+          {t.chat.degraded}
         </p>
       )}
       {view.rateLimited && (
         <p className="bg-amber-500/10 px-4 py-2 text-sm text-amber-700 dark:text-amber-400">
-          {formatRetry(remaining)}.
+          {remaining > 0
+            ? `${t.chat.limit} ${t.chat.limitRetry.replace('{seconds}', String(remaining))}`
+            : t.chat.retry}
         </p>
       )}
       {chat === 'error' && (
         <p className="flex items-center gap-1.5 bg-red-500/10 px-4 py-2 text-sm text-red-600">
           <AlertTriangle className="h-4 w-4" />
-          El asistente no está disponible ahora mismo.
+          {t.chat.offline}
         </p>
       )}
       {chat === 'refused' && (
         <p className="bg-muted px-4 py-2 text-sm text-muted-foreground">
-          ¿Prefieres hablar con Rafael?{' '}
+          {t.chat.refused}{' '}
           <a href="#contact" className="text-accent underline">
-            Usa el formulario de contacto
+            {t.chat.contact}
           </a>
           .
         </p>

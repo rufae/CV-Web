@@ -635,11 +635,12 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `feat(seo): metadata, structured data and build-time prerendering`
 - **Cierre 2026-09-30:** `index.html` con canonical/hreflang ES-EN (dominio provisional, se fija en T7.5), Open Graph/Twitter con `og-image.png` 1200×630 generada, JSON-LD `Person` sin teléfono/dirección/fecha, `manifest.webmanifest` y `theme-color`; `robots.txt` (bloquea `/api/`) y `sitemap.xml`; **prerender propio** con `react-dom/server` y `vite build --ssr` (App SSR-safe: tema guardado, Chat y Toaster solo tras montar). Verificación: `dist/index.html` incluye `<h1>`, textos y JSON-LD válido (parseado en el build). Evidencia: build/lint/typecheck/tests en verde (40/40). Pendiente: validadores de Google/OG al desplegar con el dominio real.
 
-### T6.3 · Internacionalización ES/EN `[ ]` · M
+### T6.3 · Internacionalización ES/EN `[x]` · M
 - **Ficheros:** `content/{es,en}/*`, `shared/lib/i18n.ts`, `features/*` (uso de textos), enrutado `/` y `/en`.
 - **Pasos:** diccionario ligero tipado (evitar librerías pesadas salvo necesidad); detección inicial por `navigator.language` con preferencia guardada; `<html lang>` dinámico; el chat envía `lang` y los starters cambian de idioma; el contenido de `facts.json` incluye ambas lenguas.
 - **Aceptación:** cambiar de idioma no recarga la página y actualiza `lang`, metadatos y starters; ningún texto de interfaz queda hardcodeado.
 - **Commit:** `feat(i18n): Spanish and English content with typed dictionaries`
+- **Cierre 2026-09-30:** diccionario tipado ES/EN (`content/{dictionary,es,en}.ts`; un test garantiza que ambos tienen exactamente las mismas claves), contexto ligero `shared/lib/i18n.ts` + `I18nProvider` (detección `localStorage`/`navigator.language`, `<html lang>`, `title` y `description` dinámicos), selector ES/EN en la cabecera sin recarga, textos de todas las secciones, formulario y chat migrados a `t.*`, starters y `lang` del chat por idioma (`useChat(lang)`); eliminado `content/starters.ts`. Evidencia: 44/44 tests, lint/typecheck/build/prerender en verde. Desviación: los mensajes de validación del formulario siguen en español y el contenido de `facts.json` es canónico ES hasta que el vault real incluya notas EN.
 
 ### T6.4 · Panel "AI Lab" `[ ]` · M
 - **Contexto:** convierte la ingeniería invisible en argumento de contratación.

@@ -42,22 +42,12 @@
         "Pruebas, depuración y documentación técnica"
       ],
       "role": "Mobile App Developer",
-      "technologies": [
-        "Kotlin",
-        "Android Studio",
-        "Node.js",
-        "Express",
-        "MySQL",
-        "Git"
-      ],
+      "technologies": ["Kotlin", "Android Studio", "Node.js", "Express", "MySQL", "Git"],
       "type": "Prácticas"
     }
   ],
   "generated_at": "2026-09-30T16:24:03+00:00",
-  "languages": [
-    "Español nativo",
-    "Inglés técnico"
-  ],
+  "languages": ["Español nativo", "Inglés técnico"],
   "profile": {
     "location": "Sevilla, España",
     "name": "Rafael Castaño",
@@ -68,39 +58,21 @@
     {
       "description": "Asistente personal con RAG sobre el Segundo Cerebro (Obsidian): recuperación semántica con bge-m3 y Chroma y generación con LLM local.",
       "name": "Rafita",
-      "technologies": [
-        "Python",
-        "RAG",
-        "Chroma",
-        "Ollama",
-        "bge-m3"
-      ],
+      "technologies": ["Python", "RAG", "Chroma", "Ollama", "bge-m3"],
       "type": "AI/ML",
       "url": "https://github.com/rufae"
     },
     {
       "description": "Este portfolio: SPA en React con chatbot IA y formulario de contacto sobre una API FastAPI, con despliegue self-hosted.",
       "name": "CV Web",
-      "technologies": [
-        "React",
-        "TypeScript",
-        "FastAPI",
-        "Python",
-        "Tailwind CSS"
-      ],
+      "technologies": ["React", "TypeScript", "FastAPI", "Python", "Tailwind CSS"],
       "type": "Full Stack",
       "url": "https://github.com/rufae/CV-Web"
     },
     {
       "description": "Laboratorio doméstico: nodo HP para aplicaciones, torre GPU y nodo Dell con Ollama para inferencia, unidos por Tailscale.",
       "name": "Infraestructura IA híbrida",
-      "technologies": [
-        "Linux",
-        "Ollama",
-        "Docker",
-        "Tailscale",
-        "Networking"
-      ],
+      "technologies": ["Linux", "Ollama", "Docker", "Tailscale", "Networking"],
       "type": "Infra",
       "url": "https://github.com/rufae"
     }
