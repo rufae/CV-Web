@@ -560,11 +560,12 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Aceptación:** tests con streams simulados: chunk partido a mitad de evento, UTF-8 multibyte partido, evento `error`, abort a mitad; sin fugas de lectores.
 - **Commit:** `feat(chat): robust SSE client over fetch streams`
 
-### T5.3 · Estado y lógica del chat `[ ]` · M
+### T5.3 · Estado y lógica del chat `[x]` · M
 - **Ficheros:** `features/chat/useChat.ts`, `features/chat/chatReducer.ts`, tests.
 - **Pasos:** reductor con estados `idle | retrieving | streaming | error | rate_limited | refused`; acumulación de tokens con actualización agrupada por `requestAnimationFrame` (evita re-render por token); historial recortado a `MAX_HISTORY_TURNS`; persistencia en `sessionStorage` (no `localStorage`) con botón "Nueva conversación"; acciones `send`, `stop`, `retry`; `message_id` para el feedback.
 - **Aceptación:** tests del reductor para todas las transiciones; detener en mitad de un stream conserva el texto ya recibido; recargar la pestaña restaura la conversación y cerrarla la borra.
 - **Commit:** `feat(chat): chat state machine with abort, retry and session persistence`
+- **Cierre 2026-09-30:** `chatReducer.ts` con estados `idle|retrieving|streaming|error|rate_limited|refused` y tests de todas las transiciones; `useChat.ts` con `send/stop/retry/reset`, `AbortController`, agrupación de tokens por `requestAnimationFrame` y recorte de historial a 12 entradas (`buildHistory`); `persistence.ts` con adaptador de `sessionStorage` (carga al abrir, guarda al cambiar, limpia con “Nueva conversación”, tolerante a JSON corrupto). Cada mensaje guarda `messageId`, `promptVersion`, `tier` y fuentes para el feedback. Evidencia: 11 tests nuevos (9 reducer + 2 persistencia) — 23/23 en frontend, lint y typecheck verdes.
 
 ### T5.4 · UI del chat `[ ]` · L
 - **Ficheros:** `features/chat/{ChatLauncher,ChatPanel,MessageList,MessageBubble,Composer,SourceChips}.tsx`, `features/chat/chat.css`.
