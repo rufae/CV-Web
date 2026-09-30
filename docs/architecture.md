@@ -47,7 +47,6 @@ backend/
 |---|---|---|
 | GET | `/api/health` | liveness |
 | POST | `/api/chat` | canónica (F4 la convertirá en SSE) |
-| POST | `/ask` | alias temporal de `/api/chat` (se retira en T5.7) |
 | POST | `/api/contact` | canónica |
 | POST | `/contact` | alias temporal (se retira en T5.7) |
 | GET | `/docs`, `/openapi.json` | solo en `APP_ENV=development` |
@@ -56,7 +55,8 @@ backend/
 
 - `lifespan` carga el contexto de Rafael una sola vez y construye los servicios.
 - `APP_ENV=production`: si falta una variable obligatoria (`GOOGLE_API_KEY`,
-  `RAFA_CONTEXT_PATH`, `EMAIL`, `PASSWORD_APPLICATION`) la app **no arranca** con mensaje claro.
+  `EMAIL`, `PASSWORD_APPLICATION`) la app **no arranca** con mensaje claro; sin proveedores
+  LLM el chat responde 503.
 - `development`: avisa por log y deshabilita el servicio afectado (responde 503).
 
 ## 3. Frontend
@@ -70,10 +70,9 @@ backend/
 
 Referencia completa en `backend/.env.example`:
 
-- **Usadas hoy**: `APP_ENV`, `ALLOWED_ORIGINS`, `RAFA_CONTEXT_PATH`, `GEMINI_MODEL`,
+- **Usadas hoy**: `APP_ENV`, `ALLOWED_ORIGINS`, `GEMINI_MODEL`,
   `GOOGLE_API_KEY`, `EMAIL`, `PASSWORD_APPLICATION`.
-- **Reservadas (F2-F7, aún no leídas)**: router LLM (`LLM_*`), RAG (`EMBED_*`, `CHROMA_PATH`,
-  `RAG_*`, `VAULT_PATH`), límites y seguridad (`MAX_*`, `RATE_LIMIT_*`, `DAILY_CHAT_BUDGET`,
+- **Router LLM y RAG (F2/F3, ya en uso)**: `LLM_*`, `EMBED_*`, `CHROMA_PATH`, `RAG_*`, `VAULT_PATH`, límites y seguridad (`MAX_*`, `RATE_LIMIT_*`, `DAILY_CHAT_BUDGET`,
   `ALLOWED_HOSTS`, `TRUSTED_PROXY_IPS`, `PROMPT_VERSION`, `PUBLIC_CONTACT_ALLOWLIST`,
   `DATA_PATH`), SMTP futuro (`CONTACT_TO`, `SMTP_*`, `TURNSTILE_*`) y `METRICS_TOKEN`.
 - `frontend/.env.example`: `VITE_API_URL` (vacío = same-origin).

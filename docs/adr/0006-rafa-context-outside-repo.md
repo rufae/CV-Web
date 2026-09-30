@@ -1,6 +1,7 @@
 # ADR-0006 — Ubicación y acceso al contexto personal hasta la Fase 3
 
-- **Estado:** aceptada (2026-09-30, T1.1)
+- **Estado:** superseded (2026-09-30): la Fase 3 sustituyó el contexto inyectado por RAG
+  sobre `cvweb_public` (T3.4/T3.5) y el fichero ya no se usa. El ADR se conserva como histórico.
 - **Contexto:** `rafa_context.txt` contiene datos personales y salió del repositorio en
   T1.1. Hasta que la Fase 3 sustituya la inyección de contexto por RAG, el backend lo
   sigue necesitando para el endpoint `/ask`.

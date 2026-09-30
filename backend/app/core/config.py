@@ -26,7 +26,6 @@ class Settings(BaseSettings):
     google_api_key: str = ""
     gemini_model: str = "gemini-2.5-flash"
     gemini_enabled: bool = False
-    rafa_context_path: Path | None = None
 
     # Router LLM (F2)
     llm_providers_order: str = "tower,dell"
@@ -80,26 +79,11 @@ class Settings(BaseSettings):
         return [origin.strip() for origin in self.allowed_origins.split(",") if origin.strip()]
 
     @property
-    def context_file(self) -> Path | None:
-        if self.rafa_context_path is not None:
-            return self.rafa_context_path
-        dev_copy = BACKEND_DIR / "rafa_context.txt"
-        return dev_copy if dev_copy.is_file() else None
-
-    @property
-    def chat_enabled(self) -> bool:
-        return bool(self.google_api_key) and self.context_file is not None
-
-    @property
     def contact_enabled(self) -> bool:
         return bool(self.email) and bool(self.password_application)
 
     def missing_required(self) -> list[str]:
         missing: list[str] = []
-        if not self.google_api_key:
-            missing.append("GOOGLE_API_KEY")
-        if self.context_file is None:
-            missing.append("RAFA_CONTEXT_PATH")
         if not self.email:
             missing.append("EMAIL")
         if not self.password_application:

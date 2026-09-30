@@ -137,7 +137,9 @@ def test_burst_is_rate_limited() -> None:
         app = cast(FastAPI, client.app)
         app.state.chat_limiter = SlidingWindowLimiter(parse_limits("3/minute"))
 
-        statuses = [client.post("/ask", json={"message": "hola"}).status_code for _ in range(4)]
+        statuses = [
+            client.post("/api/chat", json={"message": "hola"}).status_code for _ in range(4)
+        ]
 
     assert statuses[-1] == 429
     assert statuses[0] == 503  # servicio sin claves en test, pero el limitador cuenta

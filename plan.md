@@ -594,11 +594,12 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `feat(a11y): accessible chat dialog with focus management and live regions`
 - **Cierre 2026-09-30:** `useFocusTrap` (foco inicial en el panel, ciclo de Tab y retorno del foco al lanzador al cerrar), Esc cierra (ya), **anuncio `aria-live` solo al completarse la respuesta** (región `sr-only`; la lista pasa a `role=group` para no anunciar token a token), objetivos táctiles ≥44 px en acciones del mensaje y starters (compactos en ≥sm), `prefers-reduced-motion` respetado (typing indicator y glow del lanzador), contraste del mensaje del bot con `--card-foreground` y anillos de foco visibles. Evidencia: tests con `axe-core` + `jsdom` (lanzador y panel abierto) sin violaciones serias/críticas — 36/36; JS inicial 132,37 kB gzip y chunk del chat 7,31 kB. Prueba manual con lector de pantalla pendiente.
 
-### T5.7 · Formulario de contacto y retirada de alias legados `[ ]` · S
+### T5.7 · Formulario de contacto y retirada de alias legados `[x]` · S
 - **Ficheros:** `features/contact/*`, `app/features/*/router.py` (backend), `services/api.ts` (se elimina), `package.json`.
 - **Pasos:** el formulario usa `/api/contact` con validación en cliente, campo honeypot, estados de envío y errores; eliminar `axios` y `services/api.ts`; **retirar los alias `/ask` y `/contact` del backend** (T1.3) una vez comprobado que nada los usa.
 - **Aceptación:** `grep -r "/ask"` sin resultados; el formulario funciona de extremo a extremo; el bundle no incluye `axios`.
 - **Commit:** `refactor(api): migrate contact form to /api/contact and drop legacy routes`
+- **Cierre 2026-09-30:** el formulario usa `POST /api/contact` con validación en cliente (`validation.ts` + 4 tests), honeypot oculto y errores tipados (rate limit con cuenta atrás, presupuesto diario, genérico). Retirados del backend los alias `/ask` y `/contact`, `ChatService` y el contexto inyectado (`RAFA_CONTEXT_PATH` eliminado de Settings/plantilla; ADR-0006 marcado como *superseded*); `python eval/…` no afectado. `rg "/ask"` sin resultados en `src`, `app` y tests. Backend 161/161 y frontend 40/40; JS inicial 132,76 kB gzip.
 
 ### T5.8 · Pulido visual y responsive `[ ]` · M
 - 🏁 **Hito M3: chat completo en producción.**

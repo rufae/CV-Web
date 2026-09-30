@@ -19,7 +19,7 @@ SECURITY_HEADERS: dict[str, str] = {
         "base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
     ),
 }
-_NO_STORE_PATHS = {"/ask", "/contact"}
+_NO_STORE_PATHS = {"/api/chat", "/api/contact"}
 
 
 def client_ip(request: Request) -> str:

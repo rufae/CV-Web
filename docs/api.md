@@ -58,8 +58,6 @@ Errores previos al stream usan HTTP normal: 413 (cuerpo demasiado grande),
 422 (validación), 429 (límite, con `Retry-After`), 503 (cola desbordada, con
 `Retry-After`). `tier` es `gpu` o `cpu`; nunca se expone host ni IP.
 
-El alias legacy `POST /ask` mantiene el formato JSON `{"response": "..."}` hasta T5.7.
-
 ## `POST /api/contact`
 
 Request: `{"name": "...", "email": "....", "message": "..."}` (longitudes y

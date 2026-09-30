@@ -27,7 +27,6 @@ from app.core.security import (
     SecurityHeadersMiddleware,
 )
 from app.features.chat.router import router as chat_router
-from app.features.chat.service import ChatService
 from app.features.contact.router import router as contact_router
 from app.features.contact.service import ContactService
 from app.features.feedback.router import router as feedback_router
@@ -88,12 +87,9 @@ def create_app() -> FastAPI:
                 raise RuntimeError(message)
             logger.warning("%s (en desarrollo se deshabilitan los servicios afectados)", message)
 
-        context = (
-            settings.context_file.read_text(encoding="utf-8")
-            if settings.context_file is not None
-            else None
-        )
         providers = build_providers(settings)
+        if not providers:
+            logger.warning("Sin proveedores LLM configurados; el chat responderá 503")
         monitor = HealthMonitor(
             providers,
             config=MonitorConfig(
@@ -140,7 +136,6 @@ def create_app() -> FastAPI:
         app.state.chat_budget = DailyBudget(settings.daily_chat_budget)
         app.state.contact_budget = DailyBudget(settings.daily_contact_budget)
 
-        app.state.chat_service = ChatService(settings, context)
         app.state.contact_service = ContactService(settings)
         app.state.feedback_service = FeedbackService(
             FeedbackStore(Path(settings.data_path) / "feedback.db")

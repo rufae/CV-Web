@@ -23,12 +23,12 @@ sudo -u cvweb bash -c 'cd /opt/cvweb/repo/frontend && npm ci && npm run build'
 sudo cp /opt/cvweb/repo/backend/.env.example /opt/cvweb/.env
 sudo chown cvweb:cvweb /opt/cvweb/.env
 sudo chmod 600 /opt/cvweb/.env
-sudo -u cvweb nano /opt/cvweb/.env      # rellenar claves y RAFA_CONTEXT_PATH
+sudo -u cvweb nano /opt/cvweb/.env      # EMAIL, PASSWORD_APPLICATION, LLM_*, EMBED_*, VAULT_PATH
 
-# Contexto privado (fuera del repo, ver docs/adr/0006)
-sudo -u cvweb scp usuario@origen:/ruta/rafa_context.txt /opt/cvweb/data/rafa_context.txt
-sudo -u cvweb chmod 600 /opt/cvweb/data/rafa_context.txt
-# y en /opt/cvweb/.env: RAFA_CONTEXT_PATH=/opt/cvweb/data/rafa_context.txt
+# Ingesta del vault público (RAG): indexa solo Public/ + cv_public:true
+sudo -u cvweb bash -c 'cd /opt/cvweb/repo/backend && \
+  /opt/cvweb/venv/bin/python scripts/ingest_public_vault.py \
+  --manifest /opt/cvweb/data/ingest_manifest.json'
 
 # Servicio
 sudo cp /opt/cvweb/repo/deploy/cvweb.service /etc/systemd/system/cvweb.service

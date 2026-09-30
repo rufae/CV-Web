@@ -74,6 +74,7 @@ export interface ContactPayload {
   name: string;
   email: string;
   message: string;
+  honeypot?: string;
 }
 
 export interface ContactResponse {

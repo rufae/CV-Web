@@ -22,10 +22,10 @@ def test_rate_limit_returns_429_with_retry_after() -> None:
         app = cast(FastAPI, client.app)
         app.state.chat_limiter = SlidingWindowLimiter(parse_limits("1/minute"), clock=FakeClock())
 
-        first = client.post("/ask", json={"message": "hola"})
+        first = client.post("/api/chat", json={"message": "hola"})
         assert first.status_code == 503
 
-        second = client.post("/ask", json={"message": "hola"})
+        second = client.post("/api/chat", json={"message": "hola"})
         assert second.status_code == 429
         assert second.headers["Retry-After"] == "60"
         assert second.json() == {"code": "rate_limited", "retry_after_s": 60}
@@ -36,10 +36,10 @@ def test_daily_budget_returns_429() -> None:
         app = cast(FastAPI, client.app)
         app.state.chat_budget = DailyBudget(1, clock=lambda: 0.0)
 
-        first = client.post("/ask", json={"message": "hola"})
+        first = client.post("/api/chat", json={"message": "hola"})
         assert first.status_code == 503
 
-        second = client.post("/ask", json={"message": "hola"})
+        second = client.post("/api/chat", json={"message": "hola"})
         assert second.status_code == 429
         assert second.json() == {"code": "daily_budget_exhausted"}
 

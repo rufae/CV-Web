@@ -1,8 +1,4 @@
-"""Esquemas del endpoint de chat (T4.1).
-
-`ChatRequest` es el contrato nuevo (SSE); `Prompt` se mantiene para el alias
-legacy `/ask` hasta T5.7.
-"""
+"""Esquemas del endpoint de chat SSE (T4.1)."""
 
 from typing import Literal
 
@@ -10,10 +6,6 @@ from pydantic import BaseModel, ConfigDict, Field
 
 MAX_MESSAGE_CHARS = 500
 MAX_HISTORY_TURNS = 6
-
-
-class Prompt(BaseModel):
-    message: str
 
 
 class Turn(BaseModel):

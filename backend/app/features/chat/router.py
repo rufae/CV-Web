@@ -1,8 +1,4 @@
-"""Router del chat.
-
-- `POST /api/chat`: streaming SSE (T4.5).
-- `POST /ask`: alias legacy JSON (se retira en T5.7).
-"""
+"""Router del chat: `POST /api/chat` en streaming SSE (T4.5)."""
 
 import secrets
 from collections.abc import AsyncIterator
@@ -15,8 +11,7 @@ from app.core.ratelimit import enforce_daily_budget, enforce_rate_limit
 from app.features.chat.events import SourceItem, SourcesEvent
 from app.features.chat.output_guard import OutputGuard
 from app.features.chat.sanitize import sanitize_input
-from app.features.chat.schemas import ChatRequest, Prompt
-from app.features.chat.service import ChatService
+from app.features.chat.schemas import ChatRequest
 from app.features.chat.sse import refusal_stream, routed_stream
 from app.features.health.service import llm_status
 from app.llm.errors import LLMError, QueueOverflow
@@ -156,9 +151,3 @@ async def chat_sse(payload: ChatRequest, request: Request) -> StreamingResponse 
             guard=guard,
         )
     )
-
-
-@router.post("/ask", include_in_schema=False, dependencies=[Depends(_chat_limits)])
-async def ask_rafa(prompt: Prompt, request: Request) -> dict[str, str]:
-    service: ChatService = request.app.state.chat_service
-    return {"response": await service.ask(prompt.message)}

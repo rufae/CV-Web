@@ -53,7 +53,7 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
 }
 
 export const sendContactForm = async (formData: ContactPayload): Promise<ContactResponse> => {
-  return postJson<ContactResponse>('/contact', formData);
+  return postJson<ContactResponse>('/api/contact', formData);
 };
 
 export const sendFeedback = async (payload: FeedbackPayload): Promise<void> => {

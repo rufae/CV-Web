@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 
 import { sendContactForm } from '@/shared/api/client';
+import { ApiError } from '@/shared/api/client';
+import { validateForm } from './validation';
 
 export const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -26,6 +28,7 @@ export const Contact: React.FC = () => {
     email: '',
     message: '',
   });
+  const [honeypot, setHoneypot] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -36,20 +39,29 @@ export const Contact: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.email || !formData.message) {
-      toast.error('Por favor, completa todos los campos');
+    const validationError = validateForm(formData);
+    if (validationError !== null) {
+      toast.error(validationError);
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      await sendContactForm(formData); // <-- Llamada real al backend
+      await sendContactForm({ ...formData, honeypot });
       toast.success('¡Mensaje enviado correctamente! Te responderé pronto.');
       setFormData({ name: '', email: '', message: '' });
+      setHoneypot('');
     } catch (error) {
-      console.error(error);
-      toast.error('Error al enviar el mensaje. Por favor, intenta de nuevo.');
+      if (error instanceof ApiError && error.code === 'rate_limited') {
+        toast.error(
+          `Demasiados mensajes${error.retryAfter ? `; prueba en ${error.retryAfter} s` : ''}.`,
+        );
+      } else if (error instanceof ApiError && error.code === 'daily_budget_exhausted') {
+        toast.error('Se alcanzó el límite diario de mensajes. Inténtalo mañana.');
+      } else {
+        toast.error('Error al enviar el mensaje. Por favor, intenta de nuevo.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -179,6 +191,22 @@ export const Contact: React.FC = () => {
                       rows={6}
                       className="transition-all duration-200 focus:ring-2 focus:ring-accent resize-none text-black"
                       required
+                    />
+                  </div>
+
+                  <div
+                    aria-hidden="true"
+                    className="absolute -left-[9999px] h-0 w-0 overflow-hidden"
+                  >
+                    <label htmlFor="website">No rellenar este campo</label>
+                    <input
+                      id="website"
+                      name="website"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={honeypot}
+                      onChange={(event) => setHoneypot(event.target.value)}
                     />
                   </div>
 
