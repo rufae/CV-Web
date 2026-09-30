@@ -17,9 +17,16 @@ const SECTIONS = ['hero', 'about', 'experience', 'projects', 'skills', 'contact'
 
 function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>(() =>
-    document.documentElement.classList.contains('dark') ? 'dark' : 'light',
+    typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+      ? 'dark'
+      : 'light',
   );
   const [activeSection, setActiveSection] = useState('hero');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -101,10 +108,14 @@ function App() {
         </main>
 
         <Footer />
-        <Suspense fallback={null}>
-          <Chat />
-        </Suspense>
-        <Toaster />
+        {mounted && (
+          <>
+            <Suspense fallback={null}>
+              <Chat />
+            </Suspense>
+            <Toaster />
+          </>
+        )}
       </div>
     </ThemeContext.Provider>
   );

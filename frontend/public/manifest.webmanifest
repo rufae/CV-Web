@@ -1,0 +1,17 @@
+{
+  "name": "Rafael Castaño — Portfolio",
+  "short_name": "CV Rafael",
+  "description": "Portfolio de Rafael Castaño con asistente virtual con IA.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1E90FF",
+  "icons": [
+    {
+      "src": "/curriculum-vitae.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

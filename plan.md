@@ -628,11 +628,12 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `feat(content): single source of truth for CV facts and consistency check`
 - **Cierre 2026-09-30:** nota canónica `Public/portfolio/facts.md` (frontmatter `facts` + cuerpo para RAG), exportador `backend/scripts/build_facts.py` → `frontend/src/content/facts.json` (tipado en `src/content/facts.ts`), verificación `eval/check_consistency.py` (stale/canarios/términos ausentes en el corpus) y `app/rag/facts.py` con 5 tests. Refactorizados Experience/Projects/Skills y la bio de About para leer de `FACTS` (sin arrays duplicados; sin datos personales). ADR-0004 documentado. Evidencia: 166/166 backend, 40/40 frontend, `check_consistency` ✓, build 133,07 kB gzip. Pendiente: regenerar desde el vault real cuando exista (`VAULT_PATH`).
 
-### T6.2 · SEO técnico y datos estructurados `[ ]` · M
+### T6.2 · SEO técnico y datos estructurados `[x]` · M
 - **Ficheros:** `index.html`, `public/{robots.txt,sitemap.xml,og-image.png}`, `scripts/prerender.mjs` (o `vite-react-ssg`), `features/seo/*`.
 - **Pasos:** `<title>` y `description` por idioma; canonical y `hreflang` ES/EN; Open Graph y Twitter Card con imagen 1200×630; JSON-LD `Person` (nombre, puesto, URL, `sameAs` GitHub/LinkedIn; **sin** teléfono, dirección ni fecha de nacimiento); favicon completo y `manifest`; **prerender** de la home en build para que el HTML inicial contenga el contenido (evaluar `vite-react-ssg` frente a un script propio con `renderToString`).
 - **Aceptación:** `curl` a la home muestra el `<h1>` y el texto principal; validador de datos estructurados sin errores; previsualización OG correcta al compartir enlace.
 - **Commit:** `feat(seo): metadata, structured data and build-time prerendering`
+- **Cierre 2026-09-30:** `index.html` con canonical/hreflang ES-EN (dominio provisional, se fija en T7.5), Open Graph/Twitter con `og-image.png` 1200×630 generada, JSON-LD `Person` sin teléfono/dirección/fecha, `manifest.webmanifest` y `theme-color`; `robots.txt` (bloquea `/api/`) y `sitemap.xml`; **prerender propio** con `react-dom/server` y `vite build --ssr` (App SSR-safe: tema guardado, Chat y Toaster solo tras montar). Verificación: `dist/index.html` incluye `<h1>`, textos y JSON-LD válido (parseado en el build). Evidencia: build/lint/typecheck/tests en verde (40/40). Pendiente: validadores de Google/OG al desplegar con el dominio real.
 
 ### T6.3 · Internacionalización ES/EN `[ ]` · M
 - **Ficheros:** `content/{es,en}/*`, `shared/lib/i18n.ts`, `features/*` (uso de textos), enrutado `/` y `/en`.
