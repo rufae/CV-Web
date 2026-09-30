@@ -1,6 +1,6 @@
 # Política de privacidad y datos — CV Web
 
-> Documento vivo. Última actualización: 2026-09-30 (T1.1 de `plan.md`).
+> Documento vivo. Última actualización: 2026-09-30 (T3.1 de `plan.md`).
 > La política pública de cara al visitante se redactará en T6.6.
 
 ## 1. Principios
@@ -37,14 +37,25 @@
 - Los repositorios antiguos (`CVWeb-Back`, `CVWeb-Front`) deben borrarse o limpiarse al
   cerrar el despliegue (M1/T7.11) porque conservan el mismo historial.
 
-## 4. Retención y tratamiento (a completar en T6.6)
+## 4. Publicación del Segundo Cerebro (ADR-0001)
+
+El chat público solo puede usar información que pase **dos puertas**: estar dentro
+de `Public/` en el vault y llevar el frontmatter `cv_public: true`. Cualquier otra
+ruta (deny-list incluida) queda fuera por diseño. Además hay redacción automática
+de emails, teléfonos, DNI/NIE, IBAN y fechas de nacimiento, y limpieza de sintaxis
+Obsidian (wikilinks a notas privadas degradados, embeds y `%%comentarios%%` fuera).
+
+- Política completa: `docs/adr/0001-public-vault-allowlist.md`.
+- Plantilla de nota pública: `docs/templates/public-note.md`.
+
+## 5. Retención y tratamiento (a completar en T6.6)
 
 - Mensajes de contacto: definir retención (propuesta: 12 meses) y base legal RGPD.
 - Feedback del chat: anónimo, sin pregunta ni IP (T4.9).
 - Conversaciones del chat: no se almacenan en servidor.
 - Sin cookies de seguimiento; analítica autoalojada opcional (T6.6).
 
-## 5. Verificación
+## 6. Verificación
 
 - `gitleaks git .` limpio sobre todo el historial.
 - `git log --all -- backend/rafa_context.txt` vacío tras la purga.

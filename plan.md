@@ -325,12 +325,13 @@ PASSWORD_APPLICATION=
 **Meta:** recuperación semántica sobre **solo** el conocimiento público, con citas, umbral de relevancia y evaluación reproducible.
 **Esfuerzo total:** ~4 jornadas.
 
-### T3.1 · Política de publicación del Segundo Cerebro `[ ]` · S
+### T3.1 · Política de publicación del Segundo Cerebro `[x]` · S
 - **Contexto:** R2. Se decide qué puede salir del vault **antes** de escribir código.
 - **Ficheros:** `docs/privacy.md`, `docs/adr/0001-public-vault-allowlist.md`.
 - **Pasos:** definir allow-list de dos niveles: (a) carpeta(s) publicable(s) (p. ej. `Public/`, con subcarpetas experiencia, proyectos, stack, sobre-mí, certificaciones); (b) frontmatter obligatorio `cv_public: true` en cada nota. Una nota se indexa **solo si cumple ambos**. Definir deny-list (contactos, datos personales, diario, finanzas) y redacción automática de patrones sensibles (emails, teléfonos, DNI/NIE, fechas de nacimiento).
 - **Aceptación:** documento aprobado por ti; plantilla de nota pública con frontmatter (`title`, `cv_public`, `tags`, `updated`, `lang`).
 - **Commit:** `docs(privacy): define public vault allow-list policy`
+- **Cierre 2026-09-30:** política en `docs/adr/0001-public-vault-allowlist.md` (carpeta `Public/` con subcarpetas propuestas `sobre-mi/`, `experiencia/`, `proyectos/`, `stack/`, `certificaciones/`; **doble puerta** `Public/` + `cv_public: true`; deny-list explícita; redacción de patrones sensibles como red de seguridad; limpieza de sintaxis Obsidian; ingesta solo lectura) y plantilla `docs/templates/public-note.md`. `docs/privacy.md` actualizado (sección 4 nueva y renumeración). Decisión delegada por el usuario ("propón tú la carpeta"); revisable antes de T3.2.
 
 ### T3.2 · Extracción y filtrado `[ ]` · M
 - **Ficheros:** `backend/scripts/ingest_public_vault.py`, `app/rag/ingest.py`, `tests/unit/test_ingest_filter.py`, `tests/fixtures/vault/`.
