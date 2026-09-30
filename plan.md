@@ -546,11 +546,12 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 **Meta:** chat elegante, accesible y rápido con streaming real, integrado en una web reorganizada por features y con gestión honesta de estados (offline, degradado, límite).
 **Esfuerzo total:** ~4 jornadas.
 
-### T5.1 · Reorganización feature-first y cliente de API tipado `[ ]` · M
+### T5.1 · Reorganización feature-first y cliente de API tipado `[x]` · M
 - **Ficheros:** `frontend/src/{app,features,shared,content}/**`, `tsconfig.json` (alias `@/`), `shared/api/client.ts`, `shared/api/types.ts`.
 - **Pasos:** mover componentes a `features/{hero,about,experience,projects,skills,contact,chat}`; `shared/ui` solo con los componentes realmente usados; cliente con `fetch`, base URL desde `VITE_API_URL` (vacío = same-origin), errores tipados (`ApiError{code,retryAfter}`); tipos compartidos con el contrato de `docs/api.md`.
 - **Aceptación:** `typecheck`, `lint` y `build` en verde; ningún import relativo que cruce features; misma apariencia que antes (capturas de T1.6).
 - **Commit:** `refactor(frontend): feature-first structure and typed API client`
+- **Cierre 2026-09-30:** movidos con `git mv` (historial preservado) a `src/app`, `src/features/{hero,about,experience,projects,skills,contact,chat,footer}` y `src/shared/{ui,figma,styles,api}`; alias `@/` configurado en `tsconfig.app.json` y `vite.config.ts`; `shared/api/types.ts` con el contrato de `docs/api.md` (eventos SSE, contacto, feedback, status) y `client.ts` con `ApiError{status,code,retryAfter}` y `postJson`; ningún import relativo cruza features. `@types/node` añadido para la config de Vite. Evidencia: lint/typecheck/test/build en verde (JS 132,93 kB gzip). Verificación visual (capturas) pendiente manual.
 
 ### T5.2 · Cliente SSE con `fetch` + `ReadableStream` `[ ]` · M
 - **Contexto:** D6. `EventSource` no admite POST; se implementa un lector propio.

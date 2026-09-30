@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { ThemeContext } from './theme-context';
 import { Moon, Sun } from 'lucide-react';
-import { Button } from './components/ui/button';
-import { Toaster } from './components/ui/sonner';
-import { Hero } from './components/Hero';
-import { About } from './components/About';
-import { Experience } from './components/Experience';
-import { Projects } from './components/Projects';
-import { Skills } from './components/Skills';
-import { Contact } from './components/Contact';
-import { Footer } from './components/Footer';
-import { ChatBot } from './components/ChatBot';
+import { Button } from '@/shared/ui/button';
+import { Toaster } from '@/shared/ui/sonner';
+import { Hero } from '@/features/hero/Hero';
+import { About } from '@/features/about/About';
+import { Experience } from '@/features/experience/Experience';
+import { Projects } from '@/features/projects/Projects';
+import { Skills } from '@/features/skills/Skills';
+import { Contact } from '@/features/contact/Contact';
+import { Footer } from '@/features/footer/Footer';
+import { ChatBot } from '@/features/chat/ChatBot';
 
 function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');

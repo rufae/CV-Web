@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, Heart, ArrowUp } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '@/shared/ui/button';
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();

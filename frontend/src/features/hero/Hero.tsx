@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Button } from './ui/button';
+import { Button } from '@/shared/ui/button';
 import { Download, Eye, MessageSquare } from 'lucide-react';
 
 export const Hero: React.FC = () => {

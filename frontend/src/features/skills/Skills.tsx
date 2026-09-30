@@ -1,10 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
-import { Progress } from './ui/progress';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Badge } from '@/shared/ui/badge';
+import { Progress } from '@/shared/ui/progress';
 import { Server, Brain, Settings, Layout, Download } from 'lucide-react';
-import { Button } from './ui/button';
+import { Button } from '@/shared/ui/button';
 
 export const Skills: React.FC = () => {
   const skillCategories = [

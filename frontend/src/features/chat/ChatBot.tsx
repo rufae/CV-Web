@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot } from 'lucide-react';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { askRafa } from '../services/api';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { askRafa } from '@/shared/api/client';
 
 interface Message {
   id: string;

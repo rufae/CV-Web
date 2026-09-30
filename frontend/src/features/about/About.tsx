@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent } from './ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Card, CardContent } from '@/shared/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Code2, Gamepad2, Brain, Coffee, Music, Trophy } from 'lucide-react';
 
 export const About: React.FC = () => {

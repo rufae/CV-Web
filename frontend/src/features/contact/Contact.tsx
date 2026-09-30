@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Textarea } from './ui/textarea';
-import { Label } from './ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Textarea } from '@/shared/ui/textarea';
+import { Label } from '@/shared/ui/label';
 import { toast } from 'sonner';
 import {
   Mail,
@@ -18,7 +18,7 @@ import {
   FileText,
 } from 'lucide-react';
 
-import { sendContactForm } from '../services/api';
+import { sendContactForm } from '@/shared/api/client';
 
 export const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
