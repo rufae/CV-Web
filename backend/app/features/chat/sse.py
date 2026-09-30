@@ -7,6 +7,7 @@
 """
 
 import asyncio
+import logging
 import time
 from collections.abc import AsyncGenerator
 from typing import Literal
@@ -22,11 +23,15 @@ from app.features.chat.events import (
     TokenEvent,
     sse,
 )
+from app.features.chat.output_guard import OutputGuard
 from app.llm.errors import FirstTokenTimeout, LLMError, ProviderError, ProviderUnavailable
 from app.llm.router import RoutedStream
 
 HEARTBEAT_S = 15.0
 PING = ": ping\n\n"
+_BLOCKED_MESSAGE = "La respuesta fue bloqueada por seguridad."
+
+logger = logging.getLogger("cvweb.chat")
 
 
 def _error_code(exc: LLMError) -> ErrorCode:
@@ -58,6 +63,7 @@ async def routed_stream(
     sources: SourcesEvent,
     routed: RoutedStream,
     heartbeat_s: float = HEARTBEAT_S,
+    guard: OutputGuard | None = None,
 ) -> AsyncGenerator[str, None]:
     started = time.perf_counter()
     yield sse("meta", MetaEvent(message_id=message_id, prompt_version=prompt_version, tier=tier))
@@ -72,7 +78,18 @@ async def routed_stream(
                 continue
             except StopAsyncIteration:
                 break
-            yield sse("token", TokenEvent(t=token.text))
+
+            if guard is None:
+                yield sse("token", TokenEvent(t=token.text))
+                continue
+
+            decision = guard.feed(token.text)
+            if decision.blocked:
+                logger.warning("output_blocked", extra={"outcome": "output_blocked"})
+                yield sse("error", ErrorEvent(code="output_blocked", message=_BLOCKED_MESSAGE))
+                return
+            if decision.text:
+                yield sse("token", TokenEvent(t=decision.text))
     except LLMError as exc:
         yield sse(
             "error",
@@ -84,6 +101,15 @@ async def routed_stream(
         return
     finally:
         await routed.aclose()
+
+    if guard is not None:
+        final = guard.flush()
+        if final.blocked:
+            logger.warning("output_blocked", extra={"outcome": "output_blocked"})
+            yield sse("error", ErrorEvent(code="output_blocked", message=_BLOCKED_MESSAGE))
+            return
+        if final.text:
+            yield sse("token", TokenEvent(t=final.text))
 
     yield sse(
         "done",

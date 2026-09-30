@@ -488,7 +488,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `feat(chat): SSE chat endpoint wiring retrieval and LLM router`
 - **Cierre 2026-09-30:** `app/features/chat/sse.py` (`meta → sources → token* → done`, latido `: ping` cada 15 s, errores como evento `error` con `code` estable y `aclose()` en `finally`) y pipeline en `router.py`: sanitizar → recuperar → **refusal sin LLM** si no hay contexto → `PromptBuilder` → `LLMRouter.stream`; cola/proveedor caído responden 503 pre-stream con `Retry-After`. Alias `/ask` mantiene JSON legacy. Lifespan crea el retriever en solo lectura (Chroma + `bge-m3`) y el `PromptBuilder`, y cierra el embedder al apagar. Caddy: SSE excluido de `encode` y `flush_interval -1`. Evidencia: `tests/integration/test_chat_sse.py` (7 tests: happy path con orden de eventos, refusal sin LLM, bloqueo de inyección, error a mitad de stream, overflow 503, sin retriever 503, latido + cancelación que libera el semáforo) — 123/123 y mypy estricto en 61 ficheros. Nota: la generación real contra el Dell se valida en T4.10/T7.8.
 
-### T4.6 · Filtro de salida (output guard) `[ ]` · M
+### T4.6 · Filtro de salida (output guard) `[x]` · M
 - **Contexto:** última barrera si el modelo desobedece o el contexto contiene algo que no debía.
 - **Ficheros:** `app/features/chat/output_guard.py`, `tests/unit/test_output_guard.py`.
 - **Pasos:**
@@ -499,6 +499,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
   5. Documentar el compromiso: se añade una latencia mínima a cambio de no emitir contenido ya enviado.
 - **Aceptación:** un `FakeProvider` que "filtra" canario / teléfono / URL externa queda bloqueado; respuestas normales pasan byte a byte idénticas; sobrecoste < 5 ms p95 por respuesta.
 - **Commit:** `feat(chat): streaming output guard against prompt and PII leakage`
+- **Cierre 2026-09-30:** `app/features/chat/output_guard.py`: búfer de retención (64 chars) que bloquea el token canario, n-gramas del prompt de sistema, email/teléfono/DNI/NIE/IBAN fuera de `PUBLIC_CONTACT_ALLOWLIST`, URLs fuera de `ALLOWED_OUTPUT_DOMAINS`, `javascript:`/imágenes remotas y respuestas que superan el tope de longitud; corta con `error{output_blocked}` y log sin contenido. Integrado en `routed_stream`; nuevas settings `PUBLIC_CONTACT_ALLOWLIST` y `ALLOWED_OUTPUT_DOMAINS` (plantilla actualizada). Evidencia: `tests/unit/test_output_guard.py` (10) + integración de bloqueo en SSE — 133/133 y mypy estricto en 63 ficheros. Compromiso documentado: la retención agrupa tokens en respuestas muy cortas.
 
 ### T4.7 · Contacto endurecido `[ ]` · M
 - **Contexto:** R4. Hoy `/contact` es un relay de spam, con HTML sin escapar, `smtplib` bloqueante y `str(e)` devuelto al cliente.

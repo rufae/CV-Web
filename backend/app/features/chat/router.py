@@ -13,6 +13,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from app.core.config import get_settings
 from app.core.ratelimit import enforce_daily_budget, enforce_rate_limit
 from app.features.chat.events import SourceItem, SourcesEvent
+from app.features.chat.output_guard import OutputGuard
 from app.features.chat.sanitize import sanitize_input
 from app.features.chat.schemas import ChatRequest, Prompt
 from app.features.chat.service import ChatService
@@ -135,6 +136,16 @@ async def chat_sse(payload: ChatRequest, request: Request) -> StreamingResponse 
             for source in prompt.sources
         ]
     )
+    guard = OutputGuard(
+        canary=prompt.canary,
+        system_prompt=prompt.messages[0].content,
+        allowlist=tuple(
+            item.strip() for item in settings.public_contact_allowlist.split(",") if item.strip()
+        ),
+        allowed_domains=tuple(
+            item.strip() for item in settings.allowed_output_domains.split(",") if item.strip()
+        ),
+    )
     return _sse_response(
         routed_stream(
             message_id=message_id,
@@ -142,6 +153,7 @@ async def chat_sse(payload: ChatRequest, request: Request) -> StreamingResponse 
             tier=tier,
             sources=sources_event,
             routed=routed,
+            guard=guard,
         )
     )
 

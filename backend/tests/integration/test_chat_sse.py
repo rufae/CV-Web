@@ -115,7 +115,10 @@ def test_happy_path_streams_meta_sources_tokens_done() -> None:
     assert response.headers["cache-control"] == "no-cache, no-transform"
 
     events = _events(response.text)
-    assert [name for name, _ in events] == ["meta", "sources", "token", "token", "done"]
+    names = [name for name, _ in events]
+    assert names[0:2] == ["meta", "sources"]
+    assert names[-1] == "done"
+    assert all(name == "token" for name in names[2:-1])
     assert "".join(data["t"] for name, data in events if name == "token") == "Hola mundo"
     assert events[0][1]["prompt_version"] == "v1"
     assert events[0][1]["tier"] in {"gpu", "cpu"}
@@ -166,8 +169,23 @@ def test_mid_stream_error_emits_error_event_without_done() -> None:
 
     events = _events(response.text)
     names = [name for name, _ in events]
-    assert names == ["meta", "sources", "token", "error"]
+    assert names == ["meta", "sources", "error"]
     assert events[-1][1]["code"] == "provider_unavailable"
+
+
+def test_output_guard_blocks_dangerous_markdown() -> None:
+    provider = StubProvider(tokens=("Mira: [click](javascript:alert(1))",))
+    with TestClient(create_app()) as client:
+        app = cast(FastAPI, client.app)
+        app.state.retriever = FakeRetriever(_retrieval())
+        app.state.llm_router = _router(provider)
+
+        response = client.post("/api/chat", json={"message": "pregunta"})
+
+    events = _events(response.text)
+    names = [name for name, _ in events]
+    assert names == ["meta", "sources", "error"]
+    assert events[-1][1]["code"] == "output_blocked"
 
 
 def test_queue_overflow_returns_503_with_retry_after() -> None:

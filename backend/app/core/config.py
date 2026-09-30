@@ -47,6 +47,8 @@ class Settings(BaseSettings):
     rate_limit_feedback: str = "20/hour"
     daily_chat_budget: int = 500
     trusted_proxy_ips: str = "127.0.0.1"
+    public_contact_allowlist: str = ""
+    allowed_output_domains: str = "github.com,linkedin.com"
 
     # RAG (F3)
     vault_path: str = ""
