@@ -24,12 +24,16 @@
 | Claves `GOOGLE_API_KEY`, `PASSWORD_APPLICATION`, `EMAIL` | `.env` ignorado por git |
 | Futuras bases de datos (`feedback.db`, outbox de contacto) | `DATA_PATH` del servidor, nunca en git |
 
-## 3. Rotación de credenciales
+## 3. Credenciales y terceros (estado tras T1.1, 2026-09-30)
 
-- La `GOOGLE_API_KEY` y la contraseña de aplicación de Gmail usadas en Render/Vercel se
-  **revocaron y rotaron** al ejecutar T1.1.
+- Los proyectos de **Render y Vercel se eliminaron**; sus URLs devuelven 404 y las
+  variables de entorno que alojaban ya no existen en terceros.
+- En Google AI Studio no quedaba ninguna API key activa.
+- Contraseña de aplicación de Gmail: se generará una nueva al configurar el HP (T1.9);
+  tras borrar Render no está almacenada en ningún tercero.
 - El historial del monorepo se purgó con `git filter-repo` para eliminar
-  `backend/rafa_context.txt` de todos los commits.
+  `rafa_context.txt` (ambas rutas: `backend/` y raíz de la rama lateral del subtree) y se
+  reemplazaron teléfono y fecha de nacimiento en todo el historial de texto.
 - Los repositorios antiguos (`CVWeb-Back`, `CVWeb-Front`) deben borrarse o limpiarse al
   cerrar el despliegue (M1/T7.11) porque conservan el mismo historial.
 

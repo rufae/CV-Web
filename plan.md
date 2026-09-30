@@ -135,7 +135,7 @@ CV-Web/
 **Meta:** repositorio seguro, reproducible y ordenado; **servicio restaurado** (hito M1) con lo mínimo.
 **Esfuerzo total:** ~3 jornadas.
 
-### T1.1 · Rotar secretos y sanear el historial `[ ]` · S
+### T1.1 · Rotar secretos y sanear el historial `[x]` · S
 - **Contexto:** `rafa_context.txt` contiene datos personales y las claves de Gemini/Gmail vivieron en Render (R5).
 - **Ficheros:** `backend/rafa_context.txt` (sale del repo), `.gitignore`, `docs/privacy.md`.
 - **Pasos:**
@@ -146,6 +146,7 @@ CV-Web/
   5. Decide con D7 si el repo sigue público.
 - **Aceptación:** `gitleaks` sin hallazgos; `git log --all -- backend/rafa_context.txt` vacío; claves antiguas revocadas.
 - **Commit:** `chore(security): remove personal context from history and rotate credentials`
+- **Cierre 2026-09-30:** Render y Vercel eliminados (proyectos borrados; URLs devuelven 404) y sin API key activa en Gemini ⇒ las claves ya no residen en terceros. Historia purgada también para la copia en raíz (`rafa_context.txt`, rama lateral del subtree), con reemplazo de teléfono/fecha en todo el historial de texto (`--replace-text`). `rafa_context.txt` movido a `/home/rafael/PROYECTOS/CVWEB.private/` (ADR-0006). Contraseña de aplicación de Gmail: regenerar al configurar el HP (T1.9).
 
 ### T1.2 · Andamiaje de calidad backend `[ ]` · M
 - **Contexto:** sin linters, tipos ni tests (B10).
