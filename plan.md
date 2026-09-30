@@ -278,11 +278,12 @@ PASSWORD_APPLICATION=
 - **Commit:** `feat(llm): define provider protocol and error taxonomy`
 - **Cierre 2026-09-30:** `app/llm/base.py` (`Message`, `Token`, `ProviderHealth`, `LLMProvider` con `health()` y `stream()`), `app/llm/errors.py` (`LLMError`, `ProviderUnavailable`, `FirstTokenTimeout`, `ProviderError`) y `tests/unit/test_llm_contract.py` con `FakeProvider` (emite tokens y falla a demanda). Tests reorganizados a `tests/unit` y `tests/integration` (eliminado el smoke trivial de T1.2). Desviación menor: el `stream` del Protocol se anota `def ... -> AsyncIterator[Token]` (tipado correcto para generadores asíncronos). Evidencia: ruff/format/mypy estricto (20 ficheros) y `pytest` 6/6 en verde.
 
-### T2.2 · Cliente Ollama asíncrono `[ ]` · M
+### T2.2 · Cliente Ollama asíncrono `[x]` · M
 - **Ficheros:** `app/llm/ollama.py`, `tests/unit/test_ollama.py`.
 - **Pasos:** `httpx.AsyncClient` con timeouts diferenciados (conexión corta, lectura larga); `/api/chat` con `stream: true` parseando NDJSON; `health()` con `GET /api/tags` comprobando que el modelo configurado está cargado/disponible; mapeo de errores a la taxonomía de T2.1; cancelación limpia si el cliente se desconecta.
 - **Aceptación:** tests con servidor mock (`respx`) para: stream normal, timeout de conexión, JSON corrupto, modelo ausente; sin fugas de conexión al cancelar.
 - **Commit:** `feat(llm): add async Ollama provider with streaming`
+- **Cierre 2026-09-30:** `app/llm/ollama.py` (`POST /api/chat` con `stream: true` parseando NDJSON, `GET /api/tags` comprobando el modelo, timeouts conexión 1,5 s / lectura 60 s y mapeo de errores a `ProviderUnavailable`/`FirstTokenTimeout`/`ProviderError`); `tests/unit/test_ollama.py` con `respx` (stream normal, ConnectError, ReadTimeout, NDJSON inválido, modelo ausente/presente y cancelación con `aclose()` + reutilización). Añadidos `httpx` a runtime y `respx` a dev (locks regenerados con hashes). Desviación tipada: el contrato `stream` devuelve `AsyncGenerator` (no `AsyncIterator`) para permitir `aclose()` en cancelaciones. Evidencia: `pytest` 13/13, `mypy --strict` 22 ficheros y ruff en verde.
 
 ### T2.3 · Detección de disponibilidad con circuit breaker `[ ]` · M
 - **Contexto:** R9. Evitar que cada petición pague un timeout cuando la torre está apagada, y evitar el flapping.

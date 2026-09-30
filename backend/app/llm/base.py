@@ -4,7 +4,7 @@ Los proveedores se comunican mediante `Message`/`Token` y exponen `health()`
 (staff de disponibilidad) y `stream()` (generación por streaming).
 """
 
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 from dataclasses import dataclass
 from typing import Literal, Protocol, runtime_checkable
 
@@ -45,6 +45,9 @@ class LLMProvider(Protocol):
         *,
         temperature: float = 0.2,
         max_tokens: int | None = None,
-    ) -> AsyncIterator[Token]:
-        """Genera la respuesta en streaming como secuencia de tokens."""
+    ) -> AsyncGenerator[Token, None]:
+        """Genera la respuesta en streaming como secuencia de tokens.
+
+        Devolver un `AsyncGenerator` permite cancelar aguas arriba con `aclose()`.
+        """
         ...

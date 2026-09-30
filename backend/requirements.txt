@@ -2,5 +2,6 @@ fastapi
 uvicorn
 python-dotenv
 pydantic-settings
+httpx
 google-genai
 pydantic[email]

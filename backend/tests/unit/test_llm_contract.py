@@ -1,6 +1,6 @@
 """Tests del contrato de proveedores LLM (T2.1)."""
 
-from collections.abc import AsyncIterator
+from collections.abc import AsyncGenerator
 
 import pytest
 
@@ -30,7 +30,7 @@ class FakeProvider:
         *,
         temperature: float = 0.2,
         max_tokens: int | None = None,
-    ) -> AsyncIterator[Token]:
+    ) -> AsyncGenerator[Token, None]:
         if self._fail is not None:
             raise self._fail("fallo simulado")
         for text in self._tokens:
