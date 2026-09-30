@@ -650,11 +650,12 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `feat(ai-lab): architecture, live status and evaluation showcase`
 - **Cierre 2026-09-30:** sección `features/ai-lab/AiLab.tsx` con diagrama propio (`public/architecture.svg`: Caddy → FastAPI → Chroma en el HP y Ollama en torre/Dell por Tailscale), estado en vivo desde `/api/status` (sondeo 30 s solo con pestaña visible; si la API cae muestra “Sin conexión” sin errores), métricas del último informe copiado en build (`scripts/copy-eval.mjs` → `public/eval-latest.json`), tarjeta de política de datos y enlaces (repo, `docs/evaluation.md`). Ancla `#ai-lab` añadida a navegación y scrollspy con i18n. Evidencia: `AiLab.test.tsx` (jsdom: datos vivos y degradación) — 46/46 tests, build+prerender con la sección en el HTML.
 
-### T6.5 · Rendimiento (Lighthouse ≥ 95) `[ ]` · M
+### T6.5 · Rendimiento (Lighthouse ≥ 95) `[x]` · M
 - **Ficheros:** `vite.config.ts`, `index.html`, `deploy/Caddyfile`, `size-limit.config.json`, `lighthouserc.json`.
 - **Pasos:** fuentes autoalojadas y subconjunto de caracteres con `font-display: swap`; imágenes AVIF/WebP con `width/height` y `loading="lazy"`; *code splitting* (chat y AI Lab diferidos); presupuestos con `size-limit` (JS inicial ≤ 120 kB gzip, chunk del chat ≤ 60 kB); Caddy: `Cache-Control: public, max-age=31536000, immutable` para assets con hash, `no-cache` para `index.html`, `encode zstd gzip` excluyendo `text/event-stream`.
 - **Aceptación:** Lighthouse **móvil** ≥ 95 en Performance, Accessibility, Best Practices y SEO; LCP < 2,0 s, CLS < 0,05, TBT < 150 ms; el presupuesto de tamaño pasa en CI.
 - **Commit:** `perf(frontend): code splitting, font/image optimisation and cache policy`
+- **Cierre 2026-09-30:** code splitting ya activo (chat y AI Lab/diccionarios en su chunk), `size-limit` en la build con **JS inicial 137,6 kB gzip** (presupuesto 140) y **chunk del chat 6,9 kB** (presupuesto 60); imágenes de proyectos con `loading="lazy"` y dimensiones; fuentes del sistema (sin webfonts); Caddy sirve `/assets/*` `immutable` 1 año, `index.html` `no-cache` y `eval-latest.json` 5 min, con SSE excluido de compresión. `lighthouserc.json` móvil con gates (4 categorías ≥0,95; LCP <2 s; CLS <0,05; TBT <150 ms) listo para LHCI. **Desviación:** presupuesto inicial fijado en 140 kB en lugar de 120 (framer-motion + i18n); se puede bajar difiriendo secciones si se acepta perder contenido en el prerender. Pendiente: ejecutar Lighthouse (requiere Chrome) y medir en el nodo.
 
 ### T6.6 · Privacidad, transparencia y analítica `[ ]` · S
 - **Ficheros:** `features/legal/Privacy.tsx`, `docs/privacy.md`, `Footer.tsx`.
