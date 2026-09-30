@@ -72,6 +72,7 @@ def main() -> None:
                 store=store,
                 manifest_path=manifest,
                 public_dir=public_dir,
+                corpus_prefix=settings.rag_context_prefix,
                 rebuild=args.rebuild,
             )
         finally:

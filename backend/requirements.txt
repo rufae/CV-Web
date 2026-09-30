@@ -6,4 +6,5 @@ httpx
 google-genai
 python-frontmatter
 chromadb
+numpy
 pydantic[email]

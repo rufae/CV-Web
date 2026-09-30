@@ -24,7 +24,7 @@ quote-style = "double"
 [tool.mypy]
 python_version = "3.12"
 strict = true
-files = ["app", "tests", "scripts"]
+files = ["app", "tests", "scripts", "../eval"]
 exclude = ["venv", "\\.venv"]
 
 [[tool.mypy.overrides]]

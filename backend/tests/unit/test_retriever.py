@@ -66,6 +66,22 @@ async def test_below_threshold_refuses_without_sources() -> None:
     assert REFUSAL_MESSAGE
 
 
+async def test_context_includes_chunks_below_threshold_when_best_passes() -> None:
+    store = FakeStore(
+        [
+            _hit("a", 0.9, source_id="Public/nota.md"),
+            _hit("b", 0.4, source_id="Public/otra.md"),
+        ]
+    )
+    retriever = Retriever(FakeEmbedder(), store, min_score=0.5)
+
+    result = await retriever.retrieve("pregunta")
+
+    assert not result.is_empty
+    assert [hit.id for hit in result.hits] == ["a", "b"]
+    assert len(result.sources) == 2
+
+
 async def test_hits_are_deduped_by_note_keeping_best() -> None:
     store = FakeStore(
         [

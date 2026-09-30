@@ -16,7 +16,7 @@ import chromadb
 from chromadb.config import Settings as ChromaSettings
 from chromadb.errors import NotFoundError
 
-from app.rag.chunking import Chunk
+from app.rag.chunking import Chunk, embedding_text
 
 COLLECTION_NAME = "cvweb_public"
 SCHEMA_VERSION = "1"
@@ -91,7 +91,13 @@ class ChromaStore:
     def count(self) -> int:
         return int(self._collection.count())
 
-    def upsert(self, chunks: list[Chunk], embeddings: list[list[float]]) -> None:
+    def upsert(
+        self,
+        chunks: list[Chunk],
+        embeddings: list[list[float]],
+        *,
+        corpus_prefix: str = "",
+    ) -> None:
         self._ensure_writable()
         if len(chunks) != len(embeddings):
             raise ValueError("chunks y embeddings deben tener la misma longitud")
@@ -100,7 +106,9 @@ class ChromaStore:
         self._collection.upsert(
             ids=[chunk.id for chunk in chunks],
             embeddings=embeddings,
-            documents=[chunk.embedded_text for chunk in chunks],
+            documents=[
+                embedding_text(chunk, corpus_prefix=corpus_prefix) for chunk in chunks
+            ],
             metadatas=[self._metadata(chunk) for chunk in chunks],
         )
 

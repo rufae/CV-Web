@@ -1,8 +1,9 @@
 """Recuperador con umbral y rechazo temprano (T3.6).
 
-- Top-K en Chroma y filtro por `RAG_MIN_SCORE`; si nada supera el umbral, el
-  llamante debe rechazar **sin llamar al LLM** (ahorra cómputo y evita
-  alucinaciones por construcción).
+- Top-K en Chroma; si **ningún** resultado alcanza `RAG_MIN_SCORE`, el llamante
+  debe rechazar **sin llamar al LLM** (ahorra cómputo y evita alucinaciones por
+  construcción). Si se decide responder, al LLM se le pasa el top-K completo
+  deduplicado (los chunks por debajo del umbral pueden ser el contexto útil).
 - Deduplicación por nota (se conserva el mejor chunk de cada fuente).
 - Las fuentes expuestas son `título + sección`, nunca rutas del vault.
 """
@@ -64,8 +65,10 @@ class Retriever:
             return Retrieval((), ())
 
         hits = self._store.query(vectors[0], top_k=self._top_k)
-        relevant = [hit for hit in hits if hit.score >= self._min_score]
-        deduped = _dedupe_by_source(relevant)
+        deduped = _dedupe_by_source(hits)
+        if not deduped or max(hit.score for hit in deduped) < self._min_score:
+            return Retrieval((), ())
+
         sources = tuple(
             Source(
                 n=index + 1,

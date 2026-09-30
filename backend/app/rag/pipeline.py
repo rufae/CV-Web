@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
-from app.rag.chunking import Chunk, chunk_note
+from app.rag.chunking import Chunk, chunk_note, embedding_text
 from app.rag.ingest import extract_public_notes
 from app.rag.store import ChromaStore
 
@@ -89,6 +89,7 @@ async def run_ingest(
     store: ChromaStore,
     manifest_path: Path,
     public_dir: str = "Public",
+    corpus_prefix: str = "",
     dry_run: bool = False,
     rebuild: bool = False,
 ) -> IngestSummary:
@@ -109,7 +110,7 @@ async def run_ingest(
         extraction = extract_public_notes(vault, public_dir=public_dir)
         chunks = [chunk for note in extraction.notes for chunk in chunk_note(note)]
         replacement = store.start_replacement()
-        await _embed_and_upsert(replacement, embedder, chunks)
+        await _embed_and_upsert(replacement, embedder, chunks, corpus_prefix)
         store.commit_replacement(replacement)
         save_manifest(manifest_path, plan.current)
         return IngestSummary(
@@ -129,7 +130,7 @@ async def run_ingest(
     for path in (*plan.added, *plan.updated):
         store.delete_source(path)
         chunks = chunk_note(by_path[path])
-        await _embed_and_upsert(store, embedder, chunks)
+        await _embed_and_upsert(store, embedder, chunks, corpus_prefix)
         total_chunks += len(chunks)
 
     for path in plan.removed:
@@ -147,8 +148,15 @@ async def run_ingest(
     )
 
 
-async def _embed_and_upsert(store: ChromaStore, embedder: Embedder, chunks: list[Chunk]) -> None:
+async def _embed_and_upsert(
+    store: ChromaStore,
+    embedder: Embedder,
+    chunks: list[Chunk],
+    corpus_prefix: str,
+) -> None:
     if not chunks:
         return
-    vectors = await embedder.embed([chunk.embedded_text for chunk in chunks])
-    store.upsert(chunks, vectors)
+    vectors = await embedder.embed(
+        [embedding_text(chunk, corpus_prefix=corpus_prefix) for chunk in chunks]
+    )
+    store.upsert(chunks, vectors, corpus_prefix=corpus_prefix)

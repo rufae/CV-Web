@@ -38,6 +38,13 @@ class Chunk:
         return f"{self.context}\n\n{self.text}" if self.context else self.text
 
 
+def embedding_text(chunk: Chunk, *, corpus_prefix: str = "") -> str:
+    """Texto que se vectoriza (el prefijo de corpus mejora el ranking de chunks)."""
+    if corpus_prefix:
+        return f"{corpus_prefix} — {chunk.embedded_text}"
+    return chunk.embedded_text
+
+
 @dataclass
 class _Section:
     headings: tuple[str, ...]

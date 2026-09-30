@@ -368,7 +368,7 @@ PASSWORD_APPLICATION=
 - **Commit:** `feat(rag): threshold-based retrieval with early refusal and citations`
 - **Cierre 2026-09-30:** `app/rag/retriever.py` (`Retriever` con `top_k`, `min_score` y `max_sources`; filtro por umbral; deduplicación por nota conservando el mejor chunk; fuentes numeradas de solo `título + sección`; `Retrieval.is_empty` para que el llamante rechace **sin LLM**), `app/rag/prompts.py` con `REFUSAL_MESSAGE` y `Settings` gana `RAG_TOP_K`/`RAG_MIN_SCORE`. Evidencia: `tests/unit/test_retriever.py` (5 tests: fuentes, rechazo fuera de umbral sin fuentes, dedupe, límite/numeración y top_k) — 79/79 tests, mypy estricto en 49 ficheros. Desviación: la reformulación de consulta con historial se pospone a T4.5 (necesita el historial del chat).
 
-### T3.7 · Dataset y evaluación automática `[ ]` · L
+### T3.7 · Dataset y evaluación automática `[x]` · L
 - **Contexto:** es lo que convierte esto en demostración de ingeniería de IA y no en "un chatbot".
 - **Ficheros:** `eval/dataset.jsonl`, `eval/run_eval.py`, `eval/reports/`, `docs/evaluation.md`.
 - **Pasos:**
@@ -379,6 +379,7 @@ PASSWORD_APPLICATION=
   5. Calibrar `RAG_MIN_SCORE` y `RAG_TOP_K` con estos datos.
 - **Aceptación:** `python eval/run_eval.py --retrieval-only` es determinista y se puede ejecutar en CI; umbrales mínimos definidos (p. ej. recall@5 ≥ 0,9; 0 fugas; rechazo de fuera de dominio ≥ 95 %).
 - **Commit:** `test(eval): add golden dataset and retrieval/refusal evaluation harness`
+- **Cierre 2026-09-30:** dataset de 46 casos (`eval/dataset.jsonl`: 30 respondibles ES/EN, 4 fuera de dominio, 4 en dominio sin dato, 3 ambiguas, 5 inyecciones), vault de evaluación de 8 notas + 1 no publicada con canario, fixtures `eval/fixtures/embeddings.npz` (bge-m3 real en el Dell) con `scripts/build_eval_fixtures.py`, arnés `eval/run_eval.py` (offline determinista por defecto, `--live`, `--calibrate`, `--report`) y `docs/evaluation.md`. Decisiones: recall@k sobre el ranking top-k y el umbral solo decide *si se responde* (si responde, el LLM recibe el top-k deduplicado completo); añadido `RAG_CONTEXT_PREFIX` (prefijar chunks con el titular mejora el ranking; cambiarlo exige `--rebuild`); gates separan fuera de dominio (umbral) de inyección (T4.3/T4.4/T4.6). Resultado con umbral 0.50: `recall@5=1.000`, `mrr=0.878`, `refusal_recall=1.000`, `leaks=0` → **PASS**, informe en `eval/reports/2026-09-30.json`. Evidencia: 80/80 tests, mypy estricto en 50 ficheros. Desviaciones: las métricas de generación/LLM-juez se posponen a T4.10/T7.10 (requieren el prompt endurecido); el dataset usa un vault fixture y deberá recalibrarse con el vault real (`--live --calibrate`) en T6.1.
 
 <!--
 CONTINUACIÓN DE plan.md
