@@ -285,12 +285,13 @@ PASSWORD_APPLICATION=
 - **Commit:** `feat(llm): add async Ollama provider with streaming`
 - **Cierre 2026-09-30:** `app/llm/ollama.py` (`POST /api/chat` con `stream: true` parseando NDJSON, `GET /api/tags` comprobando el modelo, timeouts conexión 1,5 s / lectura 60 s y mapeo de errores a `ProviderUnavailable`/`FirstTokenTimeout`/`ProviderError`); `tests/unit/test_ollama.py` con `respx` (stream normal, ConnectError, ReadTimeout, NDJSON inválido, modelo ausente/presente y cancelación con `aclose()` + reutilización). Añadidos `httpx` a runtime y `respx` a dev (locks regenerados con hashes). Desviación tipada: el contrato `stream` devuelve `AsyncGenerator` (no `AsyncIterator`) para permitir `aclose()` en cancelaciones. Evidencia: `pytest` 13/13, `mypy --strict` 22 ficheros y ruff en verde.
 
-### T2.3 · Detección de disponibilidad con circuit breaker `[ ]` · M
+### T2.3 · Detección de disponibilidad con circuit breaker `[x]` · M
 - **Contexto:** R9. Evitar que cada petición pague un timeout cuando la torre está apagada, y evitar el flapping.
 - **Ficheros:** `app/llm/health.py`, `tests/unit/test_health.py`.
 - **Pasos:** sondeo en segundo plano cada `LLM_HEALTH_TTL_S` (no en la ruta caliente); estados `UP → DEGRADED → DOWN` con **histéresis** (p. ej. 2 fallos para bajar, 3 éxitos para subir); *circuit breaker* con apertura temporal; exposición del estado interno a `/api/status`.
 - **Aceptación:** con la torre apagada, la petición no espera más de `LLM_CONNECT_TIMEOUT_S`; tests de transición de estados con reloj simulado; al encender la torre vuelve a P1 sin reiniciar el servicio.
 - **Commit:** `feat(llm): add background health checks with hysteresis and circuit breaker`
+- **Cierre 2026-09-30:** `app/llm/health.py` con `ProviderState` (UP/DEGRADED/DOWN), `ProviderStatus`, `MonitorConfig` y sondeo en segundo plano (`start`/`stop`) fuera de la ruta caliente; 2 fallos bajan un escalón y 3 éxitos suben uno; al llegar a DOWN se abre el circuito 30 s (semiabierto después, con extensión si el sondeo vuelve a fallar). Evidencia: `tests/unit/test_health.py` con reloj simulado (transiciones, circuito sin sondas durante la apertura, timeout de health como fallo, recuperación y bucle en background) — 19 tests totales y mypy estricto en 24 ficheros.
 
 ### T2.4 · `LLMRouter` con failover transparente `[ ]` · M
 - **Ficheros:** `app/llm/router.py`, `tests/unit/test_router.py`.
