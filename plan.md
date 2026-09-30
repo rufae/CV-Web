@@ -227,7 +227,7 @@ PASSWORD_APPLICATION=
 - **Commit:** `chore(frontend): prune unused UI kit and dependencies, fix audit findings`
 - **Cierre 2026-09-30:** eliminados 44 componentes `ui/` (quedan los 11 usados) y sus dependencias (`depcheck`: sin issues); **axios sustituido por `fetch` y desinstalado** (el plan lo situaba en T5.7: se adelanta por presupuesto de bundle y porque SSE lo requiere en T5.2); fuera `console.log`; `onKeyPress`→`onKeyDown`; añadidos prettier (config + ignore), `eslint-plugin-jsx-a11y` y vitest con scripts `typecheck`/`test`/`format`; borrados `App.css`, `Attributions.md`, `vite.svg` y README de plantilla; corregidas 3 reglas nuevas (alt redundante, `heading-has-content` en `CardTitle`, expresión constante en test). Evidencia: `npm ci && lint && typecheck && test (2) && build` en verde; JS gzip **132,92 kB** (≤147; antes 153,32 tras el refresh de deps y 147,26 original) y CSS 29,06 kB; `npm audit --omit=dev`: 0 vulnerabilidades. Nota: queda 1 vulnerabilidad alta **solo dev** (`picomatch` vía `tailwindcss@3.4`) sin fix no-breaking; seguimiento en T7.10.
 
-### T1.6 · Reparar el sistema de diseño (Tailwind + variables) `[ ]` · M
+### T1.6 · Reparar el sistema de diseño (Tailwind + variables) `[x]` · M
 - **Contexto:** F1/F11. `hsl(var(--accent))` con `--accent: #1E90FF` es CSS inválido; faltan tokens; hay variables duplicadas; aviso de CSS anidado en `global.css:99-149`.
 - **Ficheros:** `tailwind.config.js`, `index.css`, `styles/global.css`, `styles/chatbot.css`, `main.tsx`.
 - **Pasos:**
@@ -238,6 +238,7 @@ PASSWORD_APPLICATION=
   5. Test visual: capturas antes/después de cada sección en claro/oscuro, móvil y escritorio.
 - **Aceptación:** grep sobre `dist/assets/*.css` sin `hsl(#` ni `hsl(rgba`; existen `.text-muted-foreground`, `.bg-secondary`, `.text-destructive`; contraste AA en texto principal; el build no emite avisos de PostCSS.
 - **Commit:** `fix(ui): unify design tokens and repair Tailwind color mapping`
+- **Cierre 2026-09-30:** tokens unificados en `index.css` como canales HSL (`hsl(var(--x) / <alpha-value>)`); `tailwind.config.js` completado (background, foreground, card, popover, primary, secondary, muted, accent, destructive, border, input, input-background, ring); `global.css`/`chatbot.css` migrados a `hsl(var(--x))`; eliminado el CSS anidado y las directivas `@tailwind` duplicadas de `global.css` (el CSS baja de 63,65 a 32,09 kB) y deduplicado `chatbot.css`. Evidencia: build sin warnings PostCSS; en `dist` no hay `hsl(#`/`hsl(rgba`; `bg-accent/10` y `bg-muted/20` generan alpha válido; `.text-muted-foreground` y `.bg-secondary` presentes; `.text-destructive` verificado con probe temporal (hoy no hay ningún literal en el código); contraste AA del texto principal (21:1 / 18,76:1) y muted (5,62:1 / 7,68:1); lint/typecheck/test/build en verde. **Pendiente manual**: capturas de verificación visual claro/oscuro y móvil/escritorio (`npm run dev`), no realizables desde este entorno.
 
 ### T1.7 · Corregir contenido placeholder y metadatos base `[ ]` · S
 - **Ficheros:** `Projects.tsx`, `Contact.tsx:76`, `Footer.tsx:13`, `index.html`, `public/Curriculum vitae.pdf` → `curriculum-vitae.pdf`, `Hero.tsx`, `Skills.tsx`.
