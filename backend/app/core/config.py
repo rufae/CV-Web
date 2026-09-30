@@ -42,6 +42,10 @@ class Settings(BaseSettings):
     # RAG (F3)
     vault_path: str = ""
     public_vault_dir: str = "Public"
+    embed_url: str = ""
+    embed_model: str = "bge-m3"
+    chroma_path: str = "./data/chroma"
+    data_path: str = "./data"
 
     email: str = ""
     password_application: str = ""

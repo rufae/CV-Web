@@ -1,0 +1,10 @@
+[Unit]
+Description=Ingesta diaria del vault público de CV Web
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=1h
+
+[Install]
+WantedBy=timers.target

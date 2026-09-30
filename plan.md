@@ -354,11 +354,12 @@ PASSWORD_APPLICATION=
 - **Aceptación:** indexar el vault de prueba y recuperar por similitud; cambiar `EMBED_MODEL` sin reindexar produce un error explícito, no resultados basura.
 - **Commit:** `feat(rag): add bge-m3 embeddings and read-only Chroma store`
 
-### T3.5 · Ingesta incremental e idempotente `[ ]` · M
+### T3.5 · Ingesta incremental e idempotente `[x]` · M
 - **Ficheros:** `scripts/ingest_public_vault.py`, `deploy/ingest.service`, `deploy/ingest.timer`.
 - **Pasos:** comparar manifiesto (hash) → añadir, actualizar, **borrar** chunks de notas retiradas o despublicadas; construir en una colección temporal y **hacer swap atómico** (sin ventana con índice vacío); modo `--dry-run` que lista qué entraría; ejecución periódica por timer (p. ej. diaria) y bajo demanda.
 - **Aceptación:** despublicar una nota (quitar `cv_public`) y reindexar elimina sus chunks; ejecutar dos veces seguidas no cambia nada; la API sigue respondiendo durante la ingesta.
 - **Commit:** `feat(rag): incremental idempotent ingestion with atomic index swap`
+- **Cierre 2026-09-30:** `app/rag/pipeline.py` (`plan_ingest` con diff por hash; `run_ingest` incremental: `delete_source` + re-indexado solo de notas nuevas/cambiadas, borrado de despublicadas y manifiesto JSON en `DATA_PATH`; `--dry-run`); swap atómico en `ChromaStore.start_replacement()/commit_replacement()` con `modify(name=...)` (primera indexación y `--rebuild`). CLI completo (`--dry-run`, `--rebuild`, `--manifest`) y `deploy/ingest.service` + `ingest.timer` (diario, `Persistent=true`). Telemetría de Chroma desactivada. Evidencia: `tests/integration/test_ingest_pipeline.py` (alta + rerun idempotente sin cambios, despublicar elimina chunks, modificar reindexa, dry-run sin efectos y rebuild con swap) — 74/74 tests, mypy estricto en 46 ficheros. Desviación: la incremental se aplica sobre la colección activa sin vaciarla; el swap se reserva a rebuild. Pendiente en el nodo: timer contra el `VAULT_PATH` real.
 
 ### T3.6 · Recuperador, umbral y rechazo temprano `[ ]` · M
 - **Ficheros:** `app/rag/retriever.py`, `app/rag/prompts.py`, `tests/unit/test_retriever.py`.
