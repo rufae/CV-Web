@@ -25,7 +25,19 @@ class Settings(BaseSettings):
 
     google_api_key: str = ""
     gemini_model: str = "gemini-2.5-flash"
+    gemini_enabled: bool = False
     rafa_context_path: Path | None = None
+
+    # Router LLM (F2)
+    llm_providers_order: str = "tower,dell"
+    llm_tower_url: str = ""
+    llm_tower_model: str = ""
+    llm_dell_url: str = ""
+    llm_dell_model: str = ""
+    llm_connect_timeout_s: float = 1.5
+    llm_health_ttl_s: float = 10.0
+    llm_first_token_timeout_s: float = 15.0
+    llm_max_concurrency: int = 2
 
     email: str = ""
     password_application: str = ""

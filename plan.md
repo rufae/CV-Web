@@ -304,11 +304,12 @@ PASSWORD_APPLICATION=
 - **Commit:** `feat(llm): implement priority router with pre-first-token failover`
 - **Cierre 2026-09-30:** `app/llm/router.py`: orden por lista de proveedores, salto de los `DOWN`, failover **solo antes del primer token** (cubre `ProviderUnavailable`, `FirstTokenTimeout`, `ProviderError` y stream vacío), corte a mitad sin cambiar de proveedor, semáforo `max_concurrency` con cola limitada (`QueueOverflow` + `retry_after_s`) y `RoutedStream` con metadatos (`provider`, `model`, `first_token_ms`). El protocolo gana `model` (property) y los proveedores Ollama admiten nombre por instancia (`tower`/`dell`) para no colisionar en el monitor. Evidencia: `tests/unit/test_router.py` (P1 sana, P1 DOWN→P2, fallo/lentitud antes del primer token, corte a mitad sin switch, todas caídas y overflow de cola) — 26/26 tests y mypy estricto en 26 ficheros.
 
-### T2.5 · Proveedor Gemini opcional `[ ]` · S
+### T2.5 · Proveedor Gemini opcional `[x]` · S
 - **Ficheros:** `app/llm/gemini.py`, `tests/unit/test_gemini.py`.
 - **Pasos:** adaptar el cliente actual al protocolo, usando la API asíncrona del SDK `google-genai`; activarlo solo con `GEMINI_ENABLED=true`; registrar claramente en logs cuando se usa.
 - **Aceptación:** con `GEMINI_ENABLED=false` no se importa ni se llama; con `true` cumple el mismo contrato de tests.
 - **Commit:** `feat(llm): add optional Gemini provider behind a feature flag`
+- **Cierre 2026-09-30:** `app/llm/gemini.py` (API asíncrona `client.aio.models.generate_content_stream`, `health()` vía `models.get`, errores → `ProviderError`) y `app/llm/factory.py` que construye los proveedores desde `Settings` con **import perezoso** de Gemini (con `GEMINI_ENABLED=false` no se carga `google.genai`). Añadidos a `Settings` los campos del router (`LLM_PROVIDERS_ORDER`, URLs/modelos de torre y Dell, timeouts, concurrencia, `GEMINI_ENABLED`). Evidencia: `tests/unit/test_gemini.py` (stream, error, salud) y `test_factory.py` (orden, Gemini off / sin clave / on y verificación por subproceso de que no se importa `google.genai`) — 36/36 tests y mypy en 30 ficheros.
 
 ### T2.6 · Observabilidad del router `[ ]` · S
 - **Ficheros:** `app/core/logging.py`, `app/features/health/router.py`.
