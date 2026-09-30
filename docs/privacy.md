@@ -51,7 +51,10 @@ Obsidian (wikilinks a notas privadas degradados, embeds y `%%comentarios%%` fuer
 ## 5. Retención y tratamiento (a completar en T6.6)
 
 - Mensajes de contacto: definir retención (propuesta: 12 meses) y base legal RGPD.
-- Feedback del chat: anónimo, sin pregunta ni IP (T4.9).
+- Feedback del chat: **anónimo**. Se guarda solo timestamp, valoración
+  (👍/👎), versión del prompt, números de fuentes, tier y si hubo rechazo; el
+  comentario es opcional y voluntario. **No** se guardan la pregunta ni la IP.
+  Se puede exportar con `scripts/export_feedback.py` para revisión manual.
 - Conversaciones del chat: no se almacenan en servidor.
 - Sin cookies de seguimiento; analítica autoalojada opcional (T6.6).
 

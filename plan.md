@@ -523,12 +523,13 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `feat(security): strict CORS, trusted hosts and security headers`
 - **Cierre 2026-09-30:** CORS limitado a `ALLOWED_ORIGINS` con métodos `GET/POST` y `Content-Type`; `TrustedHostMiddleware` con `ALLOWED_HOSTS`; `SecurityHeadersMiddleware` (nosniff, Referrer-Policy, Permissions-Policy, X-Frame-Options y CSP estricta) con `Cache-Control: no-store` en `/api/*`, `/ask` y `/contact`; `RequestIdMiddleware` (`X-Request-ID` + contextvar que aparece en los logs JSON); 404 como `{"code":"not_found"}` y errores no controlados como `{"code":"internal"}` sin traza (detalle solo al log). Evidencia: `tests/integration/test_headers.py` (5 tests incl. CORS permitido/denegado, preflight, 404 y 500 genérico) — 149/149 y mypy estricto en 67 ficheros.
 
-### T4.9 · Feedback de respuestas `[ ]` · S
+### T4.9 · Feedback de respuestas `[x]` · S
 - **Contexto:** alimenta el dataset de evaluación con casos reales sin almacenar conversaciones.
 - **Ficheros:** `app/features/feedback/*`, `scripts/export_feedback.py`, `docs/privacy.md`, `tests/unit/test_feedback.py`.
 - **Pasos:** `POST /api/feedback {message_id, rating: "up"|"down", comment?: ≤300 chars}`; se guarda **solo** timestamp, rating, `prompt_version`, ids de fuentes, tier y si fue rechazo; **no** la pregunta, **no** la IP; comentario opcional y avisado en la UI; SQLite en `DATA_PATH` (añadir la ruta a `ReadWritePaths` de T1.8); rate limit propio; el script exporta los 👎 para revisión manual y posible inclusión en `eval/dataset.jsonl`.
 - **Aceptación:** la base no contiene texto de usuario salvo comentario voluntario; feedback duplicado por `message_id` se ignora; documentado en `privacy.md`.
 - **Commit:** `feat(feedback): privacy-preserving answer feedback endpoint`
+- **Cierre 2026-09-30:** `features/feedback/{schemas,store,service,router}.py`: `POST /api/feedback` con rate limit propio y SQLite en `DATA_PATH/feedback.db` (`message_id` único ⇒ duplicados ignorados). Guarda solo metadatos anónimos (timestamp, rating, `prompt_version`, números de fuentes, tier y rechazo) y el comentario voluntario ≤300; **nunca** pregunta ni IP. `scripts/export_feedback.py` exporta los 👎 a JSONL y `docs/privacy.md` lo detalla. Evidencia: `tests/unit/test_feedback.py` (5 tests incl. API con deduplicación) — 154/154 y mypy estricto en 73 ficheros.
 
 ### T4.10 · Suite de seguridad e integración de la API `[ ]` · M
 - 🏁 **Hito M2: API segura y RAG local funcionando de extremo a extremo (sin UI).**

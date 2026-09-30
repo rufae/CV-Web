@@ -30,6 +30,9 @@ from app.features.chat.router import router as chat_router
 from app.features.chat.service import ChatService
 from app.features.contact.router import router as contact_router
 from app.features.contact.service import ContactService
+from app.features.feedback.router import router as feedback_router
+from app.features.feedback.service import FeedbackService
+from app.features.feedback.store import FeedbackStore
 from app.features.health.router import router as health_router
 from app.llm.factory import build_providers
 from app.llm.health import HealthMonitor, MonitorConfig
@@ -139,6 +142,9 @@ def create_app() -> FastAPI:
 
         app.state.chat_service = ChatService(settings, context)
         app.state.contact_service = ContactService(settings)
+        app.state.feedback_service = FeedbackService(
+            FeedbackStore(Path(settings.data_path) / "feedback.db")
+        )
         app.state.health_monitor = monitor
         app.state.llm_router = llm_router
         try:
@@ -180,6 +186,7 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(chat_router)
     app.include_router(contact_router)
+    app.include_router(feedback_router)
 
     # Estáticos del frontend (monolito, Opción A). El mount va después de los routers.
     dist = Path(__file__).resolve().parents[2] / "frontend" / "dist"
