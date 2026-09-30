@@ -657,11 +657,12 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `perf(frontend): code splitting, font/image optimisation and cache policy`
 - **Cierre 2026-09-30:** code splitting ya activo (chat y AI Lab/diccionarios en su chunk), `size-limit` en la build con **JS inicial 137,6 kB gzip** (presupuesto 140) y **chunk del chat 6,9 kB** (presupuesto 60); imágenes de proyectos con `loading="lazy"` y dimensiones; fuentes del sistema (sin webfonts); Caddy sirve `/assets/*` `immutable` 1 año, `index.html` `no-cache` y `eval-latest.json` 5 min, con SSE excluido de compresión. `lighthouserc.json` móvil con gates (4 categorías ≥0,95; LCP <2 s; CLS <0,05; TBT <150 ms) listo para LHCI. **Desviación:** presupuesto inicial fijado en 140 kB en lugar de 120 (framer-motion + i18n); se puede bajar difiriendo secciones si se acepta perder contenido en el prerender. Pendiente: ejecutar Lighthouse (requiere Chrome) y medir en el nodo.
 
-### T6.6 · Privacidad, transparencia y analítica `[ ]` · S
+### T6.6 · Privacidad, transparencia y analítica `[x]` · S
 - **Ficheros:** `features/legal/Privacy.tsx`, `docs/privacy.md`, `Footer.tsx`.
 - **Pasos:** página de privacidad: qué hace el asistente, qué se guarda (nada de conversaciones; feedback anónimo; mensajes de contacto y su retención, p. ej. 12 meses), base legal y derechos (RGPD); aviso de interacción con IA; sin cookies de seguimiento → sin banner. Analítica opcional y respetuosa (Umami/Plausible autoalojado, sin cookies); si no se usa, dejarlo documentado.
 - **Aceptación:** la web no establece cookies de terceros (comprobado en DevTools); la política coincide con lo que el código realmente hace.
 - **Commit:** `docs(privacy): public privacy notice and AI-interaction disclosure`
+- **Cierre 2026-09-30:** sección pública `#privacy` (`features/legal/Privacy.tsx`, ES/EN) con aviso de IA, datos del formulario, retención de 12 meses, **sin cookies ni analítica con seguimiento** y derechos RGPD con email de contacto; enlace en el footer. `docs/privacy.md` actualizado con la decisión de analítica (ninguna) y retención. Evidencia: test estático de la sección y build+prerender incluyéndola; 47/47 tests. Verificación en DevTools de “sin cookies de terceros” pendiente al desplegar.
 
 ### T6.7 · Auditoría final de accesibilidad y compatibilidad `[ ]` · S
 - **Pasos:** recorrido completo con teclado y lector de pantalla; `axe` en todas las páginas y ambos temas; pruebas en Chrome, Firefox, Safari (iOS) y un Android real; comprobar `prefers-reduced-motion` y zoom al 200 %.

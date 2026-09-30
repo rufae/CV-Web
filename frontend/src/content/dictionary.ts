@@ -90,6 +90,7 @@ export interface Dictionary {
     madeWith: string;
     alwaysEvolving: string;
     builtWith: string;
+    privacy: string;
   };
   aiLab: {
     title: string;

@@ -3,6 +3,7 @@ import { Moon, Sun } from 'lucide-react';
 
 import { About } from '@/features/about/About';
 import { AiLab } from '@/features/ai-lab/AiLab';
+import { Privacy } from '@/features/legal/Privacy';
 import { Contact } from '@/features/contact/Contact';
 import { Experience } from '@/features/experience/Experience';
 import { Footer } from '@/features/footer/Footer';
@@ -149,6 +150,7 @@ function AppContent() {
           <Skills />
           <AiLab />
           <Contact />
+          <Privacy />
         </main>
 
         <Footer />

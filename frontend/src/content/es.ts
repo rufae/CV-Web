@@ -101,6 +101,7 @@ export const ES: Dictionary = {
     madeWith: 'Hecho con',
     alwaysEvolving: 'Siempre en evolución',
     builtWith: 'Construido con React, TypeScript, Tailwind CSS y Motion',
+    privacy: 'Privacidad',
   },
   aiLab: {
     title: 'AI Lab',

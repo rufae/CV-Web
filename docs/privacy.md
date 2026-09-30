@@ -48,9 +48,14 @@ Obsidian (wikilinks a notas privadas degradados, embeds y `%%comentarios%%` fuer
 - Política completa: `docs/adr/0001-public-vault-allowlist.md`.
 - Plantilla de nota pública: `docs/templates/public-note.md`.
 
-## 5. Retención y tratamiento (a completar en T6.6)
+## 5. Retención y tratamiento (T6.6)
 
-- Mensajes de contacto: definir retención (propuesta: 12 meses) y base legal RGPD.
+- Mensajes de contacto: retención máxima de **12 meses**; finalidad exclusiva de
+  responder; sin cesión a terceros. Base: consentimiento/interés legítimo RGPD.
+- Aviso público en la web (`#privacy`, ES/EN): asistente de IA, feedback
+  anónimo, sin cookies ni analítica con seguimiento.
+- Analítica: **ninguna** (decisión T6.6); si algún día se añade, será
+  autoalojada y sin cookies (Umami/Plausible) y se documentará aquí.
 - Feedback del chat: **anónimo**. Se guarda solo timestamp, valoración
   (👍/👎), versión del prompt, números de fuentes, tier y si hubo rechazo; el
   comentario es opcional y voluntario. **No** se guardan la pregunta ni la IP.

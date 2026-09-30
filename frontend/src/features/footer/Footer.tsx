@@ -81,19 +81,24 @@ export const Footer: React.FC = () => {
           >
             <h4 className="mb-4">{t.footer.quickLinks}</h4>
             <div className="space-y-2">
-              {['Sobre mí', 'Experiencia', 'Proyectos', 'Habilidades', 'Contacto'].map(
-                (link, index) => (
-                  <motion.a
-                    key={link}
-                    href={`#${['about', 'experience', 'projects', 'skills', 'contact'][index]}`}
-                    className="block text-sm text-muted-foreground hover:text-accent transition-colors"
-                    whileHover={{ x: 2 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-                  >
-                    {link}
-                  </motion.a>
-                ),
-              )}
+              {[
+                t.nav.about,
+                t.nav.experience,
+                t.nav.projects,
+                t.nav.skills,
+                t.nav.contact,
+                t.footer.privacy,
+              ].map((link, index) => (
+                <motion.a
+                  key={link}
+                  href={`#${['about', 'experience', 'projects', 'skills', 'contact', 'privacy'][index]}`}
+                  className="block text-sm text-muted-foreground hover:text-accent transition-colors"
+                  whileHover={{ x: 2 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                >
+                  {link}
+                </motion.a>
+              ))}
             </div>
           </motion.div>
 
