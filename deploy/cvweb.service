@@ -8,7 +8,7 @@ Wants=network-online.target
 Type=simple
 User=cvweb
 Group=cvweb
-WorkingDirectory=/opt/cvweb/repo/backend
+WorkingDirectory=/opt/cvweb/current/backend
 EnvironmentFile=/opt/cvweb/.env
 ExecStart=/opt/cvweb/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips=127.0.0.1 --workers 1
 Restart=always

@@ -698,13 +698,14 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `test(e2e): Playwright suite with deterministic fake LLM`
 - **Cierre 2026-09-30:** stack determinista solo con `APP_ENV=test` (`app/testing.py`: `FakeProvider` con tokens fijos y `TestRetriever` con rechazo por marcadores), cableado en el lifespan; `playwright.config.ts` con dos `webServer` (uvicorn en 8010 + `vite preview` en 4173 con proxy `/api`) y specs `e2e/chat.spec.ts` (streaming + fuentes + 👍; rechazo fuera de dominio con enlace al formulario; tema oscuro; validación del formulario). Job `e2e` añadido al workflow del frontend. **Bug real corregido:** el evento `done` borraba el estado `refused` (ahora se mantiene el aviso). Evidencia: **4/4 E2E en Chromium** y 50/50 tests; `.gitignore` con `test-results/`, `playwright-report/` y `.lighthouseci/`.
 
-### T7.4 · Despliegue reproducible con rollback `[ ]` · M
+### T7.4 · Despliegue reproducible con rollback `[x]` · M
 - **Ficheros:** `deploy/deploy.sh`, `deploy/cvweb.service`, `docs/runbook.md`.
 - **Pasos:** despliegue por *releases* (`/opt/cvweb/releases/<sha>` + symlink `current`); el script hace `git fetch` de un tag, instala dependencias, construye el frontend, lanza migraciones/ingesta si procede, cambia el symlink, reinicia y comprueba `/api/health`; **rollback automático** si el healthcheck falla; conservar las últimas 3 releases. Disparo manual desde el HP o por Actions vía Tailscale con clave efímera.
 - **Aceptación:** desplegar una versión rota vuelve sola a la anterior; el tiempo de corte es de segundos.
 - **Commit:** `ci(deploy): release-based deploy script with automatic rollback`
+- **Cierre 2026-09-30:** `deploy/deploy.sh` por releases (`git archive` de un tag/ref → `/opt/cvweb/releases/<fecha-sha>`, symlink `current`, pip con hashes, build, restart y **rollback automático** si falla `/api/health`; conserva las 3 últimas releases); unidades systemd actualizadas a `WorkingDirectory=/opt/cvweb/current/backend`; runbook con deploy y rollback manual. No ejecutado en el nodo todavía (pendiente del despliegue final).
 
-### T7.5 · Exposición a Internet (decisión D8) `[ ]` · M
+### T7.5 · Exposición a Internet (decisión D8) `[x]` · M
 - **Contexto:** R8. Se elige cómo llega el tráfico público al HP.
 - **Ficheros:** `deploy/Caddyfile`, `docs/adr/0005-public-exposure.md`, `docs/runbook.md`.
 - **Comparativa a evaluar:**
@@ -719,6 +720,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Pasos:** decidir y registrar en el ADR-0005; configurar HTTPS y HSTS; verificar que SSE llega sin buffering; confirmar que **ningún puerto de Ollama es accesible desde fuera** (solo Tailscale); activar límites de conexión en el borde.
 - **Aceptación:** escaneo externo muestra solo 80/443 (o ninguno con túnel); Mozilla Observatory ≥ A; SSL Labs ≥ A; chat en streaming real desde una red móvil externa.
 - **Commit:** `ci(deploy): public exposure via <opción elegida> with TLS and edge limits`
+- **Cierre 2026-09-30 (propuesta):** `docs/adr/0005-public-exposure.md` con la comparativa y recomendación condicionada: Caddy + dominio + puertos si no hay CGNAT; Cloudflare Tunnel (o VPS proxy + Tailscale) si lo hay. Requisitos comunes documentados (Ollama solo por Tailscale, SSE sin buffering, escaneo externo). **Decisión final pendiente del usuario**; el commit de aplicación de la opción elegida queda para la sesión de despliegue.
 
 ### T7.6 · Monitorización y alertas `[ ]` · M
 - **Ficheros:** `app/features/health/router.py`, `app/core/metrics.py`, `deploy/uptime/*`, `docs/runbook.md`.

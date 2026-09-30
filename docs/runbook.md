@@ -1,7 +1,6 @@
 # Runbook de CV Web
 
-> Operaciones del nodo HP. Se completa en T7.4 (releases/rollback), T7.6 (monitorización),
-> T7.7 (backups) y T7.9 (documentación final).
+> Operaciones del nodo HP. Releases/rollback y backups ya descritos; monitorización en T7.6.
 
 ## 1. Preparación del nodo (una vez)
 
@@ -16,8 +15,8 @@ sudo chown -R cvweb:cvweb /opt/cvweb
 # Código y dependencias
 sudo -u cvweb git clone https://github.com/rufae/CV-Web.git /opt/cvweb/repo
 sudo -u cvweb python3 -m venv /opt/cvweb/venv
-sudo -u cvweb /opt/cvweb/venv/bin/pip install -r /opt/cvweb/repo/backend/requirements.lock
-sudo -u cvweb bash -c 'cd /opt/cvweb/repo/frontend && npm ci && npm run build'
+sudo mkdir -p /opt/cvweb/releases
+sudo -u cvweb bash -c 'cd /opt/cvweb/repo && git fetch --all'
 
 # Secretos (nunca en git)
 sudo cp /opt/cvweb/repo/backend/.env.example /opt/cvweb/.env
@@ -64,12 +63,13 @@ journalctl -u cvweb -f
 sudo caddy validate --config /etc/caddy/Caddyfile
 sudo systemctl reload caddy
 
-# Actualizar (provisional; T7.4 introducirá releases + rollback)
-sudo -u cvweb bash -c 'cd /opt/cvweb/repo && git pull --ff-only'
-sudo -u cvweb /opt/cvweb/venv/bin/pip install -r /opt/cvweb/repo/backend/requirements.lock
-sudo -u cvweb bash -c 'cd /opt/cvweb/repo/frontend && npm ci && npm run build'
+# Actualizar (releases + rollback automático, T7.4)
+sudo -u cvweb bash /opt/cvweb/repo/deploy/deploy.sh origin/main
+
+# Rollback manual: apuntar al release anterior y reiniciar
+ls -1dt /opt/cvweb/releases/*/ | head -5
+sudo ln -sfn /opt/cvweb/releases/<release-anterior> /opt/cvweb/current
 sudo systemctl restart cvweb
-curl -fsS http://127.0.0.1:8000/api/health
 
 # Reinicio del nodo
 sudo systemctl restart cvweb    # debe arrancar solo tras reboot (enable)
@@ -86,7 +86,8 @@ sudo -u cvweb test -r /opt/cvweb/.env && echo "permisos .env OK"
 ## 5. Pendiente de fases posteriores
 
 - T4.2/T4.7: rate limiting, tope de cuerpo y presupuesto diario.
-- T7.4: despliegue por releases con rollback automático.
-- T7.5: exposición definitiva (dominio, CGNAT, Cloudflare Tunnel…) en ADR-0005.
-- T7.6: métricas Prometheus, health profundo y alertas.
-- T7.7: backups (`.env` cifrado, `feedback.db`, outbox) y simulacro de restauración.
+- T7.5: exposición definitiva (dominio, CGNAT, Cloudflare Tunnel…) — decisión pendiente, ADR-0005.
+- T7.6: métricas Prometheus (`/metrics`), health profundo y alertas.
+- T7.7: `deploy/backup.sh` + restauración: copia `.env`, `feedback.db`, outbox y
+  manifiesto; el índice Chroma NO se copia (se reconstruye con la ingesta).
+  Simulacro de restauración pendiente en el nodo.
