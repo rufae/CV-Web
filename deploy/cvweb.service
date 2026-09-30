@@ -1,0 +1,47 @@
+[Unit]
+Description=CV Web (FastAPI + estáticos)
+Documentation=https://github.com/rufae/CV-Web
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=cvweb
+Group=cvweb
+WorkingDirectory=/opt/cvweb/repo/backend
+EnvironmentFile=/opt/cvweb/.env
+ExecStart=/opt/cvweb/venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips=127.0.0.1 --workers 1
+Restart=always
+RestartSec=3
+TimeoutStopSec=20
+UMask=0077
+
+# --- Hardening (revisar con `systemd-analyze security cvweb`) ---
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=-/opt/cvweb/data
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+ProtectProc=invisible
+ProcSubset=pid
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallErrorNumber=EPERM
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=multi-user.target

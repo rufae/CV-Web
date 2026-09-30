@@ -247,12 +247,13 @@ PASSWORD_APPLICATION=
 - **Commit:** `fix(content): replace placeholder links and set document language`
 - **Cierre 2026-09-30:** GitHub corregido a `github.com/rufae` (Contact y Footer); `Projects.tsx` reescrito con lista provisional real (Rafita, CV Web, Infraestructura IA híbrida) y botón Demo condicional (sin URLs inventadas); PDF renombrado a `curriculum-vitae.pdf` y enlaces actualizados (Hero/Skills); `index.html` con `lang="es"`, título, `description` y favicon PNG; retirado "Alojado en Vercel" del Footer. Evidencia: `rg github.com/rafael` = 0; `dist/curriculum-vitae.pdf` presente; lint/typecheck/test/build en verde (JS 132,75 kB gzip). Pendiente: handle de Twitter (`twitter.com/rafael_dev`) por confirmar en T6.1 y capturas visuales manuales.
 
-### T1.8 · Hardening mínimo previo a exponer `[ ]` · M
+### T1.8 · Hardening mínimo previo a exponer `[x]` · M
 - **Contexto:** R8. El nodo HP ya aloja ~14 contenedores; la web nueva no debe ampliar la superficie de ataque.
 - **Ficheros:** `deploy/cvweb.service`, `deploy/Caddyfile`, `docs/runbook.md`.
 - **Pasos:** usuario sin login `cvweb`; unidad systemd con `NoNewPrivileges`, `ProtectSystem=strict`, `ReadWritePaths` acotado, `PrivateTmp`; `.env` `chmod 600`; firewall (solo 80/443 públicos, LLM únicamente por Tailscale); cabeceras de seguridad en Caddy (HSTS, `X-Content-Type-Options`, `Referrer-Policy`, CSP inicial); `fail2ban` o límites en Caddy.
 - **Aceptación:** `systemd-analyze security cvweb` con puntuación razonable (< 5); escaneo de puertos externo solo muestra 80/443.
 - **Commit:** `ci(deploy): add hardened systemd unit and Caddy baseline`
+- **Cierre 2026-09-30:** `deploy/cvweb.service` (usuario `cvweb`, venv `/opt/cvweb/venv`, `EnvironmentFile=/opt/cvweb/.env`, uvicorn en 127.0.0.1:8000 con `--proxy-headers --forwarded-allow-ips`, `--workers 1`, hardening completo: `NoNewPrivileges`, `ProtectSystem=strict`, `ProtectHome`, `PrivateTmp/Devices`, `RestrictNamespaces`, `MemoryDenyWriteExecute`, `SystemCallFilter=@system-service`, `CapabilityBoundingSet=` vacío, `UMask=0077`, `ReadWritePaths=-/opt/cvweb/data`); `deploy/Caddyfile` (HSTS, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, CSP inicial, sin cabecera `Server`, `flush_interval -1` para SSE); `docs/runbook.md` (preparación del nodo, `.env` 600, ufw solo 22/80/443, contexto privado en `/opt/cvweb/data`, verificación y operaciones). Evidencia: `systemd-analyze security --offline=yes` → **1.5 OK**; hooks de pre-commit en verde. Pendiente en el nodo (T1.9/T7.5): `caddy validate` y escaneo externo de puertos.
 
 ### T1.9 · 🏁 Hito M1: despliegue mínimo y servicio restaurado `[ ]` · M
 - **Contexto:** producción lleva días con chat y contacto caídos. Se resuelve ya, con Gemini como proveedor temporal (D5) y Ollama del Dell si prefieres, **antes** del router completo.

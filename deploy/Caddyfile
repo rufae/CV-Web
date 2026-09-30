@@ -1,0 +1,26 @@
+# CV Web — Caddy (borrador T1.8; el dominio real se decide en T7.5)
+# Instalación: copiar a /etc/caddy/Caddyfile.d/cvweb.caddy o incluirlo desde el Caddyfile principal.
+
+cv.tudominio.example {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://images.unsplash.com; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+		-Server
+	}
+
+	# SSE sin buffering (se aprovechará en T4.5)
+	reverse_proxy 127.0.0.1:8000 {
+		flush_interval -1
+	}
+
+	log {
+		output file /var/log/caddy/cvweb-access.log
+		format json
+	}
+}
