@@ -311,11 +311,12 @@ PASSWORD_APPLICATION=
 - **Commit:** `feat(llm): add optional Gemini provider behind a feature flag`
 - **Cierre 2026-09-30:** `app/llm/gemini.py` (API asíncrona `client.aio.models.generate_content_stream`, `health()` vía `models.get`, errores → `ProviderError`) y `app/llm/factory.py` que construye los proveedores desde `Settings` con **import perezoso** de Gemini (con `GEMINI_ENABLED=false` no se carga `google.genai`). Añadidos a `Settings` los campos del router (`LLM_PROVIDERS_ORDER`, URLs/modelos de torre y Dell, timeouts, concurrencia, `GEMINI_ENABLED`). Evidencia: `tests/unit/test_gemini.py` (stream, error, salud) y `test_factory.py` (orden, Gemini off / sin clave / on y verificación por subproceso de que no se importa `google.genai`) — 36/36 tests y mypy en 30 ficheros.
 
-### T2.6 · Observabilidad del router `[ ]` · S
+### T2.6 · Observabilidad del router `[x]` · S
 - **Ficheros:** `app/core/logging.py`, `app/features/health/router.py`.
 - **Pasos:** logs JSON estructurados (`provider`, `model`, `latency_ms`, `first_token_ms`, `outcome`, **sin contenido del usuario**); `GET /api/status` público y saneado (`{"llm": "online|degraded|offline", "tier": "gpu|cpu"}`), sin IPs ni nombres de host.
 - **Aceptación:** cada petición deja exactamente una línea de log con esos campos; `/api/status` no filtra información de infraestructura.
 - **Commit:** `feat(observability): structured logs and public status endpoint`
+- **Cierre 2026-09-30:** `app/core/logging.py` (formatter JSON con campos extra y `setup_logging`), **una línea de log por stream** en `RoutedStream` (`provider`, `model`, `first_token_ms`, `latency_ms`, `outcome=done|cancelled|error:Tipo`, sin contenido de usuario) y `GET /api/status` saneado (`{"llm": online|degraded|offline, "tier": gpu|cpu}`) calculado desde el monitor. `main.py` construye proveedores/monitor/router en el lifespan (`HealthMonitor.start()`/`stop()`) y cierra los proveedores al apagar. Evidencia: `test_stream_logging.py` (una línea por stream y outcome de error), `test_status.py` (online/degraded/offline y tier) e integración de `/api/status` — 43/43 tests y mypy estricto en 34 ficheros.
 
 ---
 
