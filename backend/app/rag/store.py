@@ -106,9 +106,7 @@ class ChromaStore:
         self._collection.upsert(
             ids=[chunk.id for chunk in chunks],
             embeddings=embeddings,
-            documents=[
-                embedding_text(chunk, corpus_prefix=corpus_prefix) for chunk in chunks
-            ],
+            documents=[embedding_text(chunk, corpus_prefix=corpus_prefix) for chunk in chunks],
             metadatas=[self._metadata(chunk) for chunk in chunks],
         )
 

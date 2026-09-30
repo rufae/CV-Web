@@ -424,7 +424,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 
 **Principio de diseño:** ninguna defensa se considera suficiente por sí sola. Capas: (1) *datos* — solo el vault público (Fase 3); (2) *entrada* — validación y límites; (3) *prompt* — delimitación y reglas; (4) *salida* — filtro; (5) *infraestructura* — rate limit, concurrencia y aislamiento de red. Un fallo en una capa no debe bastar para filtrar nada.
 
-### T4.1 · Contrato de API y esquemas `[ ]` · S
+### T4.1 · Contrato de API y esquemas `[x]` · S
 - **Contexto:** el endpoint actual acepta un `str` libre. Se fija un contrato estricto antes de escribir lógica.
 - **Ficheros:** `app/features/chat/schemas.py`, `docs/api.md`, `tests/unit/test_chat_schemas.py`.
 - **Pasos:**
@@ -434,6 +434,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
   4. Como `/docs` y `/openapi.json` están desactivados en producción (B8), documentar el contrato a mano en `docs/api.md`.
 - **Aceptación:** rol `system` → 422; campo extra → 422; historial excedido → 422; `mypy --strict` limpio.
 - **Commit:** `feat(chat): define request schema and SSE event contract`
+- **Cierre 2026-09-30:** `ChatRequest` (`message` 1-500, `history` ≤12 turnos, `lang` es/en, `extra="forbid"`), `Turn` con rol `user|assistant` (rol `system` rechazado), tipos de evento SSE en `app/features/chat/events.py` (Apéndice B) y helper `sse()`; contrato documentado a mano en `docs/api.md` (incluye códigos de error y límites). El alias legacy `/ask` mantiene JSON hasta T5.7. Evidencia: `tests/unit/test_chat_schemas.py` (8 tests) — 88/88 y mypy estricto en 52 ficheros.
 
 ### T4.2 · Rate limiting, tope de tamaño y presupuesto diario `[ ]` · M
 - **Contexto:** R1. Sin límites, cualquiera puede consumir cómputo de la torre/Dell.
