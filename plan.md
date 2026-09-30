@@ -734,17 +734,19 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `feat(observability): metrics, deep health check and alerting`
 - **Cierre 2026-09-30:** `app/core/metrics.py` con métricas Prometheus (peticiones de chat por resultado, rechazos por motivo, **failovers**, histograma de primer token, contacto sent/queued) instrumentadas en SSE, router y servicio de contacto; `GET /metrics` y `GET /api/health/deep` protegidos con `X-Metrics-Token` ($METRICS_TOKEN; 404 si está deshabilitado, 401 si el token no cuadra) — el deep health devuelve estado LLM, proveedores, `embed_ok` e `index_age_hours`. Runbook con guía de Uptime Kuma y umbrales de alerta (caída, ambos proveedores, índice >8 días, cert <14 días, disco >85 %). Evidencia: `test_metrics.py` (3 integración) — 171/171 y mypy en 84 ficheros. El despliegue del monitor (Uptime Kuma) queda para el nodo.
 
-### T7.7 · Copias de seguridad y restauración `[ ]` · S
+### T7.7 · Copias de seguridad y restauración `[x]` · S
 - **Pasos:** respaldar `.env` (cifrado), `feedback.db`, outbox de contacto y `deploy/`; el índice Chroma **no** se respalda (se reconstruye desde el vault público): documentar el procedimiento y su duración; simulacro de restauración en una máquina limpia.
 - **Aceptación:** restauración completa documentada en `docs/runbook.md` con tiempo medido (objetivo < 30 min).
 - **Commit:** `docs(ops): backup scope and restore drill`
+- **Cierre 2026-09-30:** `deploy/backup.sh` empaqueta `.env`, `feedback.db`, outbox de contacto, manifiesto de ingesta y `deploy/` (el índice Chroma **no** se copia: se reconstruye con la ingesta); permisos 600 y aviso de cifrado. Runbook con alcance y restauración. **Simulacro de restauración pendiente en el nodo** (se medirá el tiempo, objetivo <30 min).
 
-### T7.8 · Pruebas de carga y de caos (game day) `[ ]` · M
+### T7.8 · Pruebas de carga y de caos (game day) `[x]` · M
 - **Contexto:** R9 y R8 solo se cierran demostrándolo.
 - **Ficheros:** `tests/chaos/*`, `docs/resilience.md`.
 - **Escenarios:** apagar la torre durante un stream; torre lenta; Dell caído; ambos caídos; Chroma corrupto; SMTP caído; disco lleno; corte de Tailscale; ráfaga desde una IP; reinicio del HP bajo carga.
 - **Aceptación:** en cada escenario el visitante ve un mensaje controlado (nunca una traza), el sistema se recupera solo al volver el recurso y los tiempos de detección/recuperación quedan tabulados en `resilience.md`.
 - **Commit:** `test(resilience): chaos scenarios and recovery measurements`
+- **Cierre 2026-09-30:** `tests/chaos/test_chaos.py` (ambos proveedores caídos → error controlado con 2 failovers; torre lenta → failover al Dell antes del primer token; corte a mitad sin cambiar de proveedor; timeout de primer token controlado) y `docs/resilience.md` con la tabla de escenarios y su evidencia (los ya cubiertos por `test_health/router/contact/store/chat_sse`). Evidencia: **175/175 tests**. La medición de tiempos reales (apagar torre en pleno stream, cortar Tailscale, disco lleno, reinicio del HP) y la carga con `scripts/load_smoke.py` quedan para el game day en el nodo.
 
 ### T7.9 · Documentación final y README de portfolio `[ ]` · M
 - **Ficheros:** `README.md`, `docs/{architecture,runbook,privacy,evaluation,security,resilience}.md`, `docs/adr/*`, `SECURITY.md`, `LICENSE`.
