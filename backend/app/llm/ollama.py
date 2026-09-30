@@ -79,6 +79,11 @@ class OllamaProvider:
                 {"role": message.role, "content": message.content} for message in messages
             ],
             "stream": True,
+            # Modelos que "piensan" por defecto (gemma4) emiten primero tokens
+            # de `thinking` con `content` vacío y pueden consumir el
+            # `num_predict` entero sin llegar a responder (2026-09-30: el chat
+            # devolvía provider_unavailable). Se desactiva el razonamiento.
+            "think": False,
             "options": options,
         }
 

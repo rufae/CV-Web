@@ -137,3 +137,23 @@ async def test_cancellation_closes_stream_and_keeps_provider_usable() -> None:
     await provider.aclose()
 
     assert health.ok
+
+
+@respx.mock
+async def test_stream_disables_thinking_in_payload() -> None:
+    """gemma4 emite `thinking` con content vacio y se comia el presupuesto
+    (2026-09-30): el payload debe llevar think=False."""
+    ruta = respx.post(f"{BASE_URL}/api/chat").mock(
+        return_value=httpx.Response(
+            200,
+            content=_ndjson({"message": {"content": "Hola"}, "done": True}),
+        )
+    )
+    provider = _provider()
+    tokens = [token.text async for token in provider.stream(_user_message())]
+    await provider.aclose()
+
+    assert tokens == ["Hola"]
+    assert ruta.calls.last.request.content is not None
+    payload = json.loads(ruta.calls.last.request.content)
+    assert payload["think"] is False
