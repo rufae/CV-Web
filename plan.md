@@ -270,12 +270,13 @@ PASSWORD_APPLICATION=
 **Meta:** una capa `LLMRouter` que elija proveedor por disponibilidad, con failover transparente, streaming y observabilidad.
 **Esfuerzo total:** ~3 jornadas.
 
-### T2.1 · Contrato de proveedor LLM `[ ]` · S
+### T2.1 · Contrato de proveedor LLM `[x]` · S
 - **Contexto:** hoy el código llama directamente a Gemini con una llamada síncrona dentro de `async def` (R7).
 - **Ficheros:** `app/llm/base.py`, `app/llm/errors.py`, `tests/unit/test_llm_contract.py`.
 - **Pasos:** definir `class LLMProvider(Protocol)` con `name`, `async def health() -> ProviderHealth`, `async def stream(messages, *, temperature, max_tokens) -> AsyncIterator[Token]`; tipos `Message`, `Token`, `ProviderHealth(latency_ms, ok, model)`; errores `ProviderUnavailable`, `FirstTokenTimeout`, `ProviderError`. Un `FakeProvider` para tests.
 - **Aceptación:** `mypy --strict` limpio; test con `FakeProvider` que emite tokens y falla a demanda.
 - **Commit:** `feat(llm): define provider protocol and error taxonomy`
+- **Cierre 2026-09-30:** `app/llm/base.py` (`Message`, `Token`, `ProviderHealth`, `LLMProvider` con `health()` y `stream()`), `app/llm/errors.py` (`LLMError`, `ProviderUnavailable`, `FirstTokenTimeout`, `ProviderError`) y `tests/unit/test_llm_contract.py` con `FakeProvider` (emite tokens y falla a demanda). Tests reorganizados a `tests/unit` y `tests/integration` (eliminado el smoke trivial de T1.2). Desviación menor: el `stream` del Protocol se anota `def ... -> AsyncIterator[Token]` (tipado correcto para generadores asíncronos). Evidencia: ruff/format/mypy estricto (20 ficheros) y `pytest` 6/6 en verde.
 
 ### T2.2 · Cliente Ollama asíncrono `[ ]` · M
 - **Ficheros:** `app/llm/ollama.py`, `tests/unit/test_ollama.py`.
