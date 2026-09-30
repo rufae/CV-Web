@@ -7,4 +7,5 @@ google-genai
 python-frontmatter
 chromadb
 numpy
+aiosmtplib
 pydantic[email]

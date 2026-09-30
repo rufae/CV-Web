@@ -50,3 +50,6 @@ rafa_context.txt
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
+
+# Datos locales (outbox, Chroma, manifiestos)
+data/

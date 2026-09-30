@@ -49,6 +49,13 @@ class Settings(BaseSettings):
     trusted_proxy_ips: str = "127.0.0.1"
     public_contact_allowlist: str = ""
     allowed_output_domains: str = "github.com,linkedin.com"
+    daily_contact_budget: int = 50
+    contact_to: str = ""
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 465
+    smtp_timeout_s: float = 10.0
+    turnstile_enabled: bool = False
+    turnstile_secret: str = ""
 
     # RAG (F3)
     vault_path: str = ""

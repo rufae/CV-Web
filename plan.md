@@ -501,7 +501,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `feat(chat): streaming output guard against prompt and PII leakage`
 - **Cierre 2026-09-30:** `app/features/chat/output_guard.py`: búfer de retención (64 chars) que bloquea el token canario, n-gramas del prompt de sistema, email/teléfono/DNI/NIE/IBAN fuera de `PUBLIC_CONTACT_ALLOWLIST`, URLs fuera de `ALLOWED_OUTPUT_DOMAINS`, `javascript:`/imágenes remotas y respuestas que superan el tope de longitud; corta con `error{output_blocked}` y log sin contenido. Integrado en `routed_stream`; nuevas settings `PUBLIC_CONTACT_ALLOWLIST` y `ALLOWED_OUTPUT_DOMAINS` (plantilla actualizada). Evidencia: `tests/unit/test_output_guard.py` (10) + integración de bloqueo en SSE — 133/133 y mypy estricto en 63 ficheros. Compromiso documentado: la retención agrupa tokens en respuestas muy cortas.
 
-### T4.7 · Contacto endurecido `[ ]` · M
+### T4.7 · Contacto endurecido `[x]` · M
 - **Contexto:** R4. Hoy `/contact` es un relay de spam, con HTML sin escapar, `smtplib` bloqueante y `str(e)` devuelto al cliente.
 - **Ficheros:** `app/features/contact/{router,service,schemas}.py`, `app/core/mailer.py`, `tests/unit/test_contact.py`.
 - **Pasos:**
@@ -514,6 +514,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
   7. Límites: `RATE_LIMIT_CONTACT` por IP + tope global diario.
 - **Aceptación:** inyección de cabeceras rechazada; `<script>` llega como texto; con SMTP caído el mensaje queda en outbox y se reenvía al recuperarse; ninguna respuesta contiene el texto de una excepción; correo real recibido en pruebas.
 - **Commit:** `fix(contact): validate, escape, rate-limit and queue outgoing mail`
+- **Cierre 2026-09-30:** `schemas.py` (longitudes, `extra="forbid"`, rechazo de `\r`/`\n` en nombre/email, honeypot y `turnstile_token`), `app/core/mailer.py` (`aiosmtplib`, TLS implícito 465 o STARTTLS 587, timeout), `contact/outbox.py` (SQLite con backoff exponencial y máximo de intentos) y `contact/service.py` (escape HTML + alternativa texto, `From` propio y `Reply-To` del visitante, honeypot silencioso, Turnstile opcional vía HTTP, outbox con reintento y errores siempre genéricos — el detalle solo va al log). Presupuesto diario de contacto en `/api/contact` (`DAILY_CONTACT_BUDGET`). Añadido `aiosmtplib` con lock. Evidencia: `tests/unit/test_contact.py` (11 tests: inyección de cabeceras, campos extra, longitudes, escape, honeypot, encolado + reintento, 503 sin configurar, Turnstile ok/fallo con `respx`, backoff) — 144/144 y mypy estricto en 66 ficheros. El envío real se validará en el nodo con credenciales.
 
 ### T4.8 · CORS, host y cabeceras en la aplicación `[ ]` · S
 - **Ficheros:** `app/main.py`, `app/core/security.py`, `tests/integration/test_headers.py`.

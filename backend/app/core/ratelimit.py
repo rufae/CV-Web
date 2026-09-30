@@ -110,7 +110,11 @@ def enforce_rate_limit(request: Request, attr: str) -> None:
         raise RateLimitExceeded(retry_after)
 
 
-def enforce_daily_budget(request: Request) -> None:
-    budget: DailyBudget = request.app.state.chat_budget
+def enforce_budget(request: Request, attr: str = "chat_budget") -> None:
+    budget: DailyBudget = getattr(request.app.state, attr)
     if not budget.allow():
         raise DailyBudgetExceeded()
+
+
+def enforce_daily_budget(request: Request) -> None:
+    enforce_budget(request, "chat_budget")

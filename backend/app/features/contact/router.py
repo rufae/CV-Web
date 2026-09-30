@@ -6,7 +6,7 @@ Alias temporal de compatibilidad: `POST /contact` (se retira en T5.7).
 
 from fastapi import APIRouter, Depends, Request
 
-from app.core.ratelimit import enforce_rate_limit
+from app.core.ratelimit import enforce_budget, enforce_rate_limit
 from app.features.contact.schemas import ContactForm
 from app.features.contact.service import ContactService
 
@@ -15,6 +15,7 @@ router = APIRouter(tags=["contact"])
 
 async def _contact_limits(request: Request) -> None:
     enforce_rate_limit(request, "contact_limiter")
+    enforce_budget(request, "contact_budget")
 
 
 @router.post("/api/contact", dependencies=[Depends(_contact_limits)])

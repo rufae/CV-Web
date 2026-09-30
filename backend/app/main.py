@@ -112,6 +112,7 @@ def create_app() -> FastAPI:
             parse_limits(settings.rate_limit_feedback)
         )
         app.state.chat_budget = DailyBudget(settings.daily_chat_budget)
+        app.state.contact_budget = DailyBudget(settings.daily_contact_budget)
 
         app.state.chat_service = ChatService(settings, context)
         app.state.contact_service = ContactService(settings)
