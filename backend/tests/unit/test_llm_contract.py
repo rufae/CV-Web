@@ -12,6 +12,7 @@ class FakeProvider:
     """Proveedor determinista para tests: emite tokens o falla a demanda."""
 
     name = "fake"
+    model = "fake-1"
 
     def __init__(
         self,
@@ -23,6 +24,9 @@ class FakeProvider:
 
     async def health(self) -> ProviderHealth:
         return ProviderHealth(ok=self._fail is None, latency_ms=1.0, model="fake-1")
+
+    async def aclose(self) -> None:
+        return
 
     async def stream(
         self,

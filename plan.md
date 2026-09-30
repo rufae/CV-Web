@@ -293,7 +293,7 @@ PASSWORD_APPLICATION=
 - **Commit:** `feat(llm): add background health checks with hysteresis and circuit breaker`
 - **Cierre 2026-09-30:** `app/llm/health.py` con `ProviderState` (UP/DEGRADED/DOWN), `ProviderStatus`, `MonitorConfig` y sondeo en segundo plano (`start`/`stop`) fuera de la ruta caliente; 2 fallos bajan un escalón y 3 éxitos suben uno; al llegar a DOWN se abre el circuito 30 s (semiabierto después, con extensión si el sondeo vuelve a fallar). Evidencia: `tests/unit/test_health.py` con reloj simulado (transiciones, circuito sin sondas durante la apertura, timeout de health como fallo, recuperación y bucle en background) — 19 tests totales y mypy estricto en 24 ficheros.
 
-### T2.4 · `LLMRouter` con failover transparente `[ ]` · M
+### T2.4 · `LLMRouter` con failover transparente `[x]` · M
 - **Ficheros:** `app/llm/router.py`, `tests/unit/test_router.py`.
 - **Pasos:**
   1. Orden por `LLM_PROVIDERS_ORDER`; salta proveedores `DOWN`.
@@ -302,6 +302,7 @@ PASSWORD_APPLICATION=
   4. Devolver junto al stream metadatos `provider`, `model`, `first_token_ms` (los usará el frontend y el panel de T6.4).
 - **Aceptación:** tests: P1 sana, P1 caída → P2, P1 lenta → P2, ambas caídas → error controlado, corte a mitad de stream; el usuario nunca ve una traza.
 - **Commit:** `feat(llm): implement priority router with pre-first-token failover`
+- **Cierre 2026-09-30:** `app/llm/router.py`: orden por lista de proveedores, salto de los `DOWN`, failover **solo antes del primer token** (cubre `ProviderUnavailable`, `FirstTokenTimeout`, `ProviderError` y stream vacío), corte a mitad sin cambiar de proveedor, semáforo `max_concurrency` con cola limitada (`QueueOverflow` + `retry_after_s`) y `RoutedStream` con metadatos (`provider`, `model`, `first_token_ms`). El protocolo gana `model` (property) y los proveedores Ollama admiten nombre por instancia (`tower`/`dell`) para no colisionar en el monitor. Evidencia: `tests/unit/test_router.py` (P1 sana, P1 DOWN→P2, fallo/lentitud antes del primer token, corte a mitad sin switch, todas caídas y overflow de cola) — 26/26 tests y mypy estricto en 26 ficheros.
 
 ### T2.5 · Proveedor Gemini opcional `[ ]` · S
 - **Ficheros:** `app/llm/gemini.py`, `tests/unit/test_gemini.py`.

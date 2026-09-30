@@ -35,8 +35,15 @@ class LLMProvider(Protocol):
 
     name: str
 
+    @property
+    def model(self) -> str: ...
+
     async def health(self) -> ProviderHealth:
         """Comprueba disponibilidad y latencia del proveedor."""
+        ...
+
+    async def aclose(self) -> None:
+        """Libera recursos del proveedor (clientes HTTP, etc.)."""
         ...
 
     def stream(

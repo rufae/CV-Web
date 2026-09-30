@@ -22,23 +22,27 @@ DEFAULT_READ_TIMEOUT_S = 60.0
 
 
 class OllamaProvider:
-    name = "ollama"
-
     def __init__(
         self,
         base_url: str,
         model: str,
         *,
+        name: str = "ollama",
         connect_timeout_s: float = DEFAULT_CONNECT_TIMEOUT_S,
         read_timeout_s: float = DEFAULT_READ_TIMEOUT_S,
         client: httpx.AsyncClient | None = None,
     ) -> None:
+        self.name = name
         self._model = model
         self._client = client or httpx.AsyncClient(
             base_url=base_url,
             timeout=httpx.Timeout(read_timeout_s, connect=connect_timeout_s),
         )
         self._owns_client = client is None
+
+    @property
+    def model(self) -> str:
+        return self._model
 
     async def aclose(self) -> None:
         if self._owns_client:

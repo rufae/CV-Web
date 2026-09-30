@@ -15,3 +15,11 @@ class FirstTokenTimeout(LLMError):
 
 class ProviderError(LLMError):
     """Error genérico devuelto por el proveedor (HTTP 5xx, JSON corrupto, etc.)."""
+
+
+class QueueOverflow(LLMError):
+    """La cola de generación está llena (demasiadas peticiones esperando turno)."""
+
+    def __init__(self, retry_after_s: int) -> None:
+        super().__init__("La cola de generación está llena")
+        self.retry_after_s = retry_after_s

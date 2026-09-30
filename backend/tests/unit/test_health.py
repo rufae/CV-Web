@@ -20,6 +20,7 @@ class FakeClock:
 
 class StubProvider:
     name = "stub"
+    model = "stub-1"
 
     def __init__(self, ok: bool = True, latency_ms: float = 5.0) -> None:
         self.ok = ok
@@ -32,6 +33,9 @@ class StubProvider:
         if self.hang_s is not None:
             await asyncio.sleep(self.hang_s)
         return ProviderHealth(ok=self.ok, latency_ms=self.latency_ms, model="stub-1")
+
+    async def aclose(self) -> None:
+        return
 
     async def stream(
         self,
