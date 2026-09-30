@@ -87,7 +87,12 @@ sudo -u cvweb test -r /opt/cvweb/.env && echo "permisos .env OK"
 
 - T4.2/T4.7: rate limiting, tope de cuerpo y presupuesto diario.
 - T7.5: exposición definitiva (dominio, CGNAT, Cloudflare Tunnel…) — decisión pendiente, ADR-0005.
-- T7.6: métricas Prometheus (`/metrics`), health profundo y alertas.
+- T7.6: monitorización lista. `GET /metrics` (Prometheus) y `GET /api/health/deep`
+  requieren cabecera `X-Metrics-Token: $METRICS_TOKEN` (404 si no está
+  configurado). Métricas: peticiones de chat por resultado, rechazos, failovers,
+  histograma de primer token y mensajes de contacto. Alertas recomendadas con
+  Uptime Kuma: caída >5 min, **ambos proveedores caídos**, índice sin actualizar
+  >8 días, certificado a <14 días y disco >85 %.
 - T7.7: `deploy/backup.sh` + restauración: copia `.env`, `feedback.db`, outbox y
   manifiesto; el índice Chroma NO se copia (se reconstruye con la ingesta).
   Simulacro de restauración pendiente en el nodo.

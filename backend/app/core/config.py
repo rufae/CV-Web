@@ -55,6 +55,7 @@ class Settings(BaseSettings):
     smtp_timeout_s: float = 10.0
     turnstile_enabled: bool = False
     turnstile_secret: str = ""
+    metrics_token: str = ""
 
     # RAG (F3)
     vault_path: str = ""

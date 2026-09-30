@@ -111,6 +111,7 @@ def create_app() -> FastAPI:
 
         prompt_builder = PromptBuilder()
         embedder: OllamaEmbedder | None = None
+        store: ChromaStore | None = None
         retriever: ChatRetriever | None = None
         if settings.app_env == "test":
             from app.testing import TestRetriever
@@ -135,6 +136,8 @@ def create_app() -> FastAPI:
 
         app.state.prompt_builder = prompt_builder
         app.state.retriever = retriever
+        app.state.embedder = embedder
+        app.state.store = store
 
         app.state.chat_limiter = SlidingWindowLimiter(parse_limits(settings.rate_limit_chat))
         app.state.contact_limiter = SlidingWindowLimiter(parse_limits(settings.rate_limit_contact))

@@ -16,6 +16,7 @@ from collections.abc import AsyncGenerator, Callable
 from contextlib import suppress
 from dataclasses import dataclass
 
+from app.core.metrics import LLM_FAILOVERS
 from app.llm.base import LLMProvider, Message, Token
 from app.llm.errors import (
     FirstTokenTimeout,
@@ -175,6 +176,7 @@ class LLMRouter:
             if isinstance(outcome, LLMError):
                 last_error = outcome
                 self._failovers += 1
+                LLM_FAILOVERS.inc()
                 continue
             first_token, stream = outcome
             return provider, self._chain_first(first_token, stream)

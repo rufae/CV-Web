@@ -17,6 +17,7 @@ from fastapi import HTTPException
 
 from app.core.config import Settings
 from app.core.mailer import Mailer, SmtpMailer
+from app.core.metrics import CONTACT_MESSAGES
 from app.features.contact.outbox import ContactOutbox
 from app.features.contact.schemas import ContactForm
 
@@ -84,6 +85,7 @@ class ContactService:
         try:
             await self._mailer.send(self._build_message(name=name, email=email, message=message))
         except Exception:
+            CONTACT_MESSAGES.labels("queued").inc()
             logger.error("contact_delivery_failed", extra={"outbox_id": outbox_id})
             if outbox_id is None:
                 self._outbox.add(
@@ -97,6 +99,7 @@ class ContactService:
                 self._outbox.mark_failed(outbox_id)
             return False
 
+        CONTACT_MESSAGES.labels("sent").inc()
         if outbox_id is not None:
             self._outbox.mark_sent(outbox_id)
         return True

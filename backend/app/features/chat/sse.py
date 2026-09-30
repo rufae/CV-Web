@@ -12,6 +12,7 @@ import time
 from collections.abc import AsyncGenerator
 from typing import Literal
 
+from app.core.metrics import CHAT_FIRST_TOKEN, CHAT_REFUSALS, CHAT_REQUESTS
 from app.features.chat.events import (
     DoneEvent,
     ErrorCode,
@@ -51,6 +52,8 @@ async def refusal_stream(
     message: str,
 ) -> AsyncGenerator[str, None]:
     yield sse("meta", MetaEvent(message_id=message_id, prompt_version=prompt_version, tier=tier))
+    CHAT_REQUESTS.labels("refused").inc()
+    CHAT_REFUSALS.labels(reason).inc()
     yield sse("refusal", RefusalEvent(reason=reason, message=message))
     yield sse("done", DoneEvent(total_ms=0.0))
 
@@ -85,12 +88,14 @@ async def routed_stream(
 
             decision = guard.feed(token.text)
             if decision.blocked:
+                CHAT_REQUESTS.labels("blocked").inc()
                 logger.warning("output_blocked", extra={"outcome": "output_blocked"})
                 yield sse("error", ErrorEvent(code="output_blocked", message=_BLOCKED_MESSAGE))
                 return
             if decision.text:
                 yield sse("token", TokenEvent(t=decision.text))
     except LLMError as exc:
+        CHAT_REQUESTS.labels("error").inc()
         yield sse(
             "error",
             ErrorEvent(
@@ -105,12 +110,16 @@ async def routed_stream(
     if guard is not None:
         final = guard.flush()
         if final.blocked:
+            CHAT_REQUESTS.labels("blocked").inc()
             logger.warning("output_blocked", extra={"outcome": "output_blocked"})
             yield sse("error", ErrorEvent(code="output_blocked", message=_BLOCKED_MESSAGE))
             return
         if final.text:
             yield sse("token", TokenEvent(t=final.text))
 
+    CHAT_REQUESTS.labels("done").inc()
+    if routed.meta.first_token_ms is not None:
+        CHAT_FIRST_TOKEN.observe(routed.meta.first_token_ms / 1000)
     yield sse(
         "done",
         DoneEvent(

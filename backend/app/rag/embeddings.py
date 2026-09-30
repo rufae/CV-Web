@@ -39,6 +39,17 @@ class OllamaEmbedder:
         if self._owns_client:
             await self._client.aclose()
 
+    async def health(self) -> bool:
+        """Comprueba que el servicio responde y el modelo está disponible."""
+        try:
+            response = await self._client.get("/api/tags")
+            response.raise_for_status()
+            payload = response.json()
+        except (httpx.HTTPError, ValueError):
+            return False
+        names = [str(item.get("name", "")) for item in payload.get("models", [])]
+        return any(name == self._model or name.startswith(f"{self._model}:") for name in names)
+
     async def embed(self, texts: list[str]) -> list[list[float]]:
         vectors: list[list[float]] = []
         for start in range(0, len(texts), self._batch_size):

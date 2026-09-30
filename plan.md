@@ -722,7 +722,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `ci(deploy): public exposure via <opción elegida> with TLS and edge limits`
 - **Cierre 2026-09-30 (propuesta):** `docs/adr/0005-public-exposure.md` con la comparativa y recomendación condicionada: Caddy + dominio + puertos si no hay CGNAT; Cloudflare Tunnel (o VPS proxy + Tailscale) si lo hay. Requisitos comunes documentados (Ollama solo por Tailscale, SSE sin buffering, escaneo externo). **Decisión final pendiente del usuario**; el commit de aplicación de la opción elegida queda para la sesión de despliegue.
 
-### T7.6 · Monitorización y alertas `[ ]` · M
+### T7.6 · Monitorización y alertas `[x]` · M
 - **Ficheros:** `app/features/health/router.py`, `app/core/metrics.py`, `deploy/uptime/*`, `docs/runbook.md`.
 - **Pasos:**
   1. `/api/health` (liveness pública) y `/api/health/deep` (protegida con `METRICS_TOKEN`: Chroma abre, embeddings alcanzables, tier activo, antigüedad del índice).
@@ -732,6 +732,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
   5. Rotación de logs (journald) y retención acotada.
 - **Aceptación:** apagar la torre genera una métrica/alerta informativa; matar el servicio dispara la alerta de caída; ningún log contiene mensajes de usuarios.
 - **Commit:** `feat(observability): metrics, deep health check and alerting`
+- **Cierre 2026-09-30:** `app/core/metrics.py` con métricas Prometheus (peticiones de chat por resultado, rechazos por motivo, **failovers**, histograma de primer token, contacto sent/queued) instrumentadas en SSE, router y servicio de contacto; `GET /metrics` y `GET /api/health/deep` protegidos con `X-Metrics-Token` ($METRICS_TOKEN; 404 si está deshabilitado, 401 si el token no cuadra) — el deep health devuelve estado LLM, proveedores, `embed_ok` e `index_age_hours`. Runbook con guía de Uptime Kuma y umbrales de alerta (caída, ambos proveedores, índice >8 días, cert <14 días, disco >85 %). Evidencia: `test_metrics.py` (3 integración) — 171/171 y mypy en 84 ficheros. El despliegue del monitor (Uptime Kuma) queda para el nodo.
 
 ### T7.7 · Copias de seguridad y restauración `[ ]` · S
 - **Pasos:** respaldar `.env` (cifrado), `feedback.db`, outbox de contacto y `deploy/`; el índice Chroma **no** se respalda (se reconstruye desde el vault público): documentar el procedimiento y su duración; simulacro de restauración en una máquina limpia.

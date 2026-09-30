@@ -8,4 +8,5 @@ python-frontmatter
 chromadb
 numpy
 aiosmtplib
+prometheus-client
 pydantic[email]
