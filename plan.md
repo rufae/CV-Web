@@ -436,7 +436,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `feat(chat): define request schema and SSE event contract`
 - **Cierre 2026-09-30:** `ChatRequest` (`message` 1-500, `history` ≤12 turnos, `lang` es/en, `extra="forbid"`), `Turn` con rol `user|assistant` (rol `system` rechazado), tipos de evento SSE en `app/features/chat/events.py` (Apéndice B) y helper `sse()`; contrato documentado a mano en `docs/api.md` (incluye códigos de error y límites). El alias legacy `/ask` mantiene JSON hasta T5.7. Evidencia: `tests/unit/test_chat_schemas.py` (8 tests) — 88/88 y mypy estricto en 52 ficheros.
 
-### T4.2 · Rate limiting, tope de tamaño y presupuesto diario `[ ]` · M
+### T4.2 · Rate limiting, tope de tamaño y presupuesto diario `[x]` · M
 - **Contexto:** R1. Sin límites, cualquiera puede consumir cómputo de la torre/Dell.
 - **Ficheros:** `app/core/ratelimit.py`, `app/core/security.py`, `app/main.py`, `tests/unit/test_ratelimit.py`, `docs/adr/0002-single-worker-state.md`.
 - **Pasos:**
@@ -447,6 +447,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
   5. ADR-0002: el estado (limitador, salud de proveedores, semáforo) es **en memoria** ⇒ `uvicorn --workers 1`. Si algún día se escala, se migra a Redis.
 - **Aceptación:** la petición 11 en un minuto → 429 con `Retry-After`; una `X-Forwarded-For` falsificada desde un peer no confiable se ignora; un payload de 1 MB → 413 sin leerse entero; test del presupuesto diario.
 - **Commit:** `feat(security): add rate limiting, body size cap and daily chat budget`
+- **Cierre 2026-09-30:** `app/core/ratelimit.py` (ventana deslizante multi-límite `10/minute;60/hour`, `DailyBudget` por día UTC, excepciones propias) y `app/core/security.py` (`BodySizeLimitMiddleware` ASGI: mira `Content-Length` y corta el stream si no existe; `client_ip`). Cableado en `main.py`: handlers 429 con cuerpo `{"code":"rate_limited","retry_after_s":N}` y cabecera `Retry-After`, `{"code":"daily_budget_exhausted"}` y middleware de cuerpo (413 `payload_too_large`); límites aplicados a `/api/chat`, `/ask` y `/contact`. `Settings` gana `MAX_BODY_BYTES`, `RATE_LIMIT_*`, `DAILY_CHAT_BUDGET`, `TRUSTED_PROXY_IPS`; ADR-0002 (estado en memoria ⇒ `--workers 1`, ya en la unit systemd). Evidencia: `test_ratelimit.py` (8) + `test_api_limits.py` (3 integración: 429 con Retry-After, presupuesto diario, 413) — 99/99 y mypy estricto en 56 ficheros. La IP real depende de `--proxy-headers --forwarded-allow-ips` (en `deploy/cvweb.service`).
 
 ### T4.3 · Sanitización de entrada y detección heurística de inyección `[ ]` · M
 - **Contexto:** R3. La pregunta y el historial son texto no confiable.

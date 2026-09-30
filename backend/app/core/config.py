@@ -39,6 +39,15 @@ class Settings(BaseSettings):
     llm_first_token_timeout_s: float = 15.0
     llm_max_concurrency: int = 2
 
+    # Seguridad y límites (F4)
+    allowed_hosts: str = "*"
+    max_body_bytes: int = 16384
+    rate_limit_chat: str = "10/minute;60/hour"
+    rate_limit_contact: str = "3/hour"
+    rate_limit_feedback: str = "20/hour"
+    daily_chat_budget: int = 500
+    trusted_proxy_ips: str = "127.0.0.1"
+
     # RAG (F3)
     vault_path: str = ""
     public_vault_dir: str = "Public"

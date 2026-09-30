@@ -5,12 +5,21 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.core.config import get_settings
 from app.core.logging import setup_logging
+from app.core.ratelimit import (
+    DailyBudget,
+    DailyBudgetExceeded,
+    RateLimitExceeded,
+    SlidingWindowLimiter,
+    parse_limits,
+)
+from app.core.security import BodySizeLimitMiddleware
 from app.features.chat.router import router as chat_router
 from app.features.chat.service import ChatService
 from app.features.contact.router import router as contact_router
@@ -21,6 +30,19 @@ from app.llm.health import HealthMonitor, MonitorConfig
 from app.llm.router import LLMRouter
 
 logger = logging.getLogger("cvweb")
+
+
+async def _rate_limit_handler(_: Request, exc: Exception) -> JSONResponse:
+    retry_after = exc.retry_after_s if isinstance(exc, RateLimitExceeded) else 60
+    return JSONResponse(
+        status_code=429,
+        content={"code": "rate_limited", "retry_after_s": retry_after},
+        headers={"Retry-After": str(retry_after)},
+    )
+
+
+async def _daily_budget_handler(_: Request, __: Exception) -> JSONResponse:
+    return JSONResponse(status_code=429, content={"code": "daily_budget_exhausted"})
 
 
 def create_app() -> FastAPI:
@@ -57,6 +79,13 @@ def create_app() -> FastAPI:
         )
         await monitor.start()
 
+        app.state.chat_limiter = SlidingWindowLimiter(parse_limits(settings.rate_limit_chat))
+        app.state.contact_limiter = SlidingWindowLimiter(parse_limits(settings.rate_limit_contact))
+        app.state.feedback_limiter = SlidingWindowLimiter(
+            parse_limits(settings.rate_limit_feedback)
+        )
+        app.state.chat_budget = DailyBudget(settings.daily_chat_budget)
+
         app.state.chat_service = ChatService(settings, context)
         app.state.contact_service = ContactService(settings)
         app.state.health_monitor = monitor
@@ -84,6 +113,9 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.max_body_bytes)
+    app.add_exception_handler(RateLimitExceeded, _rate_limit_handler)
+    app.add_exception_handler(DailyBudgetExceeded, _daily_budget_handler)
 
     app.include_router(health_router)
     app.include_router(chat_router)
