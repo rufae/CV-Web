@@ -1,0 +1,73 @@
+name: backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - 'eval/**'
+      - 'scripts/**'
+      - '.github/workflows/backend.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'eval/**'
+      - 'scripts/**'
+  workflow_dispatch:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements*.lock
+      - name: Instalar dependencias
+        run: pip install -r requirements.lock -r requirements-dev.lock pip-audit
+      - name: Ruff
+        run: ruff check . ../eval ../scripts --config pyproject.toml
+      - name: Ruff format
+        run: ruff format --check . ../eval ../scripts --config pyproject.toml
+      - name: Mypy (strict)
+        run: mypy
+      - name: Tests con cobertura (gate 85%)
+        run: pytest --cov=app --cov-fail-under=85
+      - name: Auditoría de dependencias
+        # chromadb 1.5.9 es la última versión y sus advisories aún no tienen fix;
+        # se ignoran para que el job siga bloqueando vulnerabilidades nuevas.
+        run: >
+          pip-audit -r requirements.lock
+          --ignore-vuln PYSEC-2026-311
+          --ignore-vuln PYSEC-2026-3813
+          --ignore-vuln PYSEC-2026-3814
+          --ignore-vuln PYSEC-2026-3815
+
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements.lock
+      - name: Instalar dependencias
+        run: pip install -r backend/requirements.lock
+      - name: Evaluación de recuperación y rechazo (fixtures, sin inferencia)
+        run: python eval/run_eval.py --retrieval-only
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -46,6 +46,15 @@ python scripts/load_smoke.py --base-url http://127.0.0.1:8000 --users 20 --durat
 sustituye a una prueba de carga completa. Los p95 por tier se documentarán en
 `docs/resilience.md` (T7.8) al ejecutarla.
 
+## Vulnerabilidades de dependencias
+
+- `pip-audit` en CI bloquea vulnerabilidades nuevas. Se ignoran explícitamente
+  `PYSEC-2026-311`, `PYSEC-2026-3813`, `PYSEC-2026-3814` y `PYSEC-2026-3815`
+  (afectan a `chromadb` 1.5.9, que es la última versión publicada y aún no tiene
+  fix). Revisión en T7.10 (Renovate) y al actualizar Chroma.
+- `npm audit --omit=dev` sin vulnerabilidades; queda 1 alta **solo dev**
+  (`picomatch` vía `tailwindcss@3.4`) sin fix no-breaking (seguimiento T7.10).
+
 ## Límites conocidos
 
 - El umbral de recuperación solo gestiona fuera de dominio; las preguntas “en
