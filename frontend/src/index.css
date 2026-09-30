@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --foreground: #000000;
+    --card: #ffffff;
+    --card-foreground: #000000;
+    --primary: #000000;
+    --primary-foreground: #ffffff;
+    --accent: #1E90FF;
+    --accent-foreground: #ffffff;
+    --border: rgba(0, 0, 0, 0.1);
+    --input-background: #f3f3f5;
+    --switch-background: #cbced4;
+  }
+
+  .dark {
+    --background: #111111;
+    --foreground: #ffffff;
+    --card: #1a1a1a;
+    --card-foreground: #ffffff;
+    --primary: #ffffff;
+    --primary-foreground: #000000;
+    --accent: #1E90FF;
+    --accent-foreground: #ffffff;
+    --border: rgba(255, 255, 255, 0.1);
+    --input-background: rgba(255, 255, 255, 0.05);
+  }
+
+  body {
+    @apply bg-[var(--background)] text-[var(--foreground)];
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
+
+  * {
+    @apply border-[var(--border)];
+  }
+}
