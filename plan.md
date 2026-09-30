@@ -156,7 +156,7 @@ CV-Web/
 - **Commit:** `build(backend): add ruff, mypy, pytest and pin dependencies`
 - **Cierre 2026-09-30:** `pyproject.toml` con ruff (E/F/I/UP/B/SIM/RUF), `mypy --strict` sobre `app/` y `tests/`, pytest con `asyncio_mode=auto`; locks con hashes (`uv pip compile`, `requirements.lock` + `requirements-dev.lock`); `google-generativeai` eliminado; `.pre-commit-config.yaml` (ruff + hooks básicos; mypy en *stage* manual porque requiere el venv activo). Desviaciones: se creó `backend/app/__init__.py` vacío como placeholder hasta T1.3 y los módulos planos heredados (`main.py`, `ia.py`, `form_email.py`) se excluyen de ruff hasta que T1.3 los retire. Evidencia: `ruff check`/`format --check`, `mypy --strict` y `pytest` en verde en un venv limpio instalado desde los locks.
 
-### T1.3 · Reestructurar el backend (feature-first) `[ ]` · M
+### T1.3 · Reestructurar el backend (feature-first) `[x]` · M
 - **Contexto:** `main.py`, `ia.py`, `form_email.py` planos, con lectura de fichero a nivel de import y arranque condicionado a la clave (B1, R6).
 - **Ficheros:** `backend/app/**` (nuevo), se retiran `main.py`, `ia.py`, `form_email.py`.
 - **Pasos:**
@@ -167,6 +167,7 @@ CV-Web/
   5. `GET /api/health` (liveness) y desactivar `/docs` y `/openapi.json` si `APP_ENV=production` (B8).
 - **Aceptación:** `uvicorn app.main:app` arranca **desde cualquier directorio**; `/api/health` responde 200; `mypy` limpio; test de arranque en `tests/`.
 - **Commit:** `refactor(backend): adopt feature-first structure with typed settings`
+- **Cierre 2026-09-30:** `app/` feature-first (`core/config.py`, `features/{chat,contact,health}/`, `main.py` con `create_app()` y lifespan). Rutas canónicas `POST /api/chat` y `POST /api/contact` con alias temporales `/ask` y `/contact` (se retiran en T5.7). Config tipada con `pydantic-settings` y `env_file` absoluto (`backend/.env`), `RAFA_CONTEXT_PATH` (ADR-0006) con fallback de desarrollo a `backend/rafa_context.txt` ignorado por git. Validación en arranque: producción falla rápido, desarrollo avisa y deshabilita servicios (503). `GET /api/health`; `/docs`, `/redoc` y `/openapi.json` desactivados en producción. Eliminados `main.py`, `ia.py`, `form_email.py` y la exclusión de ruff. Evidencia: `uvicorn app.main:app --app-dir backend` desde `/tmp` arranca; health 200; `/ask`/`/api/chat` 503 sin claves; `APP_ENV=production` sin claves → `RuntimeError`; ruff/format/mypy (17 ficheros)/pytest (2) en verde.
 
 ### T1.4 · `.env.example` y configuración documentada `[ ]` · S
 - **Ficheros:** `backend/.env.example`, `frontend/.env.example`, `docs/architecture.md` (sección configuración).

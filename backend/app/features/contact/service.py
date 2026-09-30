@@ -1,39 +1,36 @@
-import os
-from dotenv import load_dotenv
+"""Servicio de contacto: envío del formulario por SMTP (Gmail)."""
+
 import smtplib
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, EmailStr
+from email.mime.text import MIMEText
 
-load_dotenv()  # carga variables .env automáticamente
+from fastapi import HTTPException
 
-send_email_endpoint = APIRouter()
+from app.core.config import Settings
+from app.features.contact.schemas import ContactForm
 
-class ContactForm(BaseModel):
-    name: str
-    email: EmailStr
-    message: str
 
-@send_email_endpoint.post("/contact")
-async def send_email(form: ContactForm):
-    try:
-        sender_email = os.getenv("EMAIL")  # tu email emisor real (por ejemplo Gmail)
-        receiver_email = os.getenv("EMAIL") # donde quieres recibir los mensajes
-        password = os.getenv("PASSWORD_APPLICATION")  # contraseña de aplicación desde .env
+class ContactService:
+    def __init__(self, settings: Settings) -> None:
+        self._settings = settings
 
-        if not password:
-            raise HTTPException(status_code=500, detail="No se encontró la contraseña en variables de entorno")
+    async def send(self, form: ContactForm) -> None:
+        if not self._settings.contact_enabled:
+            raise HTTPException(
+                status_code=503,
+                detail="El formulario de contacto no está disponible ahora mismo.",
+            )
+
+        sender_email = self._settings.email
+        password = self._settings.password_application
 
         message = MIMEMultipart("alternative")
         message["Subject"] = f"Nuevo mensaje de {form.name} CV Web"
         message["From"] = sender_email
-        message["To"] = receiver_email
+        message["To"] = sender_email
 
-        # Texto plano (fallback)
         text = f"Nombre: {form.name}\nEmail: {form.email}\nMensaje:\n{form.message}"
 
-        # HTML con estilo avanzado
         html = f"""
         <!DOCTYPE html>
         <html lang="es">
@@ -81,19 +78,15 @@ async def send_email(form: ContactForm):
         </html>
         """
 
-        # Adjuntar ambas versiones
-        part1 = MIMEText(text, "plain")
-        part2 = MIMEText(html, "html")
+        message.attach(MIMEText(text, "plain"))
+        message.attach(MIMEText(html, "html"))
 
-        message.attach(part1)
-        message.attach(part2)
-
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, password)
-            server.sendmail(sender_email, receiver_email, message.as_string())
-
-        return {"status": "Mensaje enviado correctamente"}
-
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error enviando email: {str(e)}")
+        try:
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+                server.login(sender_email, password)
+                server.sendmail(sender_email, sender_email, message.as_string())
+        except Exception as exc:
+            raise HTTPException(
+                status_code=500,
+                detail="No se pudo enviar el mensaje. Inténtalo de nuevo más tarde.",
+            ) from exc
