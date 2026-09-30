@@ -16,6 +16,14 @@ export class ApiError extends Error {
   }
 }
 
+export async function getJson<T>(path: string): Promise<T> {
+  const response = await fetch(`${API_URL}${path}`);
+  if (!response.ok) {
+    throw new ApiError(response.status, `http_${response.status}`);
+  }
+  return (await response.json()) as T;
+}
+
 export async function postJson<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(`${API_URL}${path}`, {
     method: 'POST',

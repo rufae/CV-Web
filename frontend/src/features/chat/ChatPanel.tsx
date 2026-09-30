@@ -1,11 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Bot, RotateCcw, X } from 'lucide-react';
 
 import { Button } from '@/shared/ui/button';
 
 import type { ChatMessage, ChatState } from './chatReducer';
+import { ChatStatus } from './ChatStatus';
 import { Composer } from './Composer';
 import { MessageList } from './MessageList';
+import { statusView } from './statusView';
+import { useApiStatus } from './useApiStatus';
+import { useFocusTrap } from './useFocusTrap';
 
 interface ChatPanelProps {
   state: ChatState;
@@ -36,11 +40,34 @@ export function ChatPanel({
     return () => window.removeEventListener('keydown', handleKey);
   }, [onClose]);
 
+  const panelRef = useRef<HTMLElement>(null);
+  const previousStatus = useRef(state.status);
+  const [announcement, setAnnouncement] = useState('');
+
+  useFocusTrap(panelRef, true);
+  const apiStatus = useApiStatus(true);
+  const view = statusView(state.status, state.retryAfter, apiStatus?.llm ?? null);
+
+  useEffect(() => {
+    const finished =
+      (previousStatus.current === 'streaming' || previousStatus.current === 'retrieving') &&
+      state.status === 'idle';
+    if (finished) {
+      const lastAssistant = [...state.messages]
+        .reverse()
+        .find((message) => message.role === 'assistant' && message.text !== '');
+      if (lastAssistant !== undefined) {
+        setAnnouncement(lastAssistant.text);
+      }
+    }
+    previousStatus.current = state.status;
+  }, [state.status, state.messages]);
   const showRetry = state.status === 'error' || state.status === 'rate_limited';
   const streaming = state.status === 'streaming' || state.status === 'retrieving';
 
   return (
     <section
+      ref={panelRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="chat-title"
@@ -82,17 +109,7 @@ export function ChatPanel({
         </div>
       </header>
 
-      {state.status === 'rate_limited' && (
-        <p className="bg-amber-500/10 px-4 py-2 text-sm text-amber-700 dark:text-amber-400">
-          Has alcanzado el límite de mensajes
-          {state.retryAfter > 0 ? `; prueba de nuevo en ${state.retryAfter} s` : ''}.
-        </p>
-      )}
-      {state.status === 'error' && (
-        <p className="bg-red-500/10 px-4 py-2 text-sm text-red-600">
-          El asistente no está disponible ahora mismo.
-        </p>
-      )}
+      <ChatStatus chat={state.status} retryAfter={state.retryAfter} llm={apiStatus?.llm ?? null} />
       {showRetry && (
         <div className="px-4 pt-2">
           <Button size="sm" variant="outline" onClick={() => void onRetry()}>
@@ -101,9 +118,17 @@ export function ChatPanel({
         </div>
       )}
 
-      <MessageList state={state} onFeedback={onFeedback} />
+      <p className="sr-only" aria-live="polite">
+        {announcement}
+      </p>
+
+      <MessageList
+        state={state}
+        onFeedback={onFeedback}
+        onSelectStarter={(text) => void onSend(text)}
+      />
       <Composer
-        disabled={state.status === 'rate_limited'}
+        disabled={view.composerBlocked}
         streaming={streaming}
         onSend={(text) => void onSend(text)}
         onStop={onStop}

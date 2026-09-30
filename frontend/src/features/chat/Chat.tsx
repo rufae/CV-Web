@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { sendFeedback } from '@/shared/api/client';
 
@@ -11,6 +11,14 @@ import { useChat } from './useChat';
 export default function Chat() {
   const { state, send, stop, retry, reset } = useChat();
   const [open, setOpen] = useState(false);
+  const wasOpen = useRef(false);
+
+  useEffect(() => {
+    if (wasOpen.current && !open) {
+      document.querySelector<HTMLButtonElement>('[data-chat-launcher]')?.focus();
+    }
+    wasOpen.current = open;
+  }, [open]);
 
   const handleFeedback = (message: ChatMessage, rating: 'up' | 'down') => {
     if (message.messageId === undefined) {

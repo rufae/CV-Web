@@ -587,11 +587,12 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Aceptación:** cada estado tiene componente y test; simulando cada `code` de error, el usuario ve un mensaje comprensible y una acción posible.
 - **Commit:** `feat(chat): prompt starters and graceful degradation states`
 
-### T5.6 · Accesibilidad del chat `[ ]` · M
+### T5.6 · Accesibilidad del chat `[x]` · M
 - **Ficheros:** componentes del chat, `frontend/e2e/a11y.spec.ts` (o test con `vitest-axe`).
 - **Pasos:** `role="dialog"` con `aria-modal` y `aria-labelledby`; trampa de foco y retorno al lanzador al cerrar; `Esc` cierra; región `aria-live="polite"` que anuncia la respuesta **al completarse** (no token a token); objetivos táctiles ≥ 44 px; respeto de `prefers-reduced-motion`; contraste AA; etiquetas explícitas en el compositor; navegación completa por teclado.
 - **Aceptación:** `axe` sin violaciones serias/críticas; prueba manual con lector de pantalla (NVDA/VoiceOver) documentada.
 - **Commit:** `feat(a11y): accessible chat dialog with focus management and live regions`
+- **Cierre 2026-09-30:** `useFocusTrap` (foco inicial en el panel, ciclo de Tab y retorno del foco al lanzador al cerrar), Esc cierra (ya), **anuncio `aria-live` solo al completarse la respuesta** (región `sr-only`; la lista pasa a `role=group` para no anunciar token a token), objetivos táctiles ≥44 px en acciones del mensaje y starters (compactos en ≥sm), `prefers-reduced-motion` respetado (typing indicator y glow del lanzador), contraste del mensaje del bot con `--card-foreground` y anillos de foco visibles. Evidencia: tests con `axe-core` + `jsdom` (lanzador y panel abierto) sin violaciones serias/críticas — 36/36; JS inicial 132,37 kB gzip y chunk del chat 7,31 kB. Prueba manual con lector de pantalla pendiente.
 
 ### T5.7 · Formulario de contacto y retirada de alias legados `[ ]` · S
 - **Ficheros:** `features/contact/*`, `app/features/*/router.py` (backend), `services/api.ts` (se elimina), `package.json`.

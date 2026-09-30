@@ -45,11 +45,11 @@ export function MessageBubble({ message, onFeedback }: MessageBubbleProps) {
           <div className="mt-2 flex items-center gap-1 text-muted-foreground">
             <button
               type="button"
-              onClick={copy}
+              onClick={() => void copy()}
               aria-label="Copiar respuesta"
-              className="rounded p-1 transition-colors hover:text-accent"
+              className="flex h-11 w-11 items-center justify-center rounded transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:h-7 sm:w-7"
             >
-              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             </button>
             {message.messageId !== undefined && message.refused !== true && (
               <>
@@ -57,17 +57,17 @@ export function MessageBubble({ message, onFeedback }: MessageBubbleProps) {
                   type="button"
                   onClick={() => onFeedback(message, 'up')}
                   aria-label="Respuesta útil"
-                  className="rounded p-1 transition-colors hover:text-accent"
+                  className="flex h-11 w-11 items-center justify-center rounded transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:h-7 sm:w-7"
                 >
-                  <ThumbsUp className="h-3.5 w-3.5" />
+                  <ThumbsUp className="h-4 w-4" />
                 </button>
                 <button
                   type="button"
                   onClick={() => onFeedback(message, 'down')}
                   aria-label="Respuesta no útil"
-                  className="rounded p-1 transition-colors hover:text-accent"
+                  className="flex h-11 w-11 items-center justify-center rounded transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:h-7 sm:w-7"
                 >
-                  <ThumbsDown className="h-3.5 w-3.5" />
+                  <ThumbsDown className="h-4 w-4" />
                 </button>
               </>
             )}

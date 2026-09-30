@@ -32,7 +32,7 @@
 
 .message-bot {
   background-color: hsl(var(--muted));
-  color: hsl(var(--muted-foreground));
+  color: hsl(var(--card-foreground));
   border-radius: 1rem 1rem 1rem 0.25rem;
   box-shadow: 0 2px 10px hsl(var(--foreground) / 0.05);
 }
@@ -74,5 +74,15 @@
   40% {
     transform: scale(1);
     opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .typing-indicator div {
+    animation: none;
+  }
+
+  .chat-window {
+    scroll-behavior: auto;
   }
 }
