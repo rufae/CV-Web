@@ -1,9 +1,25 @@
-"""Utilidades de seguridad HTTP: IP del cliente y tope de tamaño de cuerpo (T4.2)."""
+"""Utilidades de seguridad HTTP (T4.2/T4.8): IP, tope de cuerpo, cabeceras y request-id."""
 
 import json
+import uuid
 
 from fastapi import Request
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
+
+from app.core.logging import request_id_var
+
+SECURITY_HEADERS: dict[str, str] = {
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
+    "X-Frame-Options": "DENY",
+    "Content-Security-Policy": (
+        "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+        "img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; "
+        "base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+    ),
+}
+_NO_STORE_PATHS = {"/ask", "/contact"}
 
 
 def client_ip(request: Request) -> str:
@@ -83,3 +99,61 @@ class BodySizeLimitMiddleware:
         except _BodyTooLarge:
             if not started:
                 await _json_response(send, 413, {"code": "payload_too_large"})
+
+
+class SecurityHeadersMiddleware:
+    """Añade cabeceras de seguridad y `Cache-Control: no-store` a la API."""
+
+    def __init__(self, app: ASGIApp) -> None:
+        self._app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self._app(scope, receive, send)
+            return
+
+        path = str(scope.get("path", ""))
+        no_store = path.startswith("/api/") or path in _NO_STORE_PATHS
+
+        async def send_with_headers(message: Message) -> None:
+            if message["type"] == "http.response.start":
+                headers = list(message.get("headers", []))
+                present = {key.lower() for key, _ in headers}
+                extra = dict(SECURITY_HEADERS)
+                if no_store:
+                    extra["Cache-Control"] = "no-store"
+                for key, value in extra.items():
+                    encoded = key.lower().encode()
+                    if encoded not in present:
+                        headers.append((encoded, value.encode()))
+                message["headers"] = headers
+            await send(message)
+
+        await self._app(scope, receive, send_with_headers)
+
+
+class RequestIdMiddleware:
+    """Genera un `X-Request-ID` por petición y lo propaga a los logs."""
+
+    def __init__(self, app: ASGIApp) -> None:
+        self._app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self._app(scope, receive, send)
+            return
+
+        request_id = uuid.uuid4().hex[:16]
+        token = request_id_var.set(request_id)
+
+        async def send_with_id(message: Message) -> None:
+            if message["type"] == "http.response.start":
+                headers = list(message.get("headers", []))
+                headers.append((b"x-request-id", request_id.encode()))
+                message["headers"] = headers
+            await send(message)
+
+        try:
+            await self._app(scope, receive, send_with_id)
+        finally:
+            request_id_var.reset(token)

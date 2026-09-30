@@ -7,7 +7,10 @@ nunca con el contenido de las conversaciones.
 
 import json
 import logging
+from contextvars import ContextVar
 from typing import Any
+
+request_id_var: ContextVar[str] = ContextVar("request_id", default="")
 
 _EXTRA_FIELDS = (
     "provider",
@@ -32,6 +35,9 @@ class JsonFormatter(logging.Formatter):
             value = getattr(record, field, None)
             if value is not None:
                 payload[field] = value
+        request_id = request_id_var.get()
+        if request_id:
+            payload["request_id"] = request_id
         if record.exc_info:
             payload["exception"] = self.formatException(record.exc_info)
         return json.dumps(payload, ensure_ascii=False)

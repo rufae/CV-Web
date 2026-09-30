@@ -9,6 +9,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 
 from app.core.config import get_settings
 from app.core.logging import setup_logging
@@ -19,7 +21,11 @@ from app.core.ratelimit import (
     SlidingWindowLimiter,
     parse_limits,
 )
-from app.core.security import BodySizeLimitMiddleware
+from app.core.security import (
+    BodySizeLimitMiddleware,
+    RequestIdMiddleware,
+    SecurityHeadersMiddleware,
+)
 from app.features.chat.router import router as chat_router
 from app.features.chat.service import ChatService
 from app.features.contact.router import router as contact_router
@@ -47,6 +53,23 @@ async def _rate_limit_handler(_: Request, exc: Exception) -> JSONResponse:
 
 async def _daily_budget_handler(_: Request, __: Exception) -> JSONResponse:
     return JSONResponse(status_code=429, content={"code": "daily_budget_exhausted"})
+
+
+async def _http_exception_handler(_: Request, exc: Exception) -> JSONResponse:
+    if isinstance(exc, StarletteHTTPException):
+        if exc.status_code == 404:
+            return JSONResponse(status_code=404, content={"code": "not_found"})
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail},
+            headers=exc.headers,
+        )
+    return JSONResponse(status_code=500, content={"code": "internal"})
+
+
+async def _unhandled_exception_handler(_: Request, exc: Exception) -> JSONResponse:
+    logger.error("unhandled_error: %s", type(exc).__name__)
+    return JSONResponse(status_code=500, content={"code": "internal"})
 
 
 def create_app() -> FastAPI:
@@ -140,12 +163,19 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=settings.origins,
         allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
+        allow_methods=["GET", "POST"],
+        allow_headers=["Content-Type"],
     )
+    hosts = [host.strip() for host in settings.allowed_hosts.split(",") if host.strip()]
+    if hosts:
+        app.add_middleware(TrustedHostMiddleware, allowed_hosts=hosts)
+    app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(RequestIdMiddleware)
     app.add_middleware(BodySizeLimitMiddleware, max_bytes=settings.max_body_bytes)
     app.add_exception_handler(RateLimitExceeded, _rate_limit_handler)
     app.add_exception_handler(DailyBudgetExceeded, _daily_budget_handler)
+    app.add_exception_handler(StarletteHTTPException, _http_exception_handler)
+    app.add_exception_handler(Exception, _unhandled_exception_handler)
 
     app.include_router(health_router)
     app.include_router(chat_router)
