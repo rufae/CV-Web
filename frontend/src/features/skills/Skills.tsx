@@ -138,7 +138,12 @@ export const Skills: React.FC = () => {
                         </div>
 
                         <div className="relative">
-                          <Progress value={0} className="h-2" />
+                          <Progress
+                            value={0}
+                            aria-label={`${skill.name}: ${skill.level}%`}
+                            aria-valuetext={`${skill.level}%`}
+                            className="h-2"
+                          />
                           <motion.div
                             className={`absolute top-0 left-0 h-2 rounded-full ${getSkillLevelColor(skill.level)}`}
                             initial={{ width: 0 }}

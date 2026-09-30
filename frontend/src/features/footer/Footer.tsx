@@ -118,6 +118,7 @@ export const Footer: React.FC = () => {
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label={social.name}
                   className="p-2 bg-accent/10 text-muted-foreground hover:bg-accent hover:text-accent-foreground rounded-lg transition-colors"
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   whileTap={{ scale: 0.95 }}

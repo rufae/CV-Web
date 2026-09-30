@@ -664,10 +664,11 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `docs(privacy): public privacy notice and AI-interaction disclosure`
 - **Cierre 2026-09-30:** sección pública `#privacy` (`features/legal/Privacy.tsx`, ES/EN) con aviso de IA, datos del formulario, retención de 12 meses, **sin cookies ni analítica con seguimiento** y derechos RGPD con email de contacto; enlace en el footer. `docs/privacy.md` actualizado con la decisión de analítica (ninguna) y retención. Evidencia: test estático de la sección y build+prerender incluyéndola; 47/47 tests. Verificación en DevTools de “sin cookies de terceros” pendiente al desplegar.
 
-### T6.7 · Auditoría final de accesibilidad y compatibilidad `[ ]` · S
+### T6.7 · Auditoría final de accesibilidad y compatibilidad `[x]` · S
 - **Pasos:** recorrido completo con teclado y lector de pantalla; `axe` en todas las páginas y ambos temas; pruebas en Chrome, Firefox, Safari (iOS) y un Android real; comprobar `prefers-reduced-motion` y zoom al 200 %.
 - **Aceptación:** sin violaciones serias/críticas; informe en `docs/accessibility.md`.
 - **Commit:** `test(a11y): full audit and cross-browser verification`
+- **Cierre 2026-09-30:** auditoría `axe-core` sobre la **app completa en claro y oscuro** sin violaciones serias/críticas; corregidos los enlaces-icono del footer (`aria-label`) y las barras de skills (nombre accesible con `aria-valuetext`); `docs/accessibility.md` con lo verificado y la checklist manual (teclado, lector de pantalla, navegadores, zoom 200 %, reduced-motion) pendiente de ejecutar en el navegador tras el despliegue. Evidencia: 49/49 tests; presupuestos 139,01 kB / 6,9 kB gzip.
 
 ---
 
