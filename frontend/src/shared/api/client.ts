@@ -1,4 +1,4 @@
-import type { ContactPayload, ContactResponse } from './types';
+import type { ContactPayload, ContactResponse, FeedbackPayload } from './types';
 
 export const API_URL: string = import.meta.env.VITE_API_URL ?? '';
 
@@ -44,16 +44,10 @@ export async function postJson<T>(path: string, body: unknown): Promise<T> {
   return (await response.json()) as T;
 }
 
-export const askRafa = async (message: string): Promise<string> => {
-  try {
-    const data = await postJson<{ response: string }>('/ask', { message });
-    return data.response;
-  } catch (error) {
-    console.error('Error al consultar el backend:', error);
-    return 'Ocurrió un error al conectar con Rafael. Intenta de nuevo más tarde.';
-  }
-};
-
 export const sendContactForm = async (formData: ContactPayload): Promise<ContactResponse> => {
   return postJson<ContactResponse>('/contact', formData);
+};
+
+export const sendFeedback = async (payload: FeedbackPayload): Promise<void> => {
+  await postJson<{ status: string }>('/api/feedback', payload);
 };

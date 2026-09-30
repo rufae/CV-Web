@@ -1,5 +1,7 @@
 /** Tipos compartidos con el contrato de `docs/api.md`. */
 
+export const MAX_MESSAGE_CHARS = 500;
+
 export type Lang = 'es' | 'en';
 export type Tier = 'gpu' | 'cpu';
 

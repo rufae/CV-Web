@@ -1,19 +1,4 @@
-/* Estilos del widget de chat. Tokens en `src/index.css`. */
-
-.fixed.bottom-6.right-6 button:hover {
-  animation: bounce 0.6s ease;
-  box-shadow: 0 0 20px hsl(var(--accent));
-}
-
-@keyframes bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
-}
+/* Estilos del chat (se cargan con el chunk diferido del widget). */
 
 .chat-window {
   border-radius: 1rem;
@@ -25,7 +10,6 @@
   overflow: hidden;
 }
 
-/* Scrollbar personalizado para Webkit */
 .chat-messages::-webkit-scrollbar {
   width: 6px;
 }
@@ -39,13 +23,11 @@
   border-radius: 3px;
 }
 
-/* Mensajes usuario y bot */
 .message-user {
   background-color: hsl(var(--accent));
   color: hsl(var(--accent-foreground));
   border-radius: 1rem 1rem 0.25rem 1rem;
   box-shadow: 0 2px 10px hsl(var(--accent) / 0.4);
-  transition: background-color 0.3s ease;
 }
 
 .message-bot {
@@ -53,18 +35,8 @@
   color: hsl(var(--muted-foreground));
   border-radius: 1rem 1rem 1rem 0.25rem;
   box-shadow: 0 2px 10px hsl(var(--foreground) / 0.05);
-  transition: background-color 0.3s ease;
 }
 
-.message-user:hover {
-  background-color: hsl(var(--accent) / 0.85);
-}
-
-.message-bot:hover {
-  background-color: hsl(var(--muted) / 0.85);
-}
-
-/* Indicador de escritura */
 .typing-indicator {
   background-color: hsl(var(--muted));
   color: hsl(var(--muted-foreground));
@@ -103,10 +75,4 @@
     transform: scale(1);
     opacity: 1;
   }
-}
-
-/* Input del chat: texto y fondo legibles en ambos temas */
-input {
-  color: hsl(var(--foreground));
-  background-color: hsl(var(--input-background));
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import { ThemeContext } from './theme-context';
 import { Moon, Sun } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
@@ -10,7 +10,8 @@ import { Projects } from '@/features/projects/Projects';
 import { Skills } from '@/features/skills/Skills';
 import { Contact } from '@/features/contact/Contact';
 import { Footer } from '@/features/footer/Footer';
-import { ChatBot } from '@/features/chat/ChatBot';
+
+const Chat = lazy(() => import('@/features/chat/Chat'));
 
 function App() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -76,7 +77,9 @@ function App() {
         </main>
 
         <Footer />
-        <ChatBot />
+        <Suspense fallback={null}>
+          <Chat />
+        </Suspense>
         <Toaster />
       </div>
     </ThemeContext.Provider>

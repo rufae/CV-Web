@@ -567,7 +567,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `feat(chat): chat state machine with abort, retry and session persistence`
 - **Cierre 2026-09-30:** `chatReducer.ts` con estados `idle|retrieving|streaming|error|rate_limited|refused` y tests de todas las transiciones; `useChat.ts` con `send/stop/retry/reset`, `AbortController`, agrupación de tokens por `requestAnimationFrame` y recorte de historial a 12 entradas (`buildHistory`); `persistence.ts` con adaptador de `sessionStorage` (carga al abrir, guarda al cambiar, limpia con “Nueva conversación”, tolerante a JSON corrupto). Cada mensaje guarda `messageId`, `promptVersion`, `tier` y fuentes para el feedback. Evidencia: 11 tests nuevos (9 reducer + 2 persistencia) — 23/23 en frontend, lint y typecheck verdes.
 
-### T5.4 · UI del chat `[ ]` · L
+### T5.4 · UI del chat `[x]` · L
 - **Ficheros:** `features/chat/{ChatLauncher,ChatPanel,MessageList,MessageBubble,Composer,SourceChips}.tsx`, `features/chat/chat.css`.
 - **Pasos:**
   1. Lanzador flotante; en móvil, panel a pantalla completa (*bottom sheet*), en escritorio panel anclado.
@@ -579,6 +579,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
   7. El componente se carga con `React.lazy`: no cuenta en el JS inicial.
 - **Aceptación:** JS inicial ≤ 147 kB gzip (idealmente menor); chunk del chat con presupuesto documentado; pruebas manuales en 360, 390, 768 y 1280 px; el streaming se ve token a token.
 - **Commit:** `feat(chat): responsive chat widget with streaming and source citations`
+- **Cierre 2026-09-30:** componentes `ChatLauncher`, `ChatPanel`, `MessageList`, `MessageBubble`, `Composer` y `SourceChips` + `markdown.tsx` mínimo y seguro (negritas, listas, enlaces `http(s)` con `rel`, citas `[n]` y **sin HTML crudo**, con 5 tests vía `renderToStaticMarkup`). Panel a pantalla completa en móvil y 400×600 en escritorio, autoscroll inteligente (solo si el usuario está abajo), botón Detener, copiar, 👍/👎 conectados al feedback anónimo, aviso de transparencia de IA y `React.lazy` en `App`. Eliminado el antiguo `ChatBot` y `askRafa`. Métricas: **JS inicial 132,37 kB gzip (≤147)**; chunk diferido del chat 14,16 kB raw / **5,61 kB gzip** + CSS 0,49 kB. Evidencia: 28/28 tests, lint/typecheck/build verdes. Pruebas manuales en 360/390/768/1280 px pendientes.
 
 ### T5.5 · Prompt starters y estados de error `[ ]` · S
 - **Ficheros:** `features/chat/Starters.tsx`, `features/chat/ChatStatus.tsx`, `content/starters.ts`.
