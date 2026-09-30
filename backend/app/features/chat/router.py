@@ -18,7 +18,7 @@ from app.llm.errors import LLMError, QueueOverflow
 from app.llm.health import HealthMonitor
 from app.llm.router import LLMRouter
 from app.rag.prompts import REFUSAL_MESSAGE, PromptBuilder
-from app.rag.retriever import Retriever
+from app.rag.retriever import ChatRetriever
 
 router = APIRouter(tags=["chat"])
 
@@ -57,7 +57,7 @@ async def chat_sse(payload: ChatRequest, request: Request) -> StreamingResponse 
             )
         )
 
-    retriever: Retriever | None = request.app.state.retriever
+    retriever: ChatRetriever | None = request.app.state.retriever
     if retriever is None:
         return JSONResponse(
             status_code=503,

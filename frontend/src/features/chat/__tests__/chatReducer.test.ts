@@ -76,6 +76,16 @@ describe('chatReducer', () => {
     expect(state.status).toBe('idle');
   });
 
+  it('done tras refusal mantiene el aviso de rechazo', () => {
+    const state = reduce([
+      SEND,
+      { type: 'refusal', message: 'No dispongo de esa información', reason: 'no_context' },
+      { type: 'done', firstTokenMs: null, totalMs: 10 },
+    ]);
+
+    expect(state.status).toBe('refused');
+  });
+
   it('rate_limited guarda retry_after', () => {
     const error: ErrorData = {
       code: 'rate_limited',

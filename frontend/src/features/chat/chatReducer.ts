@@ -99,7 +99,7 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
       };
 
     case 'done':
-      return { ...state, status: 'idle' };
+      return { ...state, status: state.status === 'refused' ? 'refused' : 'idle' };
 
     case 'error': {
       const limited =

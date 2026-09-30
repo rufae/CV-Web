@@ -27,4 +27,7 @@ dist-ssr
 .env
 
 /src/components/guidelines/
-
+# Playwright / Lighthouse
+test-results/
+playwright-report/
+.lighthouseci/

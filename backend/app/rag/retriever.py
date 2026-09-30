@@ -18,6 +18,10 @@ DEFAULT_MIN_SCORE = 0.45
 DEFAULT_MAX_SOURCES = 4
 
 
+class ChatRetriever(Protocol):
+    async def retrieve(self, query: str) -> "Retrieval": ...
+
+
 class EmbedderLike(Protocol):
     async def embed(self, texts: list[str]) -> list[list[float]]: ...
 

@@ -20,7 +20,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    app_env: Literal["development", "production"] = "development"
+    app_env: Literal["development", "production", "test"] = "development"
     allowed_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     google_api_key: str = ""

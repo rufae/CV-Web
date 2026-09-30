@@ -7,6 +7,7 @@ ni siquiera se carga.
 
 import time
 from collections.abc import AsyncGenerator
+from typing import Any, cast
 
 from google import genai
 from google.genai import types
@@ -66,7 +67,7 @@ class GeminiProvider:
         try:
             stream = await self._client.aio.models.generate_content_stream(
                 model=self._model,
-                contents=contents,
+                contents=cast(Any, contents),
                 config=config,
             )
             async for chunk in stream:

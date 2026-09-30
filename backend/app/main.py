@@ -38,7 +38,7 @@ from app.llm.health import HealthMonitor, MonitorConfig
 from app.llm.router import LLMRouter
 from app.rag.embeddings import OllamaEmbedder
 from app.rag.prompts import PromptBuilder
-from app.rag.retriever import Retriever
+from app.rag.retriever import ChatRetriever, Retriever
 from app.rag.store import ChromaStore, StoreConfigMismatch
 
 logger = logging.getLogger("cvweb")
@@ -88,6 +88,10 @@ def create_app() -> FastAPI:
             logger.warning("%s (en desarrollo se deshabilitan los servicios afectados)", message)
 
         providers = build_providers(settings)
+        if settings.app_env == "test":
+            from app.testing import FakeProvider
+
+            providers = [FakeProvider(), *providers]
         if not providers:
             logger.warning("Sin proveedores LLM configurados; el chat responderá 503")
         monitor = HealthMonitor(
@@ -107,8 +111,12 @@ def create_app() -> FastAPI:
 
         prompt_builder = PromptBuilder()
         embedder: OllamaEmbedder | None = None
-        retriever: Retriever | None = None
-        if settings.embed_url:
+        retriever: ChatRetriever | None = None
+        if settings.app_env == "test":
+            from app.testing import TestRetriever
+
+            retriever = TestRetriever()
+        elif settings.embed_url:
             try:
                 store = ChromaStore(
                     settings.chroma_path,
