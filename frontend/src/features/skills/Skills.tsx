@@ -1,70 +1,59 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+
+import { FACTS } from '@/content/facts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { Progress } from '@/shared/ui/progress';
 import { Server, Brain, Settings, Layout, Download } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 
+const CATEGORY_STYLES = [
+  { icon: <Layout className="w-5 h-5" />, color: 'text-blue-500' },
+  { icon: <Server className="w-5 h-5" />, color: 'text-green-500' },
+  { icon: <Settings className="w-5 h-5" />, color: 'text-purple-500' },
+  { icon: <Brain className="w-5 h-5" />, color: 'text-orange-500' },
+];
+
+const SKILL_EMOJI: Record<string, string> = {
+  React: '⚛️',
+  Angular: '🅰️',
+  'HTML/CSS': '🌐',
+  JavaScript: '🟨',
+  TypeScript: '🔷',
+  'Tailwind CSS': '💨',
+  Java: '☕',
+  'Spring Boot': '🍃',
+  'Node.js': '🟢',
+  Python: '🐍',
+  'REST APIs': '🔗',
+  MySQL: '🗄️',
+  Git: '📝',
+  Docker: '🐳',
+  Networking: '🌐',
+  Linux: '🐧',
+  AWS: '☁️',
+  Figma: '🎨',
+  'Artificial Intelligence': '🤖',
+  'Machine Learning': '📊',
+  'React Native': '📱',
+  GraphQL: '📈',
+  Kubernetes: '⚙️',
+  TensorFlow: '🧠',
+};
+
 export const Skills: React.FC = () => {
-  const skillCategories = [
-    {
-      id: 1,
-      title: 'Frontend Development',
-      icon: <Layout className="w-5 h-5" />,
-      color: 'text-blue-500',
-      skills: [
-        { name: 'React', level: 90, icon: '⚛️' },
-        { name: 'Angular', level: 85, icon: '🅰️' },
-        { name: 'HTML/CSS', level: 95, icon: '🌐' },
-        { name: 'JavaScript', level: 90, icon: '🟨' },
-        { name: 'TypeScript', level: 85, icon: '🔷' },
-        { name: 'Tailwind CSS', level: 90, icon: '💨' },
-      ],
-    },
-    {
-      id: 2,
-      title: 'Backend Development',
-      icon: <Server className="w-5 h-5" />,
-      color: 'text-green-500',
-      skills: [
-        { name: 'Java', level: 90, icon: '☕' },
-        { name: 'Spring Boot', level: 85, icon: '🍃' },
-        { name: 'Node.js', level: 80, icon: '🟢' },
-        { name: 'Python', level: 75, icon: '🐍' },
-        { name: 'REST APIs', level: 90, icon: '🔗' },
-        { name: 'MySQL', level: 80, icon: '🗄️' },
-      ],
-    },
-    {
-      id: 3,
-      title: 'Tools & Technologies',
-      icon: <Settings className="w-5 h-5" />,
-      color: 'text-purple-500',
-      skills: [
-        { name: 'Git', level: 90, icon: '📝' },
-        { name: 'Docker', level: 70, icon: '🐳' },
-        { name: 'Networking', level: 75, icon: '🌐' },
-        { name: 'Linux', level: 70, icon: '🐧' },
-        { name: 'AWS', level: 60, icon: '☁️' },
-        { name: 'Figma', level: 75, icon: '🎨' },
-      ],
-    },
-    {
-      id: 4,
-      title: 'Learning & Emerging',
-      icon: <Brain className="w-5 h-5" />,
-      color: 'text-orange-500',
-      skills: [
-        { name: 'Artificial Intelligence', level: 60, icon: '🤖' },
-        { name: 'Machine Learning', level: 55, icon: '📊' },
-        { name: 'React Native', level: 70, icon: '📱' },
-        { name: 'GraphQL', level: 50, icon: '📈' },
-        { name: 'Kubernetes', level: 40, icon: '⚙️' },
-        { name: 'TensorFlow', level: 45, icon: '🧠' },
-      ],
-    },
-  ];
+  const skillCategories = FACTS.skills.map((category, index) => ({
+    id: index + 1,
+    title: category.title,
+    icon: CATEGORY_STYLES[index]?.icon ?? <Layout className="w-5 h-5" />,
+    color: CATEGORY_STYLES[index]?.color ?? 'text-accent',
+    skills: category.skills.map((skill) => ({
+      name: skill.name,
+      level: skill.level,
+      icon: SKILL_EMOJI[skill.name] ?? '',
+    })),
+  }));
 
   const getSkillLevelColor = (level: number) => {
     if (level >= 90) return 'bg-green-500';

@@ -1,72 +1,24 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+
+import { FACTS } from '@/content/facts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { Building2, Calendar, MapPin, Users, Code, Network } from 'lucide-react';
 
 export const Experience: React.FC = () => {
-  const experiences = [
-    {
-      id: 1,
-      title: 'Full Stack Developer',
-      company: 'AePTIC',
-      location: 'Seville, Spain',
-      period: 'June 2025 - Present',
-      type: 'Full-time',
-      description:
-        'Desarrollando aplicaciones web/android/ios completas utilizando tecnologías modernas. Trabajando tanto en frontend como backend, implementando APIs RESTful y colaborando en equipos ágiles.',
-      responsibilities: [
-        'Desarrollo backend/frontend con Django',
-        'Desarrollo backend con FastAPI',
-        'Implementación de APIs RESTful',
-        'Tareas de networking y configuración de servidores',
-        'Colaboración en equipos multidisciplinarios',
-        'Mantenimiento y optimización de aplicaciones',
-      ],
-      technologies: [
-        'Python',
-        'Django',
-        'Kotlin',
-        'Dart',
-        'Android Studio',
-        'Flutter',
-        'MySQL',
-        'PostgreSQL',
-        'Git',
-        'Docker',
-      ],
-      icon: <Building2 className="w-5 h-5" />,
-    },
-    {
-      id: 2,
-      title: 'Mobile App Developer',
-      company: 'AePTIC',
-      location: 'Seville, Spain',
-      period: 'March 2025 - June 2025',
-      type: 'Internship',
-      description:
-        'Prácticas profesionales como parte del programa CFGS DAM. Trabajé en proyectos reales bajo la supervisión de desarrolladores senior, aprendiendo buenas prácticas de desarrollo.',
-      responsibilities: [
-        'Desarrollo de una aplicación Android funcional y optimizada',
-        'Implementación del backend utilizando Node.js y Express',
-        'Ejecución de pruebas y depuración para garantizar la calidad de la aplicación',
-        'Redacción de documentación técnica del proyecto',
-        'Participación activa en la presentación final de la aplicación, destacando por la calidad de mi trabajo',
-      ],
-      technologies: [
-        'Python',
-        'Django',
-        'Kotlin',
-        'Dart',
-        'Android Studio',
-        'Flutter',
-        'MySQL',
-        'PostgreSQL',
-        'Git',
-      ],
-      icon: <Code className="w-5 h-5" />,
-    },
-  ];
+  const experiences = FACTS.experience.map((fact, index) => ({
+    id: index + 1,
+    title: fact.role,
+    company: fact.company,
+    location: fact.location,
+    period: fact.period,
+    type: fact.type,
+    description: fact.description,
+    responsibilities: fact.responsibilities,
+    technologies: fact.technologies,
+    icon: index === 0 ? <Building2 className="w-5 h-5" /> : <Code className="w-5 h-5" />,
+  }));
 
   return (
     <section id="experience" className="py-20 px-6 bg-muted/20">

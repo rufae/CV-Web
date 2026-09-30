@@ -1,5 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+
+import { FACTS } from '@/content/facts';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
@@ -18,42 +20,30 @@ interface Project {
   icon: React.ReactNode;
 }
 
+const PROJECT_IMAGES: Record<string, string> = {
+  Rafita: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=300&fit=crop',
+  'CV Web': 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=600&h=300&fit=crop',
+  'Infraestructura IA híbrida':
+    'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=300&fit=crop',
+};
+
+const PROJECT_ICONS: Record<string, React.ReactNode> = {
+  'AI/ML': <Brain className="w-5 h-5" />,
+  'Full Stack': <Globe className="w-5 h-5" />,
+  Infra: <Server className="w-5 h-5" />,
+};
+
 export const Projects: React.FC = () => {
-  const projects: Project[] = [
-    {
-      id: 1,
-      name: 'Rafita',
-      description:
-        'Asistente con RAG sobre mi Segundo Cerebro (Obsidian): recuperación semántica con bge-m3 y Chroma y generación con LLM local.',
-      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=300&fit=crop',
-      technologies: ['Python', 'RAG', 'Chroma', 'Ollama', 'bge-m3'],
-      githubUrl: 'https://github.com/rufae',
-      type: 'AI/ML',
-      icon: <Brain className="w-5 h-5" />,
-    },
-    {
-      id: 2,
-      name: 'CV Web',
-      description:
-        'Este portfolio: SPA en React con chatbot IA y formulario de contacto sobre una API FastAPI, con despliegue self-hosted.',
-      image: 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=600&h=300&fit=crop',
-      technologies: ['React', 'TypeScript', 'FastAPI', 'Python', 'Tailwind CSS'],
-      githubUrl: 'https://github.com/rufae/CV-Web',
-      type: 'Full Stack',
-      icon: <Globe className="w-5 h-5" />,
-    },
-    {
-      id: 3,
-      name: 'Infraestructura IA híbrida',
-      description:
-        'Laboratorio doméstico: nodo HP para aplicaciones, torre GPU y nodo Dell con Ollama para inferencia, unidos por Tailscale.',
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=300&fit=crop',
-      technologies: ['Linux', 'Ollama', 'Docker', 'Tailscale', 'Networking'],
-      githubUrl: 'https://github.com/rufae',
-      type: 'Infra',
-      icon: <Server className="w-5 h-5" />,
-    },
-  ];
+  const projects: Project[] = FACTS.projects.map((fact, index) => ({
+    id: index + 1,
+    name: fact.name,
+    description: fact.description,
+    image: PROJECT_IMAGES[fact.name] ?? PROJECT_IMAGES['CV Web'],
+    technologies: fact.technologies,
+    githubUrl: fact.url,
+    type: fact.type,
+    icon: PROJECT_ICONS[fact.type] ?? <Globe className="w-5 h-5" />,
+  }));
 
   const getTypeColor = (type: string) => {
     switch (type) {

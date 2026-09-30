@@ -616,7 +616,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 **Meta:** una web que cuenta lo mismo que el chat (R11), se indexa bien, va rápida y **enseña** la ingeniería de IA que hay detrás.
 **Esfuerzo total:** ~4 jornadas. (T6.2 y T6.3 pueden empezar en paralelo tras T5.1.)
 
-### T6.1 · Contenido real y fuente única de verdad `[ ]` · M
+### T6.1 · Contenido real y fuente única de verdad `[x]` · M
 - **Contexto:** R11. Si la web dice una cosa y el chat otra, se pierde credibilidad.
 - **Ficheros:** `frontend/src/content/*.ts`, `content/facts.json` (generado), `backend/scripts/ingest_public_vault.py` (exportación), `eval/check_consistency.py`, `docs/adr/0004-content-source.md`.
 - **Pasos:**
@@ -626,6 +626,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
   4. Retirar del código cualquier dato personal (teléfono, fecha de nacimiento).
 - **Aceptación:** una modificación en una nota pública se refleja en web y chat tras el siguiente build/ingesta; la prueba de consistencia falla si se altera un dato solo en un lado.
 - **Commit:** `feat(content): single source of truth for CV facts and consistency check`
+- **Cierre 2026-09-30:** nota canónica `Public/portfolio/facts.md` (frontmatter `facts` + cuerpo para RAG), exportador `backend/scripts/build_facts.py` → `frontend/src/content/facts.json` (tipado en `src/content/facts.ts`), verificación `eval/check_consistency.py` (stale/canarios/términos ausentes en el corpus) y `app/rag/facts.py` con 5 tests. Refactorizados Experience/Projects/Skills y la bio de About para leer de `FACTS` (sin arrays duplicados; sin datos personales). ADR-0004 documentado. Evidencia: 166/166 backend, 40/40 frontend, `check_consistency` ✓, build 133,07 kB gzip. Pendiente: regenerar desde el vault real cuando exista (`VAULT_PATH`).
 
 ### T6.2 · SEO técnico y datos estructurados `[ ]` · M
 - **Ficheros:** `index.html`, `public/{robots.txt,sitemap.xml,og-image.png}`, `scripts/prerender.mjs` (o `vite-react-ssg`), `features/seo/*`.

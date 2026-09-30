@@ -1,5 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+
+import { FACTS } from '@/content/facts';
 import { Card, CardContent } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Code2, Gamepad2, Brain, Coffee, Music, Trophy } from 'lucide-react';
@@ -61,14 +63,10 @@ export const About: React.FC = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
             >
               <h3 className="text-2xl">Rafael</h3>
-              <p className="text-accent">21 años • Full Stack Developer</p>
-              <p className="text-muted-foreground leading-relaxed">
-                Soy un desarrollador Full Stack de 21 años que ha estudiado CFGS en Desarrollo de
-                Aplicaciones Multiplataforma (DAM). Actualmente trabajo como desarrollador después
-                de haber terminado mis prácticas y conseguir un contrato. Me apasiona la
-                programación, la inteligencia artificial y el fútbol. Siempre estoy buscando nuevos
-                desafíos y oportunidades para crecer profesionalmente.
+              <p className="text-accent">
+                {FACTS.profile.role} • {FACTS.profile.location}
               </p>
+              <p className="text-muted-foreground leading-relaxed">{FACTS.profile.summary}</p>
             </motion.div>
           </motion.div>
 
