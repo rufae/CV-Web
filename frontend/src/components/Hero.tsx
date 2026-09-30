@@ -126,7 +126,7 @@ export const Hero: React.FC = () => {
               className="border-accent text-accent hover:bg-accent hover:text-accent-foreground min-w-[200px]"
               asChild
             >
-              <a href="/Curriculum vitae.pdf" download="Rafael_CV.pdf">
+              <a href="/curriculum-vitae.pdf" download="Rafael_CV.pdf">
                 <Download className="w-4 h-4 mr-2" />
                 Download CV
               </a>

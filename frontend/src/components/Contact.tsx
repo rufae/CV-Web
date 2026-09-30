@@ -74,7 +74,7 @@ export const Contact: React.FC = () => {
     {
       name: 'GitHub',
       icon: <Github className="w-5 h-5" />,
-      url: 'https://github.com/rafael',
+      url: 'https://github.com/rufae',
       color: 'hover:text-gray-600',
     },
     {

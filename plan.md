@@ -240,11 +240,12 @@ PASSWORD_APPLICATION=
 - **Commit:** `fix(ui): unify design tokens and repair Tailwind color mapping`
 - **Cierre 2026-09-30:** tokens unificados en `index.css` como canales HSL (`hsl(var(--x) / <alpha-value>)`); `tailwind.config.js` completado (background, foreground, card, popover, primary, secondary, muted, accent, destructive, border, input, input-background, ring); `global.css`/`chatbot.css` migrados a `hsl(var(--x))`; eliminado el CSS anidado y las directivas `@tailwind` duplicadas de `global.css` (el CSS baja de 63,65 a 32,09 kB) y deduplicado `chatbot.css`. Evidencia: build sin warnings PostCSS; en `dist` no hay `hsl(#`/`hsl(rgba`; `bg-accent/10` y `bg-muted/20` generan alpha válido; `.text-muted-foreground` y `.bg-secondary` presentes; `.text-destructive` verificado con probe temporal (hoy no hay ningún literal en el código); contraste AA del texto principal (21:1 / 18,76:1) y muted (5,62:1 / 7,68:1); lint/typecheck/test/build en verde. **Pendiente manual**: capturas de verificación visual claro/oscuro y móvil/escritorio (`npm run dev`), no realizables desde este entorno.
 
-### T1.7 · Corregir contenido placeholder y metadatos base `[ ]` · S
+### T1.7 · Corregir contenido placeholder y metadatos base `[x]` · S
 - **Ficheros:** `Projects.tsx`, `Contact.tsx:76`, `Footer.tsx:13`, `index.html`, `public/Curriculum vitae.pdf` → `curriculum-vitae.pdf`, `Hero.tsx`, `Skills.tsx`.
 - **Pasos:** GitHub → `github.com/rufae`; renombrar el PDF y actualizar enlaces (F6); `lang="es"`, título y `description`; retirar "Alojado en Vercel" (M6); dejar los proyectos como lista provisional real (se rehacen en T6.1).
 - **Aceptación:** no queda ningún enlace a `github.com/rafael`; el PDF descarga; `<html lang="es">`.
 - **Commit:** `fix(content): replace placeholder links and set document language`
+- **Cierre 2026-09-30:** GitHub corregido a `github.com/rufae` (Contact y Footer); `Projects.tsx` reescrito con lista provisional real (Rafita, CV Web, Infraestructura IA híbrida) y botón Demo condicional (sin URLs inventadas); PDF renombrado a `curriculum-vitae.pdf` y enlaces actualizados (Hero/Skills); `index.html` con `lang="es"`, título, `description` y favicon PNG; retirado "Alojado en Vercel" del Footer. Evidencia: `rg github.com/rafael` = 0; `dist/curriculum-vitae.pdf` presente; lint/typecheck/test/build en verde (JS 132,75 kB gzip). Pendiente: handle de Twitter (`twitter.com/rafael_dev`) por confirmar en T6.1 y capturas visuales manuales.
 
 ### T1.8 · Hardening mínimo previo a exponer `[ ]` · M
 - **Contexto:** R8. El nodo HP ya aloja ~14 contenedores; la web nueva no debe ampliar la superficie de ataque.

@@ -10,7 +10,7 @@ export const Footer: React.FC = () => {
     {
       name: 'GitHub',
       icon: <Github className="w-4 h-4" />,
-      url: 'https://github.com/rafael',
+      url: 'https://github.com/rufae',
     },
     {
       name: 'LinkedIn',
@@ -165,8 +165,8 @@ export const Footer: React.FC = () => {
           transition={{ duration: 0.6, delay: 0.5 }}
         >
           <p className="text-xs text-muted-foreground">
-            Construido con React, TypeScript, Tailwind CSS y Motion • Alojado en Vercel •
-            <span className="text-accent"> Siempre en evolución</span>
+            Construido con React, TypeScript, Tailwind CSS y Motion •{' '}
+            <span className="text-accent">Siempre en evolución</span>
           </p>
         </motion.div>
       </div>

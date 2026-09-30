@@ -4,45 +4,54 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { ImageWithFallback } from './figma/ImageWithFallback';
-import { Github, ExternalLink, Code, Smartphone, Globe } from 'lucide-react';
+import { Github, ExternalLink, Brain, Globe, Server } from 'lucide-react';
+
+interface Project {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+  technologies: string[];
+  githubUrl: string;
+  liveUrl?: string;
+  type: string;
+  icon: React.ReactNode;
+}
 
 export const Projects: React.FC = () => {
-  const projects = [
+  const projects: Project[] = [
     {
       id: 1,
-      name: 'Swapify',
+      name: 'Rafita',
       description:
-        'Plataforma de comercio electrónico completa con carrito de compras, sistema de pagos y panel de administración. Incluye autenticación de usuarios y gestión de inventario.',
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=300&fit=crop',
-      technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'Stripe', 'Tailwind CSS'],
-      githubUrl: 'https://github.com/rafael/ecommerce-platform',
-      liveUrl: 'https://ecommerce-demo.vercel.app',
+        'Asistente con RAG sobre mi Segundo Cerebro (Obsidian): recuperación semántica con bge-m3 y Chroma y generación con LLM local.',
+      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=300&fit=crop',
+      technologies: ['Python', 'RAG', 'Chroma', 'Ollama', 'bge-m3'],
+      githubUrl: 'https://github.com/rufae',
+      type: 'AI/ML',
+      icon: <Brain className="w-5 h-5" />,
+    },
+    {
+      id: 2,
+      name: 'CV Web',
+      description:
+        'Este portfolio: SPA en React con chatbot IA y formulario de contacto sobre una API FastAPI, con despliegue self-hosted.',
+      image: 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=600&h=300&fit=crop',
+      technologies: ['React', 'TypeScript', 'FastAPI', 'Python', 'Tailwind CSS'],
+      githubUrl: 'https://github.com/rufae/CV-Web',
       type: 'Full Stack',
       icon: <Globe className="w-5 h-5" />,
     },
     {
-      id: 2,
-      name: 'Powerzone',
-      description:
-        'Aplicación de gestión de tareas con funcionalidades de colaboración en tiempo real, notificaciones push y sincronización entre dispositivos.',
-      image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=600&h=300&fit=crop',
-      technologies: ['Angular', 'Java', 'Spring Boot', 'PostgreSQL', 'WebSocket', 'PWA'],
-      githubUrl: 'https://github.com/rafael/task-manager',
-      liveUrl: 'https://taskmanager-demo.netlify.app',
-      type: 'Full Stack',
-      icon: <Code className="w-5 h-5" />,
-    },
-    {
       id: 3,
-      name: 'CV Web',
+      name: 'Infraestructura IA híbrida',
       description:
-        'Aplicación móvil del clima con diseño responsive, geolocalización y pronósticos detallados. Incluye widgets personalizables y notificaciones.',
-      image: 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?w=600&h=300&fit=crop',
-      technologies: ['React Native', 'TypeScript', 'Weather API', 'AsyncStorage', 'Expo'],
-      githubUrl: 'https://github.com/rafael/weather-app',
-      liveUrl: 'https://expo.dev/@rafael/weather-app',
-      type: 'Full Stack',
-      icon: <Smartphone className="w-5 h-5" />,
+        'Laboratorio doméstico: nodo HP para aplicaciones, torre GPU y nodo Dell con Ollama para inferencia, unidos por Tailscale.',
+      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&h=300&fit=crop',
+      technologies: ['Linux', 'Ollama', 'Docker', 'Tailscale', 'Networking'],
+      githubUrl: 'https://github.com/rufae',
+      type: 'Infra',
+      icon: <Server className="w-5 h-5" />,
     },
   ];
 
@@ -52,7 +61,7 @@ export const Projects: React.FC = () => {
         return 'bg-accent text-accent-foreground';
       case 'AI/ML':
         return 'bg-purple-500 text-white';
-      case 'Mobile':
+      case 'Infra':
         return 'bg-green-500 text-white';
       default:
         return 'bg-secondary text-secondary-foreground';
@@ -103,10 +112,12 @@ export const Projects: React.FC = () => {
                         <Github className="w-4 h-4 mr-1" />
                         Code
                       </Button>
-                      <Button size="sm" onClick={() => window.open(project.liveUrl, '_blank')}>
-                        <ExternalLink className="w-4 h-4 mr-1" />
-                        Demo
-                      </Button>
+                      {project.liveUrl && (
+                        <Button size="sm" onClick={() => window.open(project.liveUrl, '_blank')}>
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          Demo
+                        </Button>
+                      )}
                     </div>
                   </div>
                   <div className="absolute top-4 left-4">
@@ -154,14 +165,16 @@ export const Projects: React.FC = () => {
                         <Github className="w-4 h-4 mr-1" />
                         View on GitHub
                       </Button>
-                      <Button
-                        size="sm"
-                        className="flex-1 bg-accent hover:bg-accent/90"
-                        onClick={() => window.open(project.liveUrl, '_blank')}
-                      >
-                        <ExternalLink className="w-4 h-4 mr-1" />
-                        Live Demo
-                      </Button>
+                      {project.liveUrl && (
+                        <Button
+                          size="sm"
+                          className="flex-1 bg-accent hover:bg-accent/90"
+                          onClick={() => window.open(project.liveUrl, '_blank')}
+                        >
+                          <ExternalLink className="w-4 h-4 mr-1" />
+                          Live Demo
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </CardContent>
