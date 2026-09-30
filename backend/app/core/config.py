@@ -46,6 +46,8 @@ class Settings(BaseSettings):
     embed_model: str = "bge-m3"
     chroma_path: str = "./data/chroma"
     data_path: str = "./data"
+    rag_top_k: int = 5
+    rag_min_score: float = 0.45
 
     email: str = ""
     password_application: str = ""

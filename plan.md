@@ -361,11 +361,12 @@ PASSWORD_APPLICATION=
 - **Commit:** `feat(rag): incremental idempotent ingestion with atomic index swap`
 - **Cierre 2026-09-30:** `app/rag/pipeline.py` (`plan_ingest` con diff por hash; `run_ingest` incremental: `delete_source` + re-indexado solo de notas nuevas/cambiadas, borrado de despublicadas y manifiesto JSON en `DATA_PATH`; `--dry-run`); swap atómico en `ChromaStore.start_replacement()/commit_replacement()` con `modify(name=...)` (primera indexación y `--rebuild`). CLI completo (`--dry-run`, `--rebuild`, `--manifest`) y `deploy/ingest.service` + `ingest.timer` (diario, `Persistent=true`). Telemetría de Chroma desactivada. Evidencia: `tests/integration/test_ingest_pipeline.py` (alta + rerun idempotente sin cambios, despublicar elimina chunks, modificar reindexa, dry-run sin efectos y rebuild con swap) — 74/74 tests, mypy estricto en 46 ficheros. Desviación: la incremental se aplica sobre la colección activa sin vaciarla; el swap se reserva a rebuild. Pendiente en el nodo: timer contra el `VAULT_PATH` real.
 
-### T3.6 · Recuperador, umbral y rechazo temprano `[ ]` · M
+### T3.6 · Recuperador, umbral y rechazo temprano `[x]` · M
 - **Ficheros:** `app/rag/retriever.py`, `app/rag/prompts.py`, `tests/unit/test_retriever.py`.
 - **Pasos:** top-K con `RAG_MIN_SCORE`; reformulación ligera de la consulta con el historial corto (opcional); deduplicación por nota; **si nada supera el umbral no se llama al LLM** y se responde con un mensaje estándar de "no dispongo de esa información" (ahorra cómputo y elimina alucinación por construcción); devolver `sources` (título + sección, nunca ruta del fichero).
 - **Aceptación:** consulta fuera de dominio ("capital de Francia") → rechazo sin llamada al LLM (verificado con mock); consulta válida devuelve fuentes; umbral calibrado con el dataset de T3.7.
 - **Commit:** `feat(rag): threshold-based retrieval with early refusal and citations`
+- **Cierre 2026-09-30:** `app/rag/retriever.py` (`Retriever` con `top_k`, `min_score` y `max_sources`; filtro por umbral; deduplicación por nota conservando el mejor chunk; fuentes numeradas de solo `título + sección`; `Retrieval.is_empty` para que el llamante rechace **sin LLM**), `app/rag/prompts.py` con `REFUSAL_MESSAGE` y `Settings` gana `RAG_TOP_K`/`RAG_MIN_SCORE`. Evidencia: `tests/unit/test_retriever.py` (5 tests: fuentes, rechazo fuera de umbral sin fuentes, dedupe, límite/numeración y top_k) — 79/79 tests, mypy estricto en 49 ficheros. Desviación: la reformulación de consulta con historial se pospone a T4.5 (necesita el historial del chat).
 
 ### T3.7 · Dataset y evaluación automática `[ ]` · L
 - **Contexto:** es lo que convierte esto en demostración de ingeniería de IA y no en "un chatbot".
