@@ -449,7 +449,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `feat(security): add rate limiting, body size cap and daily chat budget`
 - **Cierre 2026-09-30:** `app/core/ratelimit.py` (ventana deslizante multi-límite `10/minute;60/hour`, `DailyBudget` por día UTC, excepciones propias) y `app/core/security.py` (`BodySizeLimitMiddleware` ASGI: mira `Content-Length` y corta el stream si no existe; `client_ip`). Cableado en `main.py`: handlers 429 con cuerpo `{"code":"rate_limited","retry_after_s":N}` y cabecera `Retry-After`, `{"code":"daily_budget_exhausted"}` y middleware de cuerpo (413 `payload_too_large`); límites aplicados a `/api/chat`, `/ask` y `/contact`. `Settings` gana `MAX_BODY_BYTES`, `RATE_LIMIT_*`, `DAILY_CHAT_BUDGET`, `TRUSTED_PROXY_IPS`; ADR-0002 (estado en memoria ⇒ `--workers 1`, ya en la unit systemd). Evidencia: `test_ratelimit.py` (8) + `test_api_limits.py` (3 integración: 429 con Retry-After, presupuesto diario, 413) — 99/99 y mypy estricto en 56 ficheros. La IP real depende de `--proxy-headers --forwarded-allow-ips` (en `deploy/cvweb.service`).
 
-### T4.3 · Sanitización de entrada y detección heurística de inyección `[ ]` · M
+### T4.3 · Sanitización de entrada y detección heurística de inyección `[x]` · M
 - **Contexto:** R3. La pregunta y el historial son texto no confiable.
 - **Ficheros:** `app/features/chat/sanitize.py`, `tests/unit/test_sanitize.py`, `eval/dataset.jsonl` (casos nuevos).
 - **Pasos:**
@@ -459,6 +459,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
   4. Detector heurístico ES/EN ("ignora las instrucciones", "system prompt", "actúa como", "modo desarrollador", delimitadores falsos…). **No bloquea por sí solo**: marca `injection_suspected` (log + refuerzo del recordatorio en el prompt). Solo bloquea con respuesta estándar ante extracción explícita de prompt o de datos personales.
 - **Aceptación:** 30+ payloads (invisibles, homoglifos, delimitadores falsos) quedan normalizados; las preguntas legítimas del dataset (p. ej. "¿qué papel tuvo en el sistema de prompts de Rafita?") **no** se bloquean (medir falsos positivos, objetivo 0 en el dataset).
 - **Commit:** `feat(chat): sanitize input and flag prompt-injection attempts`
+- **Cierre 2026-09-30:** `app/features/chat/sanitize.py` (NFKC, fuera invisibles/de control, colapso de espacios, neutralización de delimitadores `<fuente…>`, 8 patrones de inyección ES/EN que marcan `injection_suspected` sin bloquear, y 2 de extracción explícita de prompt o datos personales que **bloquean**; historial saneado y sin autoridad). Dataset ampliado a 49 casos (3 inyecciones nuevas) y fixtures regeneradas; eval PASS. Evidencia: `tests/unit/test_sanitize.py` (10 tests: normalización, invisibles, delimitadores, `<div>` intacto, detección, cero falsos positivos en preguntas legítimas, bloqueo y saneado de historial) — 109/109 y mypy estricto en 58 ficheros.
 
 ### T4.4 · Prompt de sistema y ensamblado de contexto `[ ]` · M
 - **Ficheros:** `app/rag/prompts.py`, `app/features/chat/service.py` (ensamblado), `tests/unit/test_prompts.py`, `docs/adr/0003-prompt-hardening.md`.
