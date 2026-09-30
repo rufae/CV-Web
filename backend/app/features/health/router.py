@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter, Request
 
-from app.features.health.service import llm_status
+from app.features.health.service import LlmStatus, llm_status
 from app.llm.health import HealthMonitor
 
 router = APIRouter(tags=["health"])
@@ -14,6 +14,6 @@ async def health() -> dict[str, str]:
 
 
 @router.get("/api/status")
-async def status(request: Request) -> dict[str, str]:
+async def status(request: Request) -> LlmStatus:
     monitor: HealthMonitor = request.app.state.health_monitor
     return llm_status(monitor.statuses)

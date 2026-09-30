@@ -2,7 +2,9 @@
 # Instalación: copiar a /etc/caddy/Caddyfile.d/cvweb.caddy o incluirlo desde el Caddyfile principal.
 
 cv.tudominio.example {
-	encode zstd gzip
+	# SSE nunca se comprime (buffering/compresión rompen el streaming)
+	@not_sse not header Content-Type text/event-stream
+	encode @not_sse zstd gzip
 
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"

@@ -473,7 +473,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Aceptación:** test de snapshot del prompt; una nota con `</fuente>` incrustado no rompe la estructura; con el conjunto de inyección de T3.7 ejecutado contra el Dell real (manual), 0 fugas del prompt.
 - **Commit:** `feat(rag): hardened system prompt with delimited context and canary`
 
-### T4.5 · Endpoint `/api/chat` (SSE) `[ ]` · L
+### T4.5 · Endpoint `/api/chat` (SSE) `[x]` · L
 - **Contexto:** núcleo del producto. Une sanitización → retrieval → router → stream.
 - **Ficheros:** `app/features/chat/router.py`, `service.py`, `sse.py`, `tests/integration/test_chat_sse.py`, `deploy/Caddyfile`.
 - **Pasos:**
@@ -486,6 +486,7 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
   7. Caddy: `flush_interval -1` para `/api/chat` y excluir `text/event-stream` de `encode`.
 - **Aceptación:** test con `FakeProvider`: secuencia exacta de eventos; cancelar libera el semáforo; consulta fuera de dominio → `refusal` sin invocar al proveedor; `curl -N` a través de Caddy muestra tokens incrementales (no un bloque final).
 - **Commit:** `feat(chat): SSE chat endpoint wiring retrieval and LLM router`
+- **Cierre 2026-09-30:** `app/features/chat/sse.py` (`meta → sources → token* → done`, latido `: ping` cada 15 s, errores como evento `error` con `code` estable y `aclose()` en `finally`) y pipeline en `router.py`: sanitizar → recuperar → **refusal sin LLM** si no hay contexto → `PromptBuilder` → `LLMRouter.stream`; cola/proveedor caído responden 503 pre-stream con `Retry-After`. Alias `/ask` mantiene JSON legacy. Lifespan crea el retriever en solo lectura (Chroma + `bge-m3`) y el `PromptBuilder`, y cierra el embedder al apagar. Caddy: SSE excluido de `encode` y `flush_interval -1`. Evidencia: `tests/integration/test_chat_sse.py` (7 tests: happy path con orden de eventos, refusal sin LLM, bloqueo de inyección, error a mitad de stream, overflow 503, sin retriever 503, latido + cancelación que libera el semáforo) — 123/123 y mypy estricto en 61 ficheros. Nota: la generación real contra el Dell se valida en T4.10/T7.8.
 
 ### T4.6 · Filtro de salida (output guard) `[ ]` · M
 - **Contexto:** última barrera si el modelo desobedece o el contexto contiene algo que no debía.

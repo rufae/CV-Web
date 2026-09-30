@@ -28,6 +28,10 @@ from app.features.health.router import router as health_router
 from app.llm.factory import build_providers
 from app.llm.health import HealthMonitor, MonitorConfig
 from app.llm.router import LLMRouter
+from app.rag.embeddings import OllamaEmbedder
+from app.rag.prompts import PromptBuilder
+from app.rag.retriever import Retriever
+from app.rag.store import ChromaStore, StoreConfigMismatch
 
 logger = logging.getLogger("cvweb")
 
@@ -79,6 +83,29 @@ def create_app() -> FastAPI:
         )
         await monitor.start()
 
+        prompt_builder = PromptBuilder()
+        embedder: OllamaEmbedder | None = None
+        retriever: Retriever | None = None
+        if settings.embed_url:
+            try:
+                store = ChromaStore(
+                    settings.chroma_path,
+                    embed_model=settings.embed_model,
+                    read_only=True,
+                )
+                embedder = OllamaEmbedder(settings.embed_url, settings.embed_model)
+                retriever = Retriever(
+                    embedder,
+                    store,
+                    top_k=settings.rag_top_k,
+                    min_score=settings.rag_min_score,
+                )
+            except StoreConfigMismatch as exc:
+                logger.error("Índice incompatible; asistente deshabilitado: %s", exc)
+
+        app.state.prompt_builder = prompt_builder
+        app.state.retriever = retriever
+
         app.state.chat_limiter = SlidingWindowLimiter(parse_limits(settings.rate_limit_chat))
         app.state.contact_limiter = SlidingWindowLimiter(parse_limits(settings.rate_limit_contact))
         app.state.feedback_limiter = SlidingWindowLimiter(
@@ -96,6 +123,8 @@ def create_app() -> FastAPI:
             await monitor.stop()
             for provider in providers:
                 await provider.aclose()
+            if embedder is not None:
+                await embedder.aclose()
 
     app = FastAPI(
         title="CV Web API",
