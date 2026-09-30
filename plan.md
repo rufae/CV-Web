@@ -261,6 +261,7 @@ PASSWORD_APPLICATION=
 - **Pasos:** clonar en `/opt/cvweb/repo`, venv, `.env`, `npm ci && npm run build`, servicio systemd + Caddy (CVWEB.md §6.4-6.7); comprobar chat y formulario; actualizar el dominio/enlaces del CV y decidir el destino de Render/Vercel (apagar cuando el HP esté validado).
 - **Aceptación:** desde el móvil, fuera de tu red: la web carga, el chat responde, el formulario llega al correo, `/api/health` = 200, el servicio se recupera tras `systemctl kill` y tras reinicio del HP.
 - **Commit:** `ci(deploy): first self-hosted deployment on HP node`
+- **Parcial 2026-09-30 (decidido por el usuario: despliegue al final del proyecto):** parte de código completada — FastAPI monta `frontend/dist` con `StaticFiles(html=True)` tras los routers (solo si existe) y `deploy/deploy.sh` (pull, `pip install --require-hashes`, build, restart, healthcheck). Evidencia local (`uvicorn --app-dir` desde `/tmp`): `/` 200 con título correcto, asset JS 200, `curriculum-vitae.pdf` 200, `/api/health` 200 y `/ask` 503 sin claves; ruff/mypy/pytest en verde. **Pendiente al desplegar**: clon en `/opt/cvweb`, `.env` 600, systemd + Caddy, prueba desde móvil externo, recuperación tras `systemctl kill` y reboot, `caddy validate` y escaneo externo de puertos.
 
 ---
 

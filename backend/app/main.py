@@ -3,9 +3,11 @@
 import logging
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.core.config import get_settings
 from app.features.chat.router import router as chat_router
@@ -58,6 +60,11 @@ def create_app() -> FastAPI:
     app.include_router(health_router)
     app.include_router(chat_router)
     app.include_router(contact_router)
+
+    # Estáticos del frontend (monolito, Opción A). El mount va después de los routers.
+    dist = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+    if dist.is_dir():
+        app.mount("/", StaticFiles(directory=dist, html=True), name="static")
 
     return app
 
