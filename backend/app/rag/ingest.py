@@ -89,7 +89,7 @@ def clean_obsidian(content: str) -> str:
             return ""
         label = (alias or target.rsplit("/", 1)[-1]).strip()
         if section:
-            label = f"{label} › {section.strip()}"  # noqa: RUF001
+            label = f"{label} › {section.strip()}"
         return label
 
     content = _WIKILINK.sub(_replace_link, content)

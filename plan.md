@@ -340,11 +340,12 @@ PASSWORD_APPLICATION=
 - **Commit:** `feat(rag): add allow-list vault extraction with sensitive-data redaction`
 - **Cierre 2026-09-30:** `app/rag/ingest.py` aplica la doble puerta (`Public/` + `cv_public: true`), deny-list, limpieza Obsidian (wikilinks sin alias → solo el nombre de la nota, sin carpetas; embeds y `%%comentarios%%` fuera; callouts a texto), redacción (email, teléfono ES, DNI/NIE, IBAN y fecha de nacimiento), manifiesto determinista (`ruta → sha256`) y **solo lectura** sobre el vault. CLI `scripts/ingest_public_vault.py` (`--vault`, `--public-dir`, `--dry-run`, `--manifest`). `Settings` gana `VAULT_PATH` y `PUBLIC_VAULT_DIR`; añadida dependencia `python-frontmatter` con lock. Evidencia: vault fixture con canarios — `test_ingest_filter.py` (7 tests: no fugas, redacción, limpieza, manifiesto determinista y vault intacto), CLI en dry-run → 3 notas públicas y 5 redacciones; 50/50 tests, mypy estricto en 38 ficheros (ahora incluye `scripts/`).
 
-### T3.3 · Chunking consciente de Markdown `[ ]` · M
+### T3.3 · Chunking consciente de Markdown `[x]` · M
 - **Ficheros:** `app/rag/chunking.py`, `tests/unit/test_chunking.py`.
 - **Pasos:** dividir por encabezados; chunks de ~300-500 tokens con solape ~50; **prefijo de contexto** en cada chunk (`Título de nota › Sección`); metadatos (`source_id`, `title`, `section`, `tags`, `lang`, `updated`); ids deterministas (hash del contenido) para reindexado idempotente.
 - **Aceptación:** ningún chunk supera el límite ni corta una lista/bloque de código a la mitad; mismo input → mismos ids.
 - **Commit:** `feat(rag): markdown-aware chunking with deterministic ids`
+- **Cierre 2026-09-30:** `app/rag/chunking.py`: secciones por encabezados con pila, prefijo de contexto `Título › Sección` (el H1 igual al título se omite), bloques atómicos (listas y bloques de código no se parten), chunks de ~450 tokens con solape de 50, ids deterministas `sha256(source_id|contexto|texto)[:16]`, metadatos completos y `embedded_text`. Evidencia: `tests/unit/test_chunking.py` (8 tests: contexto/sección, límite de tokens, fence intacto, lista sin cortar, ids deterministas y únicos, metadatos, solape entre chunks consecutivos y contenido vacío) — 58/58 tests, mypy estricto en 40 ficheros. Nota: `›` añadido a `allowed-confusables` de ruff.
 
 ### T3.4 · Embeddings y almacén vectorial `[ ]` · M
 - **Contexto:** D4. Vectorización siempre en el Dell con `bge-m3`.
