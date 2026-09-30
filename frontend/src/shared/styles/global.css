@@ -112,3 +112,43 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* Foco visible coherente en ambos temas */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid hsl(var(--accent));
+  outline-offset: 2px;
+}
+
+/* Accesibilidad: menos movimiento si el usuario lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Hoja de impresión para el CV */
+@media print {
+  nav,
+  footer,
+  .fixed {
+    display: none !important;
+  }
+
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  section {
+    break-inside: avoid;
+    padding: 1rem 0 !important;
+  }
+}

@@ -601,12 +601,13 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `refactor(api): migrate contact form to /api/contact and drop legacy routes`
 - **Cierre 2026-09-30:** el formulario usa `POST /api/contact` con validación en cliente (`validation.ts` + 4 tests), honeypot oculto y errores tipados (rate limit con cuenta atrás, presupuesto diario, genérico). Retirados del backend los alias `/ask` y `/contact`, `ChatService` y el contexto inyectado (`RAFA_CONTEXT_PATH` eliminado de Settings/plantilla; ADR-0006 marcado como *superseded*); `python eval/…` no afectado. `rg "/ask"` sin resultados en `src`, `app` y tests. Backend 161/161 y frontend 40/40; JS inicial 132,76 kB gzip.
 
-### T5.8 · Pulido visual y responsive `[ ]` · M
+### T5.8 · Pulido visual y responsive `[x]` · M
 - 🏁 **Hito M3: chat completo en producción.**
 - **Ficheros:** secciones en `features/*`, `app/theme.tsx`, `shared/ui`.
 - **Pasos:** conmutador claro/oscuro persistente y respetando `prefers-color-scheme`; jerarquía tipográfica y espaciado coherentes; animaciones sutiles y desactivables; estados de foco visibles; navegación fija con anclas y resaltado de sección activa; hoja de estilos de impresión para el CV; revisión en móvil y escritorio con capturas comparadas.
 - **Aceptación:** ninguna sección con scroll horizontal en 360 px; conmutación de tema sin parpadeo; despliegue en el HP validado desde el móvil.
 - **Commit:** `feat(ui): visual polish, theme toggle and responsive refinements`
+- **Cierre 2026-09-30 — 🏁 M3 alcanzado (chat completo y web pulida):** `public/theme-init.js` aplica el tema antes del primer pintado (localStorage o `prefers-color-scheme`; sin parpadeo) y `App` fija `color-scheme`; navegación con *scrollspy* (`IntersectionObserver` + `aria-current`); hoja de impresión del CV; foco visible global; `prefers-reduced-motion` global; `overflow-x-hidden` en el layout. Métricas: JS inicial 132,93 kB gzip y chunk del chat 7,31 kB gzip. Evidencia: 40/40 tests, lint/typecheck/build en verde; `dist/theme-init.js` presente. Pendiente manual: revisión en 360/390/768/1280 px y validación desde móvil tras desplegar.
 
 ---
 
