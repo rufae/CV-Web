@@ -1,6 +1,7 @@
 # Secretos / entorno
 .env
 .env.*
+!.env.example
 
 # Sistema operativo
 .DS_Store

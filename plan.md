@@ -169,7 +169,7 @@ CV-Web/
 - **Commit:** `refactor(backend): adopt feature-first structure with typed settings`
 - **Cierre 2026-09-30:** `app/` feature-first (`core/config.py`, `features/{chat,contact,health}/`, `main.py` con `create_app()` y lifespan). Rutas canónicas `POST /api/chat` y `POST /api/contact` con alias temporales `/ask` y `/contact` (se retiran en T5.7). Config tipada con `pydantic-settings` y `env_file` absoluto (`backend/.env`), `RAFA_CONTEXT_PATH` (ADR-0006) con fallback de desarrollo a `backend/rafa_context.txt` ignorado por git. Validación en arranque: producción falla rápido, desarrollo avisa y deshabilita servicios (503). `GET /api/health`; `/docs`, `/redoc` y `/openapi.json` desactivados en producción. Eliminados `main.py`, `ia.py`, `form_email.py` y la exclusión de ruff. Evidencia: `uvicorn app.main:app --app-dir backend` desde `/tmp` arranca; health 200; `/ask`/`/api/chat` 503 sin claves; `APP_ENV=production` sin claves → `RuntimeError`; ruff/format/mypy (17 ficheros)/pytest (2) en verde.
 
-### T1.4 · `.env.example` y configuración documentada `[ ]` · S
+### T1.4 · `.env.example` y configuración documentada `[x]` · S
 - **Ficheros:** `backend/.env.example`, `frontend/.env.example`, `docs/architecture.md` (sección configuración).
 - **Pasos:** crear las plantillas con todas las claves (sin valores reales):
 
@@ -213,6 +213,7 @@ PASSWORD_APPLICATION=
   `frontend/.env.example`: `VITE_API_URL=` (vacío = same-origin).
 - **Aceptación:** la app arranca copiando `.env.example` → `.env` y rellenando; falla con mensaje claro si falta una variable obligatoria.
 - **Commit:** `docs(config): add env templates and configuration reference`
+- **Cierre 2026-09-30:** plantillas `backend/.env.example` (variables usadas hoy + reservadas F2-F7 claramente marcadas) y `frontend/.env.example`; `docs/architecture.md` con componentes, rutas y referencia de configuración. Añadidas a la plantilla `RAFA_CONTEXT_PATH` y `GEMINI_MODEL` (no figuraban en el listado del plan). Corregido el `.gitignore` raíz (`!.env.example`) para poder versionar las plantillas. Evidencia: plantilla copiada a `.env` con `APP_ENV=production` arranca (health 200, `/docs` 404) y sin `GOOGLE_API_KEY` falla con `RuntimeError` claro; `.env` de prueba eliminado.
 
 ### T1.5 · Andamiaje de calidad frontend y poda `[ ]` · M
 - **Contexto:** F4, F5, F2, F8, F11. 46 componentes `ui/` y ~25 dependencias sin uso.
