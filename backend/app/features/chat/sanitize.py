@@ -19,7 +19,8 @@ _WHITESPACE = re.compile(r"\s+")
 _DELIMITERS = re.compile(r"<\s*/?\s*fuentes?\b[^>]*>?", re.IGNORECASE)
 
 _INJECTION_PATTERNS: tuple[re.Pattern[str], ...] = (
-    re.compile(r"ignora (todas )?(las|tus) instrucciones", re.IGNORECASE),
+    re.compile(r"ignora (todas )?(las|tus) (instrucciones|reglas)", re.IGNORECASE),
+    re.compile(r"</?\s*fuentes?\b", re.IGNORECASE),
     re.compile(r"ignore (all )?(previous|prior|above) instructions", re.IGNORECASE),
     re.compile(r"(system|sistema) prompt", re.IGNORECASE),
     re.compile(
@@ -32,6 +33,11 @@ _INJECTION_PATTERNS: tuple[re.Pattern[str], ...] = (
         re.IGNORECASE,
     ),
     re.compile(r"modo (desarrollador|desarrollo|developer mode)", re.IGNORECASE),
+    re.compile(r"\bjailbreak\w*\b", re.IGNORECASE),
+    re.compile(
+        r"\byou are now\b.{0,40}\b(dan|jailbroken|unrestricted|developer mode)",
+        re.IGNORECASE | re.DOTALL,
+    ),
     re.compile(r"<\|[^|]*\|>"),
     re.compile(r"###\s*(system|instruction)", re.IGNORECASE),
 )

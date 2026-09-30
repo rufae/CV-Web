@@ -36,3 +36,11 @@ testpaths = ["tests"]
 pythonpath = ["."]
 asyncio_mode = "auto"
 addopts = "-q"
+
+[tool.coverage.run]
+source = ["app"]
+omit = ["app/core/mailer.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

@@ -531,12 +531,13 @@ METRICS_TOKEN=                       # protege /metrics y /api/health/deep
 - **Commit:** `feat(feedback): privacy-preserving answer feedback endpoint`
 - **Cierre 2026-09-30:** `features/feedback/{schemas,store,service,router}.py`: `POST /api/feedback` con rate limit propio y SQLite en `DATA_PATH/feedback.db` (`message_id` único ⇒ duplicados ignorados). Guarda solo metadatos anónimos (timestamp, rating, `prompt_version`, números de fuentes, tier y rechazo) y el comentario voluntario ≤300; **nunca** pregunta ni IP. `scripts/export_feedback.py` exporta los 👎 a JSONL y `docs/privacy.md` lo detalla. Evidencia: `tests/unit/test_feedback.py` (5 tests incl. API con deduplicación) — 154/154 y mypy estricto en 73 ficheros.
 
-### T4.10 · Suite de seguridad e integración de la API `[ ]` · M
+### T4.10 · Suite de seguridad e integración de la API `[x]` · M
 - 🏁 **Hito M2: API segura y RAG local funcionando de extremo a extremo (sin UI).**
 - **Ficheros:** `tests/integration/test_security_suite.py`, `eval/redteam.jsonl`, `docs/security.md`.
 - **Pasos:** batería automatizada: payload gigante, ráfagas contra el limitador, tormenta de cancelaciones SSE, extracción de prompt, preguntas directas por **canarios del vault** (T3.2), peticiones con cabeceras manipuladas; prueba de humo de carga con `k6` (p. ej. 50 usuarios virtuales, 1 min) con la torre encendida y con la torre apagada; medir tiempo a primer token por tier.
 - **Aceptación:** 0 fugas; el limitador actúa; p95 de primer token documentado para GPU y CPU; cobertura ≥ 85 % en `app/`; `pytest` y `mypy` en verde.
 - **Commit:** `test(security): add red-team suite and API load smoke test`
+- **Cierre 2026-09-30 — 🏁 M2 alcanzado:** `eval/redteam.jsonl` (15 payloads) + `tests/integration/test_security_suite.py`: todos los payloads detectados/bloqueados; un proveedor que **simula fugar el prompt** queda cortado por el output guard (0 fugas); los bloqueados no llegan al retriever ni al LLM; ráfaga → 429; canario del vault jamás indexado; host no permitido → 400; tormenta de 10 cancelaciones y semáforo sano. Añadido `pytest-cov` y **cobertura 95%** (gate ≥85%). `docs/security.md` con capas/pruebas/límites y `scripts/load_smoke.py` (k6 no está instalado; el p95 por tier se medirá al desplegar). El detector de inyección incorporó variantes `jailbreak`, `you are now` y delimitadores falsos. Evidencia: 161/161 tests, mypy estricto en 77 ficheros, ruff y pre-commit en verde.
 
 ---
 

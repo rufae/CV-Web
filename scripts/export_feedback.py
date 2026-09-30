@@ -27,9 +27,7 @@ def main() -> None:
         raise SystemExit(f"ERROR: no existe {db_path}")
 
     entries = FeedbackStore(db_path).downs()
-    lines = [
-        json.dumps(dataclasses.asdict(entry), ensure_ascii=False) for entry in entries
-    ]
+    lines = [json.dumps(dataclasses.asdict(entry), ensure_ascii=False) for entry in entries]
     text = "\n".join(lines)
 
     if args.output is not None:

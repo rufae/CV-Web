@@ -3,5 +3,6 @@ mypy
 pre-commit
 pytest
 pytest-asyncio
+pytest-cov
 respx
 ruff
