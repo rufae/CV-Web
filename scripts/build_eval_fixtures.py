@@ -63,7 +63,14 @@ def main() -> None:
             chunk_vectors = await embedder.embed(
                 [embedding_text(chunk, corpus_prefix=context_prefix) for chunk in chunks]
             )
-            query_vectors = await embedder.embed([str(case["question"]) for case in cases])
+            # Misma codificación simétrica que en runtime (`Retriever`):
+            # las preguntas llevan el prefijo de corpus, como los chunks.
+            query_vectors = await embedder.embed(
+                [
+                    f"{context_prefix} — {case['question']}" if context_prefix else str(case["question"])
+                    for case in cases
+                ]
+            )
         finally:
             await embedder.aclose()
         return chunk_vectors, query_vectors
