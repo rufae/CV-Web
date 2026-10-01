@@ -120,7 +120,7 @@ def test_happy_path_streams_meta_sources_tokens_done() -> None:
     assert names[-1] == "done"
     assert all(name == "token" for name in names[2:-1])
     assert "".join(data["t"] for name, data in events if name == "token") == "Hola mundo"
-    assert events[0][1]["prompt_version"] == "v1"
+    assert events[0][1]["prompt_version"] == "v2"
     assert events[0][1]["tier"] in {"gpu", "cpu"}
     assert events[-1][1]["first_token_ms"] is not None
 

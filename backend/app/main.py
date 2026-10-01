@@ -130,6 +130,7 @@ def create_app() -> FastAPI:
                     store,
                     top_k=settings.rag_top_k,
                     min_score=settings.rag_min_score,
+                    corpus_prefix=settings.rag_context_prefix,
                 )
             except StoreConfigMismatch as exc:
                 logger.error("Índice incompatible; asistente deshabilitado: %s", exc)

@@ -55,6 +55,16 @@ async def test_relevant_hits_are_returned_with_sources() -> None:
     assert store.calls[0][1] == 5
 
 
+async def test_query_uses_the_same_corpus_prefix_as_ingest() -> None:
+    embedder = FakeEmbedder()
+    store = FakeStore([_hit("a", 0.9)])
+    retriever = Retriever(embedder, store, min_score=0.5, corpus_prefix="Rafael Castaño")
+
+    await retriever.retrieve("¿dónde trabaja?")
+
+    assert embedder.queries == [["Rafael Castaño — ¿dónde trabaja?"]]
+
+
 async def test_below_threshold_refuses_without_sources() -> None:
     store = FakeStore([_hit("a", 0.2), _hit("b", 0.1)])
     retriever = Retriever(FakeEmbedder(), store, min_score=0.45)
@@ -82,7 +92,7 @@ async def test_context_includes_chunks_below_threshold_when_best_passes() -> Non
     assert len(result.sources) == 2
 
 
-async def test_hits_are_deduped_by_note_keeping_best() -> None:
+async def test_hits_keep_all_chunks_and_sources_dedupe_by_note() -> None:
     store = FakeStore(
         [
             _hit("a", 0.9, source_id="Public/nota.md"),
@@ -94,8 +104,8 @@ async def test_hits_are_deduped_by_note_keeping_best() -> None:
 
     result = await retriever.retrieve("pregunta")
 
-    assert [hit.id for hit in result.hits] == ["a", "c"]
-    assert len(result.sources) == 2
+    assert [hit.id for hit in result.hits] == ["a", "b", "c"]
+    assert [source.n for source in result.sources] == [1, 2]
 
 
 async def test_sources_are_limited_and_numbered() -> None:

@@ -133,7 +133,7 @@ async def chat_sse(payload: ChatRequest, request: Request) -> StreamingResponse 
     )
     guard = OutputGuard(
         canary=prompt.canary,
-        system_prompt=prompt.messages[0].content,
+        system_prompt=prompt.instructions,
         allowlist=tuple(
             item.strip() for item in settings.public_contact_allowlist.split(",") if item.strip()
         ),

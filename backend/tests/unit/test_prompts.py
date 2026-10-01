@@ -18,11 +18,16 @@ def _hit(
     title: str = "Experiencia",
     section: str = "AePTIC",
     text: str | None = None,
+    source_id: str | None = None,
 ) -> QueryHit:
     return QueryHit(
         id=hit_id,
         text=text or f"contenido de {hit_id}",
-        metadata={"source_id": f"Public/{hit_id}.md", "title": title, "section": section},
+        metadata={
+            "source_id": source_id or f"Public/{hit_id}.md",
+            "title": title,
+            "section": section,
+        },
         score=score,
     )
 
@@ -106,6 +111,37 @@ def test_context_budget_keeps_highest_scores_and_renumbers_sources() -> None:
     assert '<fuente id="2" titulo="B"' not in system
     assert [source.n for source in built.sources] == [1]
     assert built.sources[0].title == "A"
+
+
+def test_guard_instructions_do_not_include_public_sources() -> None:
+    builder = PromptBuilder(canary="canario-fijo")
+    built = builder.build(
+        question="pregunta",
+        history=[],
+        retrieval=_retrieval(_hit("a", 0.9, text="contenido publico de la nota")),
+    )
+
+    assert "contenido publico de la nota" in built.messages[0].content
+    assert "contenido publico de la nota" not in built.instructions
+    assert "canario-fijo" in built.instructions
+
+
+def test_chunks_from_the_same_note_share_source_number() -> None:
+    builder = PromptBuilder()
+    built = builder.build(
+        question="pregunta",
+        history=[],
+        retrieval=_retrieval(
+            _hit("a", 0.9, text="primer chunk", source_id="Public/nota.md"),
+            _hit("b", 0.85, text="segundo chunk", source_id="Public/nota.md"),
+            _hit("c", 0.8, title="Otra", source_id="Public/otra.md", text="otra nota"),
+        ),
+    )
+
+    system = built.messages[0].content
+    assert system.count('<fuente id="1"') == 2
+    assert system.count('<fuente id="2"') == 1
+    assert [source.n for source in built.sources] == [1, 2]
 
 
 def test_injection_suspected_adds_reminder() -> None:

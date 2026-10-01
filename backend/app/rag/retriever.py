@@ -2,9 +2,12 @@
 
 - Top-K en Chroma; si **ningún** resultado alcanza `RAG_MIN_SCORE`, el llamante
   debe rechazar **sin llamar al LLM** (ahorra cómputo y evita alucinaciones por
-  construcción). Si se decide responder, al LLM se le pasa el top-K completo
-  deduplicado (los chunks por debajo del umbral pueden ser el contexto útil).
-- Deduplicación por nota (se conserva el mejor chunk de cada fuente).
+  construcción). Si se decide responder, al LLM se le pasa el top-K completo.
+- La consulta se vectoriza con el mismo prefijo de corpus que los chunks
+  (codificación simétrica); sin él bge-m3 pierde ~0,1 de similitud y el umbral
+  rechazaría preguntas legítimas.
+- `hits` conserva **todos** los chunks (una nota larga puede necesitar varios
+  para responder); `sources` deduplica por nota y se limita a `max_sources`.
 - Las fuentes expuestas son `título + sección`, nunca rutas del vault.
 """
 
@@ -56,41 +59,46 @@ class Retriever:
         top_k: int = DEFAULT_TOP_K,
         min_score: float = DEFAULT_MIN_SCORE,
         max_sources: int = DEFAULT_MAX_SOURCES,
+        corpus_prefix: str = "",
     ) -> None:
         self._embedder = embedder
         self._store = store
         self._top_k = top_k
         self._min_score = min_score
         self._max_sources = max_sources
+        self._corpus_prefix = corpus_prefix
 
     async def retrieve(self, query: str) -> Retrieval:
-        vectors = await self._embedder.embed([query])
+        # Mismo prefijo que en la ingesta: sin esta simetría los scores de
+        # bge-m3 caen ~0,1 y el umbral rechaza preguntas legítimas.
+        text = f"{self._corpus_prefix} — {query}" if self._corpus_prefix else query
+        vectors = await self._embedder.embed([text])
         if not vectors:
             return Retrieval((), ())
 
         hits = self._store.query(vectors[0], top_k=self._top_k)
-        deduped = _dedupe_by_source(hits)
-        if not deduped or max(hit.score for hit in deduped) < self._min_score:
+        if not hits or max(hit.score for hit in hits) < self._min_score:
             return Retrieval((), ())
 
-        sources = tuple(
-            Source(
-                n=index + 1,
-                title=str(hit.metadata.get("title", "")),
-                section=str(hit.metadata.get("section", "")),
-            )
-            for index, hit in enumerate(deduped[: self._max_sources])
-        )
-        return Retrieval(hits=tuple(deduped), sources=sources)
+        return Retrieval(hits=tuple(hits), sources=_unique_sources(hits, self._max_sources))
 
 
-def _dedupe_by_source(hits: list[QueryHit]) -> list[QueryHit]:
+def _unique_sources(hits: list[QueryHit], max_sources: int) -> tuple[Source, ...]:
+    """Una entrada por nota (el mejor chunk de cada una ya viene primero)."""
     seen: set[str] = set()
-    deduped: list[QueryHit] = []
+    sources: list[Source] = []
     for hit in hits:
         source_id = str(hit.metadata.get("source_id", hit.id))
         if source_id in seen:
             continue
         seen.add(source_id)
-        deduped.append(hit)
-    return deduped
+        sources.append(
+            Source(
+                n=len(sources) + 1,
+                title=str(hit.metadata.get("title", "")),
+                section=str(hit.metadata.get("section", "")),
+            )
+        )
+        if len(sources) >= max_sources:
+            break
+    return tuple(sources)
