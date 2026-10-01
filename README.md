@@ -1,14 +1,14 @@
-# CV Web — portfolio con asistente de IA self-hosted
+# Rafita — portfolio con segundo cerebro de IA self-hosted
 
 [![backend](https://github.com/rufae/CV-Web/actions/workflows/backend.yml/badge.svg)](https://github.com/rufae/CV-Web/actions/workflows/backend.yml)
 [![frontend](https://github.com/rufae/CV-Web/actions/workflows/frontend.yml/badge.svg)](https://github.com/rufae/CV-Web/actions/workflows/frontend.yml)
 
-Portfolio personal (React + FastAPI) con **chatbot con RAG sobre un vault
-Obsidian público**, enrutado de LLM entre nodos propios (torre/Dell) y
-despliegue self-hosted en un nodo HP. El objetivo del proyecto es demostrar
-ingeniería de IA aplicada: recuperación con umbrales calibrados, guardarraíles
-contra inyección y fuga de datos, evaluación reproducible y operación con
-failover.
+Portfolio personal (React + FastAPI) cuyo asistente es **Rafita**, el segundo
+cerebro de Rafael: **RAG sobre un vault Obsidian público**, enrutado de LLM
+entre nodos propios (`gemma4:12b`: torre GPU → nodo Dell) y despliegue
+self-hosted en un nodo HP. El objetivo es demostrar ingeniería de IA aplicada:
+recuperación con umbrales calibrados, guardarraíles contra inyección y fuga de
+datos, evaluación reproducible y operación con failover.
 
 ## Qué demuestra
 
@@ -20,7 +20,7 @@ failover.
 - **Seguridad**: sanitización, prompt endurecido con canario, output guard
   (fuga de prompt/PII/URLs), rate limit, presupuesto diario, contacto con
   honeypot/Turnstile y outbox con reintentos.
-- **Evaluación**: dataset dorado (49 casos), `recall@5=1.000`,
+- **Evaluación**: dataset dorado (49 casos), `recall@5=0.983`,
   `refusal_recall=1.000`, 0 fugas (informe versionado en `eval/reports/`).
 - **Operación**: releases con rollback, métricas Prometheus, health profundo,
   backups, runbook y escenarios de caos documentados.
@@ -29,38 +29,59 @@ failover.
 
 ![Arquitectura](frontend/public/architecture.svg)
 
-Caddy (TLS, cabeceras, SSE sin buffering) → FastAPI en el nodo HP (estáticos +
-API + Chroma) → Ollama en la torre/Dell por Tailscale (LLM nunca expuesto).
+nginx-proxy-manager o Caddy (TLS, cabeceras, SSE sin buffering) → FastAPI en el
+nodo HP (estáticos + API + Chroma) → Ollama en la torre/Dell por Tailscale
+(LLM nunca expuesto).
 
 ## Quickstart local
 
+Los LLM viven en la tailnet (torre GPU y nodo Dell, ambos con
+`gemma4:12b`); los embeddings, en el Dell (`bge-m3`). Para una demo sin depender de la tailnet puedes apuntar
+`LLM_*`/`EMBED_*` a un Ollama local con los mismos modelos.
+
 ```bash
 # Backend
-cd backend && python3 -m venv venv && source venv/bin/activate
-pip install -r requirements.lock -r requirements-dev.lock
-cp .env.example .env            # rellena EMAIL, PASSWORD_APPLICATION, LLM_*, EMBED_*
-uvicorn app.main:app --port 8000
+cd backend
+python3 -m venv .venv && .venv/bin/pip install --require-hashes -r requirements.lock
+cp .env.example .env                 # revisa LLM_*, EMBED_* y VAULT_PATH
+.venv/bin/uvicorn app.main:app --port 8010
 
-# Ingesta del vault público (una vez)
-python scripts/ingest_public_vault.py --manifest ../data/ingest_manifest.json
+# Ingesta de la bóveda pública (una vez). El repo incluye una sembrada en
+# `deploy/public-vault/`; apunta VAULT_PATH a tu propia bóveda si la tienes:
+cp -r ../deploy/public-vault/Public ../vault/ 2>/dev/null || true
+.venv/bin/python scripts/ingest_public_vault.py --vault ../deploy/public-vault --rebuild
 
-# Frontend
-cd ../frontend && npm ci && npm run dev
+# Frontend (proxy /api → 127.0.0.1:8010 ya configurado)
+cd ../frontend && npm ci && npm run dev   # http://localhost:5173
 ```
 
-Tests: `cd backend && pytest` · `cd frontend && npm run test` ·
+Tests: `cd backend && .venv/bin/pytest` · `cd frontend && npm run test` ·
 E2E: `cd frontend && npm run test:e2e` · Evaluación:
 `python eval/run_eval.py --retrieval-only` · Consistencia:
 `python eval/check_consistency.py`.
 
+## Despliegue
+
+Docker multi-stage (frontend + backend en una imagen):
+
+```bash
+cp backend/.env.example .env         # secretos y configuración
+docker compose up -d --build         # http://127.0.0.1:8086
+```
+
+En el nodo HP, nginx-proxy-manager publica `http://cv-web.home/` → `8086`.
+Detalles y operación: [`docs/deployment-guide.md`](docs/deployment-guide.md).
+
 ## Estructura
 
 ```
-backend/   FastAPI (app/), tests/, scripts/ (ingesta, facts), locks reproducibles
-frontend/  React 19 + Vite 7 (features/, shared/, content/, e2e/)
-eval/      dataset.jsonl, redteam.jsonl, run_eval.py, check_consistency.py, reports/
-deploy/    systemd, Caddyfile, deploy.sh (releases+rollback), backup.sh
-docs/      architecture, runbook, security, evaluation, privacy, resilience, ADRs
+Dockerfile     imagen multi-stage (frontend + backend)
+compose.yaml   servicio cvweb en el nodo HP (8086)
+backend/       FastAPI (app/), tests/, scripts/ (ingesta, facts), locks reproducibles
+frontend/      React 19 + Vite 7 (features/, shared/, content/, e2e/)
+eval/          dataset.jsonl, redteam.jsonl, run_eval.py, check_consistency.py, reports/
+deploy/        systemd y Caddyfile (alternativa), deploy.sh (releases+rollback), backup.sh
+docs/          architecture, deployment-guide, runbook, security, evaluation, ADRs
 ```
 
 ## Documentación

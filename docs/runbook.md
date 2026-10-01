@@ -1,6 +1,10 @@
 # Runbook de CV Web
 
-> Operaciones del nodo HP. Releases/rollback y backups ya descritos; monitorización en T7.6.
+> **El despliegue actual del nodo HP es Docker** (`compose.yaml`,
+> `docker compose up -d --build`, `cv-web.home` → `127.0.0.1:8086`):
+> ver [`docs/deployment-guide.md`](deployment-guide.md).
+> Esta guía se conserva para la alternativa systemd + Caddy y las operaciones
+> de nodo (firewall, hardening, reindexado y backups).
 
 ## 1. Preparación del nodo (una vez)
 

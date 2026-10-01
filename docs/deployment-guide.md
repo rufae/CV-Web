@@ -1,149 +1,200 @@
-# Guía de despliegue en `nodochicohp` (lista para copiar)
+# Guía de despliegue de Rafita / CV Web
 
-> Preparada para el nodo HP en Tailscale (`100.121.77.29`). Sustituye
-> `cv.tudominio.example` por tu dominio real y rellena los valores de tus nodos.
-> Referencias: `docs/runbook.md`, `docs/adr/0005-public-exposure.md`.
+> Arquitectura real: el nodo **HP** (`nodochicohp`, Tailscale `<hp-tailscale>`)
+> sirve la web y la API en Docker; la inferencia vive en la **torre GPU**
+> (`rafael-server`, `<torre-tailscale>:11435`, RTX 3060) y en el **nodo Dell**
+> (`<dell-tailscale>:11434`) como respaldo, siempre por Tailscale.
+> Los embeddings (`bge-m3`) siempre se calculan en el Dell.
+> El proxy del HP es **nginx-proxy-manager**: `http://cv-web.home/` → `127.0.0.1:8086`.
 
-## 0. Prerrequisitos en el HP
+## 0. Servicios en la tailnet
 
-```bash
-sudo apt update && sudo apt install -y git python3-venv python3-pip curl
+| Nodo | Tailscale | Servicio | Modelo |
+|---|---|---|---|
+| Torre GPU (rafael-server) | `<torre-tailscale>:11435` | `rafita-ollama-gpu` (Docker, solo tailnet) | `gemma4:12b` |
+| Nodo Dell | `<dell-tailscale>:11434` | Ollama | `gemma4:12b` + `bge-m3:latest` |
+| Nodo HP | `<hp-tailscale>` | `cvweb_api` (Docker) + nginx-proxy-manager | — |
 
-# Node LTS (solo para el build; se usa una vez por despliegue)
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-sudo apt install -y nodejs
-node --version   # >= 20.19
+El router (`LLM_PROVIDERS_ORDER=tower,dell`) usa la torre mientras está
+encendida y sáltala sin coste cuando está apagada (health check + circuit
+breaker). Si la torre está apagada o tarda más de
+`LLM_FIRST_TOKEN_TIMEOUT_S`, la respuesta la genera el Dell (más lento).
 
-# Caddy (TLS automático)
-sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-sudo apt update && sudo apt install -y caddy
-```
-
-## 1. Usuario y estructura
-
-```bash
-sudo adduser --system --group --home /opt/cvweb --shell /usr/sbin/nologin cvweb
-sudo mkdir -p /opt/cvweb/{repo,releases,data}
-sudo chown -R cvweb:cvweb /opt/cvweb
-
-sudo -u cvweb git clone https://github.com/rufae/CV-Web.git /opt/cvweb/repo
-sudo -u cvweb python3 -m venv /opt/cvweb/venv
-sudo -u cvweb /opt/cvweb/venv/bin/pip install --require-hashes -r /opt/cvweb/repo/backend/requirements.lock
-```
-
-## 2. Secretos (`/opt/cvweb/.env`)
+## 1. Despliegue con Docker en el HP (el actual)
 
 ```bash
-sudo cp /opt/cvweb/repo/backend/.env.example /opt/cvweb/.env
-sudo chown cvweb:cvweb /opt/cvweb/.env && sudo chmod 600 /opt/cvweb/.env
-sudo -u cvweb nano /opt/cvweb/.env
+# Repo y datos
+cd /home/server/proyectos/CVWEB        # ruta actual en el nodo
+git pull
+
+# Secretos (una sola vez; luego solo se editan)
+cp backend/.env.example .env
+chmod 600 .env
+nano .env                              # EMAIL/PASSWORD_APPLICATION y METRICS_TOKEN
+
+# Build de la imagen completa (frontend + backend) y arranque
+docker compose up -d --build
+
+# Estado
+docker compose ps
+curl -s http://127.0.0.1:8086/api/status    # {"llm":"online","tier":"gpu"}
+curl -s http://127.0.0.1:8086/api/health    # {"status":"ok"}
 ```
 
-Valores mínimos (los LLM van por Tailscale; nunca a Internet):
+Valores del `.env` en el HP:
 
 ```dotenv
 APP_ENV=production
 ALLOWED_ORIGINS=
-ALLOWED_HOSTS=cv.tudominio.example,localhost
-
-# Proveedores (IPs Tailscale conocidas)
+ALLOWED_HOSTS=*
 LLM_PROVIDERS_ORDER=tower,dell
-LLM_TOWER_URL=http://100.83.40.103:11434     # nodo con bge-m3/LLMs (Dell)
-LLM_TOWER_MODEL=bge-m3:latest                # ajusta al modelo de generación
-LLM_DELL_URL=http://100.83.40.103:11434
-LLM_DELL_MODEL=qwen2.5:7b
-EMBED_URL=http://100.83.40.103:11434
+LLM_TOWER_URL=http://<torre-tailscale>:11435
+LLM_TOWER_MODEL=gemma4:12b
+LLM_DELL_URL=http://<dell-tailscale>:11434
+LLM_DELL_MODEL=gemma4:12b
+LLM_FIRST_TOKEN_TIMEOUT_S=30
+EMBED_URL=http://<dell-tailscale>:11434
 EMBED_MODEL=bge-m3:latest
-# Si tu torre GPU tiene otro modelo, ponla primero en el orden y su URL.
-
-VAULT_PATH=/opt/cvweb/vault                  # copia aquí tu carpeta Public/
-CHROMA_PATH=/opt/cvweb/data/chroma
-DATA_PATH=/opt/cvweb/data
+VAULT_PATH=/vault
+PUBLIC_VAULT_DIR=Public
+CHROMA_PATH=/data/chroma
+DATA_PATH=/data
+RAG_TOP_K=5
+RAG_MIN_SCORE=0.60
+RAG_CONTEXT_PREFIX=Rafael Castaño
 PUBLIC_CONTACT_ALLOWLIST=rafaelcastanoblanca1805@gmail.com
-
 EMAIL=rafaelcastanoblanca1805@gmail.com
-PASSWORD_APPLICATION=xxxx xxxx xxxx xxxx    # nueva contraseña de aplicación
+PASSWORD_APPLICATION=xxxx xxxx xxxx xxxx
 METRICS_TOKEN=<token-largo-aleatorio>
 ```
 
-## 3. Vault público e ingesta
+## 2. Bóveda pública e ingesta
+
+El contenedor monta `./vault` en `/vault` (solo lectura) y `./data` en `/data`
+(Chroma, feedback, outbox). Solo se indexan notas de `Public/` con
+`cv_public: true`.
+
+El repo incluye una **bóveda pública versionada** en `deploy/public-vault/Public`
+(bio, experiencia, proyectos, stack, formación con el máster y el TFM). Para
+sembrarla en el nodo:
 
 ```bash
-# Copia tu vault (o solo la carpeta Public/) al nodo
-sudo mkdir -p /opt/cvweb/vault && sudo chown -R cvweb:cvweb /opt/cvweb/vault
-# scp -r ./MiVault/Public cvweb@<hp>:/opt/cvweb/vault/
+mkdir -p vault/Public
+cp -r deploy/public-vault/Public/. vault/Public/     # añade o actualiza notas
+# Añade también tus propias notas Public/ con `cv_public: true` si quieres
 
-# Indexación inicial (usa el repo, antes del primer deploy)
-sudo -u cvweb bash -c 'cd /opt/cvweb/repo/backend && \
-  /opt/cvweb/venv/bin/python scripts/ingest_public_vault.py \
-  --manifest /opt/cvweb/data/ingest_manifest.json'
+# Indexación (dentro del contenedor en marcha)
+docker compose exec cvweb python scripts/ingest_public_vault.py --vault /vault --rebuild
 ```
 
-## 4. Servicios (systemd) y Caddy
+> La bóveda completa de Rafita (`../rafita/mi_boveda_obsidian`) **no** se
+> indexa: no tiene `Public/` ni notas `cv_public: true`. El asistente de la web
+> solo ve la carpeta pública curada.
+
+Reindexado diario opcional (cron del usuario `server`):
+
+```cron
+0 4 * * * cd /home/server/proyectos/CVWEB && docker compose exec -T cvweb python scripts/ingest_public_vault.py --vault /vault >/dev/null 2>&1
+```
+
+## 3. Proxy (nginx-proxy-manager)
+
+En NPM, el proxy host `cv-web.home` apunta a `127.0.0.1:8086`. Para que el
+streaming SSE no se bufferee, en **Advanced** del proxy host:
+
+```nginx
+proxy_buffering off;
+proxy_cache off;
+proxy_read_timeout 300s;
+```
+
+## 4. Verificación
 
 ```bash
-sudo cp /opt/cvweb/repo/deploy/cvweb.service /etc/systemd/system/cvweb.service
-sudo cp /opt/cvweb/repo/deploy/ingest.service /etc/systemd/system/ingest.service
-sudo cp /opt/cvweb/repo/deploy/ingest.timer /etc/systemd/system/ingest.timer
-sudo systemctl daemon-reload
-
-# Caddy: ajusta el dominio y copia el bloque
-sudo cp /opt/cvweb/repo/deploy/Caddyfile /etc/caddy/Caddyfile.d-cvweb
-# edítalo (dominio real) e inclúyelo desde /etc/caddy/Caddyfile: `import Caddyfile.d-cvweb`
-sudo caddy validate --config /etc/caddy/Caddyfile
-sudo systemctl reload caddy
+curl -sI http://cv-web.home/                      # 200
+curl -s  http://cv-web.home/api/status            # {"llm":"online","tier":"gpu"}
+# Chat en streaming (SSE):
+curl -sN -X POST http://cv-web.home/api/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"¿Qué proyectos de IA ha hecho Rafael?","lang":"es"}'
 ```
 
-## 5. Primer despliegue (releases + rollback)
+Prueba desde el móvil: web, chat (debe responder Rafita con fuentes),
+formulario, descarga del PDF y tema oscuro. Con la torre apagada, el chat debe
+seguir respondiendo vía Dell (más lento) sin errores.
+
+## 4-bis. Desplegar cambios sin commit (desde tu estación)
+
+Mientras trabajas en el rediseño sin subir a GitHub, puedes sincronizar el
+árbol de trabajo y reconstruir en el nodo con `rsync`:
 
 ```bash
-sudo -u cvweb bash /opt/cvweb/repo/deploy/deploy.sh origin/main
-sudo systemctl enable --now cvweb ingest.timer
-curl -fsS http://127.0.0.1:8000/api/health
+rsync -av --delete \
+  --exclude .git --exclude .env \
+  --exclude frontend/node_modules --exclude frontend/dist --exclude frontend/dist-ssr \
+  --exclude backend/.venv --exclude backend/data \
+  --exclude data --exclude vault --exclude vault_deploy \
+  ./ server@nodochicohp:/home/server/proyectos/CVWEB/
+
+ssh server@nodochicohp 'cd /home/server/proyectos/CVWEB && ./deploy/deploy-docker.sh'
 ```
 
-## 6. Firewall y verificación externa
+`compose.yaml` tiene prioridad sobre el antiguo `docker-compose.yml`, así que
+el build pasa a ser multi-stage (ya no hace falta Node en el HP).
+
+## 5. Actualizar y revertir
 
 ```bash
-sudo ufw default deny incoming && sudo ufw default allow outgoing
-sudo ufw allow OpenSSH && sudo ufw allow 80/tcp && sudo ufw allow 443/tcp
-sudo ufw enable && sudo ufw status verbose
+cd /home/server/proyectos/CVWEB
+git pull
+docker compose up -d --build          # reconstruye y recrea
 
-# Desde fuera de tu red:
-curl -sI https://cv.tudominio.example/            # 200 + HSTS/CSP
-curl -s  https://cv.tudominio.example/api/status  # {"llm":"online","tier":"gpu"}
+# Volver a la imagen anterior (si se etiquetó) o a un commit concreto
+git log --oneline -5
+git checkout <commit>
+docker compose up -d --build
 ```
 
-Comprueba desde el móvil (fuera de casa): web, chat en streaming, formulario,
-descarga del PDF y tema oscuro. Prueba también `systemctl kill cvweb` (se
-recupera) y un reinicio del nodo.
-
-## 7. Operación
+## 6. Backup y restauración
 
 ```bash
-# Actualizar / rollback
-sudo -u cvweb bash /opt/cvweb/repo/deploy/deploy.sh origin/main
-ls -1dt /opt/cvweb/releases/*/ | head -5
-sudo ln -sfn /opt/cvweb/releases/<anterior> /opt/cvweb/current && sudo systemctl restart cvweb
-
-# Backups + restauración (T7.7)
-sudo -u cvweb bash /opt/cvweb/repo/deploy/backup.sh
-# restaurar: copia .env y data/*.db de vuelta y reingesta el vault
-
-# Métricas y health profundo
-curl -s -H "X-Metrics-Token: $TOKEN" http://127.0.0.1:8000/metrics | head
-curl -s -H "X-Metrics-Token: $TOKEN" http://127.0.0.1:8000/api/health/deep
-
-# Carga (game day)
-/opt/cvweb/venv/bin/python /opt/cvweb/repo/scripts/load_smoke.py \
-  --base-url http://127.0.0.1:8000 --users 20 --duration 60
+# Estado + secretos (NUNCA al repositorio)
+tar czf cvweb-backup-$(date +%F).tgz .env data/ vault/
+# Restaurar: descomprimir, `docker compose up -d --build` y reingestar el vault
 ```
 
-## 8. Cierre v1.0
+## 7. Alternativa systemd + Caddy (sin Docker)
 
-1. Completar `docs/release-v1.0-checklist.md` con los ⏳.
-2. Uptime Kuma (o equivalente) contra `/` y `/api/health/deep` con alertas
-   (caída >5 min, ambos proveedores, índice >8 días, cert <14 días, disco >85 %).
-3. Actualizar enlaces del CV, LinkedIn y GitHub; archivar `CVWeb-Back`/`CVWeb-Front`.
+Si se prefiere el camino del `docs/runbook.md`: usuario `cvweb`, venv en
+`/opt/cvweb/venv`, repo en `/opt/cvweb/repo`, `.env` en `/opt/cvweb/.env`,
+`deploy/cvweb.service`, `Caddyfile` en `/etc/caddy/` y
+`deploy/deploy.sh origin/main`. En ese caso el proxy es Caddy (el CSP del
+`deploy/Caddyfile` ya asume assets autoalojados) y el backend escucha en
+`127.0.0.1:8000`.
+
+## 9. Desarrollo local (frontend con `npm run dev`)
+
+El servidor de desarrollo de Vite no sirve el backend: necesita un **proxy**
+hacia la API de CVWEB. Se configura con `VITE_DEV_API_TARGET`:
+
+```bash
+cd frontend
+npm install
+
+# Opción A: backend local (uvicorn en 127.0.0.1:8000)
+npm run dev
+
+# Opción B: desarrollar contra el backend desplegado en el nodo
+VITE_DEV_API_TARGET=http://<nodo>:8086 npm run dev
+# p. ej. VITE_DEV_API_TARGET=http://<hp-tailscale>:8086 npm run dev
+```
+
+Abre `http://localhost:5173`. Si el asistente muestra «no está disponible»,
+comprueba el proxy:
+
+```bash
+curl -s http://localhost:5173/api/status   # debe devolver {"llm":"online",...}
+```
+
+> Bug 2026-10-01: el proxy apuntaba a `127.0.0.1:8010` (puerto de Rafita, no
+> de CVWEB) y el chat nunca respondía en desarrollo.
