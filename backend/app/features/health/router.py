@@ -6,6 +6,7 @@ from pathlib import Path
 from fastapi import APIRouter, HTTPException, Request, Response
 
 from app.core.config import get_settings
+from app.core.latency import LATENCY
 from app.core.metrics import metrics_content_type, render_metrics
 from app.features.health.service import LlmStatus, llm_status
 from app.llm.health import HealthMonitor
@@ -59,4 +60,11 @@ async def health() -> dict[str, str]:
 @router.get("/api/status")
 async def status(request: Request) -> LlmStatus:
     monitor: HealthMonitor = request.app.state.health_monitor
-    return llm_status(monitor.statuses)
+    base = llm_status(monitor.statuses)
+    stats = LATENCY.stats()
+    return {
+        **base,
+        "p50_ms": stats.p50_ms,
+        "p95_ms": stats.p95_ms,
+        "samples": stats.samples,
+    }

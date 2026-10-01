@@ -51,13 +51,18 @@ class RoutedStream:
         clock: Callable[[], float],
         on_close: Callable[[], None],
         logger: logging.Logger,
+        started_s: float | None = None,
     ) -> None:
         self.meta = meta
         self._tokens = tokens
         self._clock = clock
         self._on_close = on_close
         self._logger = logger
-        self._started_s = clock()
+        # Instante de inicio REAL de la peticion (antes de esperar al primer
+        # token). Bug 2026-10-01: se ponia al crear el RoutedStream, despues de
+        # que _try_start ya hubiera esperado al primer token, y el p50 salia
+        # en milisegundos irreales (1,5 ms).
+        self._started_s = started_s if started_s is not None else clock()
         self._first_token = True
         self._closed = False
         self._outcome = "cancelled"
@@ -141,6 +146,7 @@ class LLMRouter:
         max_tokens: int | None = None,
     ) -> RoutedStream:
         await self._acquire_slot()
+        started_s = self._clock()
         try:
             provider, tokens = await self._start_stream(
                 messages, temperature=temperature, max_tokens=max_tokens
@@ -155,6 +161,7 @@ class LLMRouter:
             clock=self._clock,
             on_close=self._release_slot,
             logger=self._logger,
+            started_s=started_s,
         )
 
     async def _start_stream(

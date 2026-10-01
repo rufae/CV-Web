@@ -12,6 +12,7 @@ import time
 from collections.abc import AsyncGenerator
 from typing import Literal
 
+from app.core.latency import LATENCY
 from app.core.metrics import CHAT_FIRST_TOKEN, CHAT_REFUSALS, CHAT_REQUESTS
 from app.features.chat.events import (
     DoneEvent,
@@ -120,6 +121,7 @@ async def routed_stream(
     CHAT_REQUESTS.labels("done").inc()
     if routed.meta.first_token_ms is not None:
         CHAT_FIRST_TOKEN.observe(routed.meta.first_token_ms / 1000)
+        LATENCY.record(routed.meta.first_token_ms)
     yield sse(
         "done",
         DoneEvent(

@@ -16,4 +16,10 @@ def test_status_endpoint_without_providers() -> None:
     with TestClient(create_app()) as client:
         response = client.get("/api/status")
     assert response.status_code == 200
-    assert response.json() == {"llm": "offline", "tier": "cpu"}
+    body = response.json()
+    assert body["llm"] == "offline"
+    assert body["tier"] == "cpu"
+    # Estado en vivo (2026-10-01): sin peticiones aun no hay percentiles.
+    assert body["p50_ms"] is None
+    assert body["p95_ms"] is None
+    assert body["samples"] == 0
