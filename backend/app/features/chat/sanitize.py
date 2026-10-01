@@ -52,6 +52,24 @@ _BLOCK_PATTERNS: tuple[re.Pattern[str], ...] = (
         r"\b(el|su|tu)?\s*(tel[ée]fono|phone|direcci[óo]n|address|dni|nie|iban|pasaporte)\b",
         re.IGNORECASE,
     ),
+    # Jailbreak explícito: "actúa como DAN / sin restricciones / sin filtros".
+    re.compile(
+        r"(act[úu]a|act|responde|respond)\s+como\s+(un\s+)?(asistente\s+)?"
+        r"(sin\s+(restricciones|filtros)|jailbreak|dan\b)",
+        re.IGNORECASE,
+    ),
+    # Intento explícito de anular las instrucciones del sistema.
+    re.compile(
+        r"ignora\s+(todas\s+)?(las|tus|mis)\s+(instrucciones|reglas|directrices)",
+        re.IGNORECASE,
+    ),
+    re.compile(r"ignore\s+(all\s+)?(previous|prior|above)\s+instructions", re.IGNORECASE),
+    # Extracción explícita de información privada/sensible.
+    re.compile(
+        r"(revela\w*|muestra\w*|dame|dime|cu[eé]ntame|print|reveal\w*|show)\s+"
+        r".{0,40}\b(informaci[oó]n|datos)\s+(privad\w+|personal\w+|sensibles?)",
+        re.IGNORECASE | re.DOTALL,
+    ),
 )
 
 

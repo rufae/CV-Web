@@ -132,8 +132,17 @@ def extract_public_notes(vault_path: Path, *, public_dir: str = PUBLIC_DIR_DEFAU
     manifest: dict[str, str] = {}
     total_redactions = 0
 
+    vault_root = vault_path.resolve()
     for path in sorted(public_root.rglob("*")):
         if not path.is_file() or path.suffix.lower() not in MARKDOWN_SUFFIXES:
+            continue
+        # Aislamiento FS (2026-10-01): nunca seguir symlinks ni rutas que
+        # escapen del vault, aunque estuvieran dentro de Public/.
+        if path.is_symlink():
+            continue
+        try:
+            path.resolve().relative_to(vault_root)
+        except ValueError:
             continue
         relative = path.relative_to(vault_path).as_posix()
         if _is_denied(relative):
