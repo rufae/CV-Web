@@ -3,6 +3,17 @@
 .env.*
 !.env.example
 
+# Estado local y datos personales (nunca al repositorio)
+backend/.venv/
+backend/data/
+data/
+vault/
+vault_deploy/
+
+# Python
+__pycache__/
+*.pyc
+
 # Sistema operativo
 .DS_Store
 Thumbs.db
