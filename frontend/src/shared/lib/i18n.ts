@@ -9,13 +9,13 @@ const STORAGE_KEY = 'cvweb.lang';
 export const DICTIONARIES: Record<Lang, Dictionary> = { es: ES, en: EN };
 
 export const TITLES: Record<Lang, string> = {
-  es: 'Rafael Castaño — Full Stack Developer',
-  en: 'Rafael Castaño — Full Stack Developer (English)',
+  es: 'Rafael Castaño — Ingeniero de software e IA aplicada',
+  en: 'Rafael Castaño — Software & Applied AI Engineer',
 };
 
 export const DESCRIPTIONS: Record<Lang, string> = {
-  es: 'Portfolio de Rafael Castaño, desarrollador Full Stack en Sevilla: experiencia, proyectos con IA, habilidades y asistente virtual con RAG.',
-  en: 'Portfolio of Rafael Castaño, Full Stack developer in Seville: experience, AI projects, skills and a RAG-powered virtual assistant.',
+  es: 'Portfolio de Rafael Castaño, ingeniero de software especializado en IA aplicada: LLM locales, RAG, evaluación medible y un asistente con el que puedes hablar.',
+  en: 'Portfolio of Rafael Castaño, software engineer specialised in applied AI: local LLMs, RAG, measurable evaluation and an assistant you can talk to.',
 };
 
 export function pickLang(stored: string | null, navigatorLang: string): Lang {

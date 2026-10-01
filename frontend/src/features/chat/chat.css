@@ -1,13 +1,12 @@
 /* Estilos del chat (se cargan con el chunk diferido del widget). */
 
 .chat-window {
-  border-radius: 1rem;
-  box-shadow: 0 10px 30px hsl(var(--accent) / 0.25);
-  background-color: hsl(var(--card));
-  border: 1px solid hsl(var(--border));
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 30px hsl(var(--foreground) / 0.08);
+}
+
+.dark .chat-window {
+  box-shadow: none;
 }
 
 .chat-messages::-webkit-scrollbar {
@@ -19,26 +18,42 @@
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-  background-color: hsl(var(--accent));
+  background-color: hsl(var(--accent-strong) / 0.5);
   border-radius: 3px;
 }
 
 .message-user {
-  background-color: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
+  background-color: hsl(var(--accent-strong));
+  color: #ffffff;
   border-radius: 1rem 1rem 0.25rem 1rem;
-  box-shadow: 0 2px 10px hsl(var(--accent) / 0.4);
+}
+
+.dark .message-user {
+  color: hsl(var(--primary-foreground));
 }
 
 .message-bot {
-  background-color: hsl(var(--muted));
-  color: hsl(var(--card-foreground));
+  background-color: hsl(var(--surface-subtle));
+  color: hsl(var(--foreground));
   border-radius: 1rem 1rem 1rem 0.25rem;
-  box-shadow: 0 2px 10px hsl(var(--foreground) / 0.05);
+}
+
+.chat-launcher {
+  animation: pulse-glow 2s ease-in-out 3;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 20px hsl(var(--accent) / 0.35);
+  }
+  50% {
+    box-shadow: 0 0 36px hsl(var(--accent) / 0.6);
+  }
 }
 
 .typing-indicator {
-  background-color: hsl(var(--muted));
+  background-color: hsl(var(--surface-subtle));
   color: hsl(var(--muted-foreground));
   padding: 0.5rem 1rem;
   border-radius: 1rem;
@@ -78,7 +93,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .typing-indicator div {
+  .typing-indicator div,
+  .chat-launcher {
     animation: none;
   }
 

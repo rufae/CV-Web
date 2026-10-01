@@ -62,7 +62,7 @@ export function Composer({ disabled, streaming, onSend, onStop }: ComposerProps)
             onClick={submit}
             disabled={disabled || text.trim() === ''}
             aria-label={t.chat.send}
-            className="bg-accent text-accent-foreground hover:bg-accent/90"
+            className="bg-accent-strong text-white hover:bg-accent-strong/90"
           >
             <Send className="h-4 w-4" />
           </Button>

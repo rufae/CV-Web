@@ -50,10 +50,27 @@ export interface UseChat {
   reset: () => void;
 }
 
-export function useChat(lang: Lang = 'es'): UseChat {
+export interface UseChatOptions {
+  persist?: boolean;
+}
+
+/**
+ * `crypto.randomUUID` solo existe en contextos seguros (HTTPS o localhost).
+ * La web puede servirse por HTTP en la red local (p. ej. http://cv-web.home),
+ * así que se usa un fallback para que el chat funcione igual.
+ */
+export function newMessageId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+export function useChat(lang: Lang = 'es', options: UseChatOptions = {}): UseChat {
+  const persist = options.persist !== false;
   const [state, dispatch] = useReducer(chatReducer, initialChatState, (initial): ChatState => ({
     ...initial,
-    messages: chatPersistence.load(),
+    messages: persist ? chatPersistence.load() : [],
   }));
   const stateRef = useRef(state);
   const abortRef = useRef<AbortController | null>(null);
@@ -64,8 +81,10 @@ export function useChat(lang: Lang = 'es'): UseChat {
   stateRef.current = state;
 
   useEffect(() => {
-    chatPersistence.save(state.messages);
-  }, [state.messages]);
+    if (persist) {
+      chatPersistence.save(state.messages);
+    }
+  }, [persist, state.messages]);
 
   const flushTokens = useCallback(() => {
     frameRef.current = null;
@@ -97,8 +116,8 @@ export function useChat(lang: Lang = 'es'): UseChat {
       dispatch({
         type: 'send',
         text: trimmed,
-        userMessageId: crypto.randomUUID(),
-        assistantMessageId: crypto.randomUUID(),
+        userMessageId: newMessageId(),
+        assistantMessageId: newMessageId(),
       });
 
       const controller = new AbortController();

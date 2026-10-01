@@ -5,62 +5,82 @@
 /*
  * Única fuente de tokens de diseño (canales HSL separados por espacios).
  * Tailwind los consume como `hsl(var(--token) / <alpha-value>)`.
+ * v2: accent es decorativo; accent-strong es el azul de texto/botones (AA).
  */
 @layer base {
   :root {
-    --font-size: 14px;
+    --font-size: 16px;
 
     --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
+    --surface: 0 0% 100%;
+    --surface-subtle: 220 20% 97%;
+    --foreground: 223 39% 7%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --card-foreground: 223 39% 7%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-    --primary: 0 0% 0%;
+    --popover-foreground: 223 39% 7%;
+    --primary: 213 90% 43%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 6% 10%;
-    --muted: 240 5% 93%;
-    --muted-foreground: 240 4% 42%;
+    --secondary: 220 20% 97%;
+    --secondary-foreground: 223 39% 7%;
+    --muted: 220 20% 97%;
+    --muted-foreground: 217 8% 40%;
     --accent: 210 100% 56%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 72% 45%;
+    --accent-strong: 213 90% 43%;
+    --accent-soft: 214 100% 95%;
+    --success: 142 72% 29%;
+    --warning: 26 90% 37%;
+    --danger: 0 74% 42%;
+    --destructive: 0 74% 42%;
     --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --input-background: 240 9% 96%;
-    --ring: 210 100% 56%;
+    --border: 217 17% 91%;
+    --input: 217 17% 91%;
+    --input-background: 220 20% 97%;
+    --ring: 213 90% 43%;
     --switch-background: 220 9% 81%;
-    --radius: 0.625rem;
+    --radius: 0.75rem;
   }
 
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 100%;
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 100%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 17%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 17%;
-    --muted-foreground: 0 0% 65%;
+    --background: 223 39% 7%;
+    --surface: 221 32% 10%;
+    --surface-subtle: 221 31% 12%;
+    --foreground: 216 26% 96%;
+    --card: 221 32% 10%;
+    --card-foreground: 216 26% 96%;
+    --popover: 221 32% 10%;
+    --popover-foreground: 216 26% 96%;
+    --primary: 210 100% 65%;
+    --primary-foreground: 216 68% 7%;
+    --secondary: 221 31% 12%;
+    --secondary-foreground: 216 26% 96%;
+    --muted: 221 31% 12%;
+    --muted-foreground: 215 13% 65%;
     --accent: 210 100% 56%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 72% 55%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --input-background: 0 0% 12%;
-    --ring: 210 100% 56%;
+    --accent-strong: 210 100% 65%;
+    --accent-soft: 214 61% 14%;
+    --success: 142 69% 58%;
+    --warning: 43 96% 56%;
+    --danger: 0 91% 71%;
+    --destructive: 0 91% 71%;
+    --destructive-foreground: 216 68% 7%;
+    --border: 219 25% 18%;
+    --input: 219 25% 18%;
+    --input-background: 221 31% 12%;
+    --ring: 210 100% 65%;
     --switch-background: 0 0% 30%;
   }
 
+  html {
+    font-size: var(--font-size);
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
     font-family:
+      'Inter Variable',
       'Inter',
       -apple-system,
       BlinkMacSystemFont,

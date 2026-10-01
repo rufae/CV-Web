@@ -7,11 +7,17 @@ import { Starters } from './Starters';
 
 interface MessageListProps {
   state: ChatState;
+  compact?: boolean;
   onFeedback: (message: ChatMessage, rating: 'up' | 'down') => void;
   onSelectStarter: (text: string) => void;
 }
 
-export function MessageList({ state, onFeedback, onSelectStarter }: MessageListProps) {
+export function MessageList({
+  state,
+  compact = false,
+  onFeedback,
+  onSelectStarter,
+}: MessageListProps) {
   const { t } = useI18n();
   const bottomRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -42,9 +48,9 @@ export function MessageList({ state, onFeedback, onSelectStarter }: MessageListP
       aria-label="Conversación"
     >
       {state.messages.length === 0 && (
-        <div className="py-4">
-          <p className="mb-3 text-center text-sm text-muted-foreground">{t.chat.empty}</p>
-          <Starters onSelect={onSelectStarter} />
+        <div className="py-2">
+          <p className="mb-3 text-sm text-muted-foreground">{t.chat.empty}</p>
+          <Starters compact={compact} onSelect={onSelectStarter} />
         </div>
       )}
 
@@ -54,7 +60,7 @@ export function MessageList({ state, onFeedback, onSelectStarter }: MessageListP
 
       {state.status === 'retrieving' && (
         <div className="flex justify-start">
-          <div className="typing-indicator" aria-label="Buscando información">
+          <div className="typing-indicator" aria-label={t.chat.sources}>
             <div />
             <div />
             <div />

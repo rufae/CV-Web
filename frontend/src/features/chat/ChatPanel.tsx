@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Bot, RotateCcw, X } from 'lucide-react';
 
 import { Button } from '@/shared/ui/button';
+import { StatusPill } from '@/shared/ui/status-pill';
+import { cn } from '@/shared/ui/utils';
 
 import type { ChatMessage, ChatState } from './chatReducer';
 import { ChatStatus } from './ChatStatus';
@@ -10,11 +12,14 @@ import { MessageList } from './MessageList';
 import { statusView } from './statusView';
 import { useApiStatus } from './useApiStatus';
 import { useI18n } from '@/shared/lib/i18n';
-import { useFocusTrap } from './useFocusTrap';
+import { useFocusTrap } from '@/shared/lib/useFocusTrap';
+
+export type ChatMode = 'embedded' | 'floating';
 
 interface ChatPanelProps {
+  mode: ChatMode;
   state: ChatState;
-  onClose: () => void;
+  onClose?: () => void;
   onSend: (text: string) => Promise<void>;
   onStop: () => void;
   onRetry: () => Promise<void>;
@@ -22,7 +27,10 @@ interface ChatPanelProps {
   onFeedback: (message: ChatMessage, rating: 'up' | 'down') => void;
 }
 
+const STATUS_TONE = { online: 'success', degraded: 'warning', offline: 'danger' } as const;
+
 export function ChatPanel({
+  mode,
   state,
   onClose,
   onSend,
@@ -31,24 +39,27 @@ export function ChatPanel({
   onReset,
   onFeedback,
 }: ChatPanelProps) {
-  useEffect(() => {
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [onClose]);
-
   const { t } = useI18n();
   const panelRef = useRef<HTMLElement>(null);
   const previousStatus = useRef(state.status);
   const [announcement, setAnnouncement] = useState('');
 
-  useFocusTrap(panelRef, true);
+  useFocusTrap(panelRef, mode === 'floating');
   const apiStatus = useApiStatus(true);
   const view = statusView(state.status, state.retryAfter, apiStatus?.llm ?? null);
+
+  useEffect(() => {
+    if (mode !== 'floating') {
+      return;
+    }
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose?.();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [mode, onClose]);
 
   useEffect(() => {
     const finished =
@@ -64,52 +75,83 @@ export function ChatPanel({
     }
     previousStatus.current = state.status;
   }, [state.status, state.messages]);
+
+  const statusLabels = {
+    online: t.aiLab.online,
+    degraded: t.aiLab.degraded,
+    offline: t.aiLab.offline,
+  } as const;
   const showRetry = state.status === 'error' || state.status === 'rate_limited';
   const streaming = state.status === 'streaming' || state.status === 'retrieving';
+  const llm = apiStatus?.llm ?? null;
 
   return (
     <section
       ref={panelRef}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="chat-title"
-      className="chat-window fixed inset-0 z-50 flex flex-col sm:inset-auto sm:bottom-24 sm:right-6 sm:h-[600px] sm:w-[400px]"
+      role={mode === 'floating' ? 'dialog' : 'region'}
+      aria-modal={mode === 'floating' ? 'true' : undefined}
+      aria-labelledby={`chat-title-${mode}`}
+      className={cn(
+        'chat-window flex flex-col overflow-hidden border border-border bg-surface',
+        mode === 'floating'
+          ? 'fixed inset-0 z-50 sm:inset-auto sm:bottom-24 sm:right-6 sm:h-[600px] sm:w-[400px]'
+          : 'h-full max-h-[520px] min-h-[320px] w-full',
+      )}
     >
-      <header className="flex items-center justify-between border-b border-border bg-accent p-4 text-accent-foreground">
-        <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-foreground">
-            <Bot className="h-5 w-5 text-accent" />
+      <header className="flex items-start justify-between gap-3 border-b border-border bg-surface p-4">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent-strong">
+            <Bot className="h-5 w-5" />
           </div>
-          <div>
-            <h3 id="chat-title" className="font-semibold">
+          <div className="min-w-0">
+            <h3 id={`chat-title-${mode}`} className="text-base font-semibold leading-tight">
               {t.chat.title}
             </h3>
-            <p className="text-xs opacity-90">{t.chat.disclaimer}</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{t.chat.disclaimer}</p>
+            <div className="mt-2">
+              {llm !== null ? (
+                <StatusPill
+                  tone={STATUS_TONE[llm]}
+                  label={statusLabels[llm]}
+                  detail={apiStatus !== null ? `${t.aiLab.tier} ${apiStatus.tier}` : undefined}
+                  pulse={llm === 'online'}
+                  className="px-2 py-0.5 text-xs"
+                />
+              ) : (
+                <StatusPill
+                  tone="neutral"
+                  label={t.aiLab.checking}
+                  className="px-2 py-0.5 text-xs"
+                />
+              )}
+            </div>
           </div>
         </div>
-        <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onReset}
-            aria-label={t.chat.newConversation}
-            className="text-accent-foreground hover:bg-white/10"
-          >
-            <RotateCcw className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            aria-label={t.chat.close}
-            className="text-accent-foreground hover:bg-white/10"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
+        {mode === 'floating' && (
+          <div className="flex shrink-0 items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onReset}
+              aria-label={t.chat.newConversation}
+              className="size-10 sm:size-9"
+            >
+              <RotateCcw className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              aria-label={t.chat.close}
+              className="size-10 sm:size-9"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </header>
 
-      <ChatStatus chat={state.status} retryAfter={state.retryAfter} llm={apiStatus?.llm ?? null} />
+      <ChatStatus chat={state.status} retryAfter={state.retryAfter} llm={llm} />
       {showRetry && (
         <div className="px-4 pt-2">
           <Button size="sm" variant="outline" onClick={() => void onRetry()}>
@@ -124,6 +166,7 @@ export function ChatPanel({
 
       <MessageList
         state={state}
+        compact={mode === 'embedded'}
         onFeedback={onFeedback}
         onSelectStarter={(text) => void onSend(text)}
       />

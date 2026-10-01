@@ -1,37 +1,30 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import { Button } from '@/shared/ui/button';
-import { Input } from '@/shared/ui/input';
-import { Textarea } from '@/shared/ui/textarea';
-import { Label } from '@/shared/ui/label';
+import { useState } from 'react';
+import { Check, Copy, Github, Linkedin, Mail, Send } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  Mail,
-  MapPin,
-  Send,
-  Github,
-  Linkedin,
-  Twitter,
-  MessageSquare,
-  User,
-  FileText,
-} from 'lucide-react';
 
-import { sendContactForm } from '@/shared/api/client';
-import { ApiError } from '@/shared/api/client';
+import { ApiError, sendContactForm } from '@/shared/api/client';
 import { useI18n } from '@/shared/lib/i18n';
-import { validateForm } from './validation';
+import { Badge } from '@/shared/ui/badge';
+import { Button } from '@/shared/ui/button';
+import { Card } from '@/shared/ui/card';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import { Reveal } from '@/shared/ui/reveal';
+import { Section, SectionHeader } from '@/shared/ui/section';
+import { StatusPill } from '@/shared/ui/status-pill';
+import { Textarea } from '@/shared/ui/textarea';
 
-export const Contact: React.FC = () => {
+import { validateForm, type ValidationError } from './validation';
+
+const EMAIL = 'rafaelcastanoblanca1805@gmail.com';
+const MAX_MESSAGE = 2000;
+
+export function Contact() {
   const { t } = useI18n();
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [honeypot, setHoneypot] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -41,9 +34,14 @@ export const Contact: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const validationError = validateForm(formData);
-    if (validationError !== null) {
-      toast.error(validationError);
+    const error: ValidationError | null = validateForm(formData);
+    if (error !== null) {
+      const messages: Record<ValidationError, string> = {
+        name: t.contact.validationName,
+        email: t.contact.validationEmail,
+        message: t.contact.validationMessage,
+      };
+      toast.error(messages[error]);
       return;
     }
 
@@ -54,280 +52,183 @@ export const Contact: React.FC = () => {
       toast.success(t.contact.sent);
       setFormData({ name: '', email: '', message: '' });
       setHoneypot('');
-    } catch (error) {
-      if (error instanceof ApiError && error.code === 'rate_limited') {
-        toast.error(
-          `Demasiados mensajes${error.retryAfter ? `; prueba en ${error.retryAfter} s` : ''}.`,
-        );
-      } else if (error instanceof ApiError && error.code === 'daily_budget_exhausted') {
-        toast.error('Se alcanzó el límite diario de mensajes. Inténtalo mañana.');
+    } catch (err) {
+      if (err instanceof ApiError && err.code === 'rate_limited') {
+        toast.error(t.contact.rateLimited.replace('{seconds}', String(err.retryAfter ?? 0)));
+      } else if (err instanceof ApiError && err.code === 'daily_budget_exhausted') {
+        toast.error(t.contact.dailyBudget);
       } else {
-        toast.error('Error al enviar el mensaje. Por favor, intenta de nuevo.');
+        toast.error(t.contact.error);
       }
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const contactInfo = [
-    {
-      icon: <Mail className="w-5 h-5" />,
-      label: 'Email',
-      value: 'rafaelcastanoblanca1805@gmail.com',
-      href: 'mailto:rafaelcastanoblanca1805@gmail.com',
-    },
-    {
-      icon: <MapPin className="w-5 h-5" />,
-      label: t.contact.locationLabel,
-      value: t.contact.locationValue,
-      href: 'https://maps.google.com/?q=Seville,Spain',
-    },
-  ];
-
-  const socialLinks = [
-    {
-      name: 'GitHub',
-      icon: <Github className="w-5 h-5" />,
-      url: 'https://github.com/rufae',
-      color: 'hover:text-gray-600',
-    },
-    {
-      name: 'LinkedIn',
-      icon: <Linkedin className="w-5 h-5" />,
-      url: 'https://www.linkedin.com/in/rafael-castaño-blanca/',
-      color: 'hover:text-blue-600',
-    },
-    {
-      name: 'Twitter',
-      icon: <Twitter className="w-5 h-5" />,
-      url: 'https://twitter.com/rafael_dev',
-      color: 'hover:text-blue-400',
-    },
-    {
-      name: 'Email',
-      icon: <Mail className="w-5 h-5" />,
-      url: 'mailto:rafaelcastanoblanca1805@gmail.com',
-      color: 'hover:text-red-500',
-    },
-  ];
+  const copyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // sin permiso de portapapeles
+    }
+  };
 
   return (
-    <section id="contact" className="py-20 px-6">
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="mb-4">{t.contact.title}</h2>
-          <div className="w-20 h-1 bg-accent mx-auto rounded-full" />
-          <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">{t.contact.subtitle}</p>
-        </motion.div>
+    <Section id="contact">
+      <Reveal>
+        <SectionHeader eyebrow={t.contact.eyebrow} title={t.contact.title} lead={t.contact.lead} />
+      </Reveal>
 
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Contact Form */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-accent" />
-                  {t.contact.formTitle}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="name" className="flex items-center gap-2">
-                      <User className="w-4 h-4" />
-                      {t.contact.name}
-                    </Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      placeholder={t.contact.namePlaceholder}
-                      className="transition-all duration-200 focus:ring-2 focus:ring-accent"
-                      required
+      <div className="grid gap-8 lg:grid-cols-12">
+        <Reveal className="lg:col-span-7">
+          <Card className="p-6">
+            <h3 className="text-xl font-semibold">{t.contact.formTitle}</h3>
+            <form onSubmit={handleSubmit} className="mt-6 space-y-5" noValidate>
+              <div className="space-y-2">
+                <Label htmlFor="name">{t.contact.name}</Label>
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  placeholder={t.contact.namePlaceholder}
+                  autoComplete="name"
+                  required
+                  maxLength={100}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">{t.contact.email}</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder={t.contact.emailPlaceholder}
+                  autoComplete="email"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="message">{t.contact.message}</Label>
+                  <span id="message-counter" className="mono-label text-muted-foreground">
+                    {formData.message.length}/{MAX_MESSAGE}
+                  </span>
+                </div>
+                <Textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  placeholder={t.contact.messagePlaceholder}
+                  rows={6}
+                  required
+                  maxLength={MAX_MESSAGE}
+                  aria-describedby="message-counter"
+                />
+              </div>
+
+              <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                <label htmlFor="website">No rellenar este campo</label>
+                <input
+                  id="website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(event) => setHoneypot(event.target.value)}
+                />
+              </div>
+
+              <Button type="submit" size="lg" disabled={isSubmitting} className="w-full">
+                {isSubmitting ? (
+                  <>
+                    <span
+                      className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+                      aria-hidden="true"
                     />
-                  </div>
+                    {t.contact.sending}
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4" />
+                    {t.contact.send}
+                  </>
+                )}
+              </Button>
+            </form>
+          </Card>
+        </Reveal>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="flex items-center gap-2">
-                      <Mail className="w-4 h-4" />
-                      {t.contact.email}
-                    </Label>
-                    <Input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      placeholder={t.contact.emailPlaceholder}
-                      className="transition-all duration-200 focus:ring-2 focus:ring-accent"
-                      required
-                    />
-                  </div>
+        <div className="space-y-6 lg:col-span-5">
+          <Reveal delay={0.06}>
+            <Card className="border-success/30 bg-success/5 p-6">
+              <StatusPill tone="success" label={t.contact.availabilityTitle} pulse />
+              <p className="mt-3 text-sm text-muted-foreground">{t.contact.availabilityText}</p>
+            </Card>
+          </Reveal>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="message" className="flex items-center gap-2">
-                      <FileText className="w-4 h-4" />
-                      {t.contact.message}
-                    </Label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      placeholder={t.contact.messagePlaceholder}
-                      rows={6}
-                      className="transition-all duration-200 focus:ring-2 focus:ring-accent resize-none text-black"
-                      required
-                    />
-                  </div>
-
-                  <div
-                    aria-hidden="true"
-                    className="absolute -left-[9999px] h-0 w-0 overflow-hidden"
+          <Reveal delay={0.12}>
+            <Card className="p-6">
+              <h3 className="text-xl font-semibold">{t.contact.linksTitle}</h3>
+              <ul className="mt-4 space-y-2">
+                <li>
+                  <a
+                    href="https://github.com/rufae"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex min-h-11 items-center gap-3 rounded-md border border-border px-3 text-sm font-medium transition-colors hover:border-accent/40 hover:bg-surface-subtle"
                   >
-                    <label htmlFor="website">No rellenar este campo</label>
-                    <input
-                      id="website"
-                      name="website"
-                      type="text"
-                      tabIndex={-1}
-                      autoComplete="off"
-                      value={honeypot}
-                      onChange={(event) => setHoneypot(event.target.value)}
-                    />
-                  </div>
-
+                    <Github className="h-4 w-4" aria-hidden="true" />
+                    GitHub
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://www.linkedin.com/in/rafael-casta%C3%B1o-blanca/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex min-h-11 items-center gap-3 rounded-md border border-border px-3 text-sm font-medium transition-colors hover:border-accent/40 hover:bg-surface-subtle"
+                  >
+                    <Linkedin className="h-4 w-4" aria-hidden="true" />
+                    LinkedIn
+                  </a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="flex min-h-11 flex-1 items-center gap-3 rounded-md border border-border px-3 text-sm">
+                    <Mail className="h-4 w-4 shrink-0" aria-hidden="true" />
+                    <span className="truncate">Email</span>
+                  </span>
                   <Button
-                    type="submit"
-                    size="lg"
-                    disabled={isSubmitting}
-                    className="w-full bg-accent hover:bg-accent/90 text-accent-foreground"
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => void copyEmail()}
+                    aria-label={t.contact.copyEmail}
                   >
-                    {isSubmitting ? (
-                      <>
-                        <motion.div
-                          className="w-4 h-4 border-2 border-current border-t-transparent rounded-full mr-2"
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        />
-                        {t.contact.sending}
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 mr-2" />
-                        {t.contact.send}
-                      </>
-                    )}
+                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                    {copied ? t.common.copied : t.common.copy}
                   </Button>
-                </form>
-              </CardContent>
+                </li>
+              </ul>
+              <p aria-live="polite" className="sr-only">
+                {copied ? t.common.copied : ''}
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Badge variant="secondary">GitHub · rufae</Badge>
+                <Badge variant="secondary">LinkedIn · Rafael Castaño</Badge>
+              </div>
             </Card>
-          </motion.div>
-
-          {/* Contact Info & Social */}
-          <motion.div
-            className="space-y-8"
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            {/* Contact Information */}
-            <Card>
-              <CardHeader>
-                <CardTitle>{t.contact.infoTitle}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {contactInfo.map((info, index) => (
-                    <motion.a
-                      key={index}
-                      href={info.href}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent/10 transition-colors group"
-                      initial={{ opacity: 0, y: 10 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                      whileHover={{ x: 5 }}
-                    >
-                      <div className="p-2 bg-accent/20 text-accent rounded-lg group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
-                        {info.icon}
-                      </div>
-                      <div>
-                        <div className="font-medium">{info.label}</div>
-                        <div className="text-sm text-muted-foreground">{info.value}</div>
-                      </div>
-                    </motion.a>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Social Links */}
-            <Card>
-              <CardHeader>
-                <CardTitle>{t.contact.socialTitle}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 gap-4">
-                  {socialLinks.map((social, index) => (
-                    <motion.a
-                      key={social.name}
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`flex items-center gap-3 p-4 rounded-lg border border-border hover:border-accent/50 transition-all group ${social.color}`}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <div className="group-hover:scale-110 transition-transform">
-                        {social.icon}
-                      </div>
-                      <span className="font-medium">{social.name}</span>
-                    </motion.a>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Availability Status */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              <Card className="border-green-500/20 bg-green-500/5">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                    <div>
-                      <div className="font-medium text-green-600">{t.contact.availableTitle}</div>
-                      <div className="text-sm text-muted-foreground">{t.contact.availableText}</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </motion.div>
+          </Reveal>
         </div>
       </div>
-    </section>
+    </Section>
   );
-};
+}

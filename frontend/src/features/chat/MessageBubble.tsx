@@ -11,10 +11,18 @@ interface MessageBubbleProps {
   onFeedback: (message: ChatMessage, rating: 'up' | 'down') => void;
 }
 
+const MODEL: string =
+  (import.meta.env.VITE_LLM_MODEL as string | undefined) ?? 'gemma4:12b';
+
 export function MessageBubble({ message, onFeedback }: MessageBubbleProps) {
   const { t } = useI18n();
   const [copied, setCopied] = useState(false);
   const isUser = message.role === 'user';
+  const latency =
+    typeof message.firstTokenMs === 'number'
+      ? `${(message.firstTokenMs / 1000).toFixed(1).replace('.', ',')} s`
+      : null;
+  const provider = message.tier === 'gpu' ? t.chat.providerGpu : t.chat.providerCpu;
 
   const copy = async () => {
     try {
@@ -43,13 +51,34 @@ export function MessageBubble({ message, onFeedback }: MessageBubbleProps) {
 
         {!isUser && <SourceChips sources={message.sources} />}
 
+        {!isUser && message.text !== '' && message.tier !== undefined && (
+          <p
+            className="mt-2 flex flex-wrap items-center gap-1.5 font-mono text-xs text-muted-foreground"
+            title={t.chat.providerTooltip}
+          >
+            <span>{provider}</span>
+            {MODEL !== '' && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>{MODEL}</span>
+              </>
+            )}
+            {latency !== null && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span className="tabular">{latency}</span>
+              </>
+            )}
+          </p>
+        )}
+
         {!isUser && message.text !== '' && (
-          <div className="mt-2 flex items-center gap-1 text-muted-foreground">
+          <div className="mt-1 flex items-center gap-1 text-muted-foreground">
             <button
               type="button"
               onClick={() => void copy()}
               aria-label={t.chat.copy}
-              className="flex h-11 w-11 items-center justify-center rounded transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:h-7 sm:w-7"
+              className="flex h-11 w-11 items-center justify-center rounded transition-colors hover:text-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-7 sm:w-7"
             >
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             </button>
@@ -59,7 +88,7 @@ export function MessageBubble({ message, onFeedback }: MessageBubbleProps) {
                   type="button"
                   onClick={() => onFeedback(message, 'up')}
                   aria-label={t.chat.useful}
-                  className="flex h-11 w-11 items-center justify-center rounded transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:h-7 sm:w-7"
+                  className="flex h-11 w-11 items-center justify-center rounded transition-colors hover:text-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-7 sm:w-7"
                 >
                   <ThumbsUp className="h-4 w-4" />
                 </button>
@@ -67,7 +96,7 @@ export function MessageBubble({ message, onFeedback }: MessageBubbleProps) {
                   type="button"
                   onClick={() => onFeedback(message, 'down')}
                   aria-label={t.chat.notUseful}
-                  className="flex h-11 w-11 items-center justify-center rounded transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:h-7 sm:w-7"
+                  className="flex h-11 w-11 items-center justify-center rounded transition-colors hover:text-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:h-7 sm:w-7"
                 >
                   <ThumbsDown className="h-4 w-4" />
                 </button>

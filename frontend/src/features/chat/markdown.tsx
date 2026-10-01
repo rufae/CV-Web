@@ -21,7 +21,7 @@ export function renderInline(text: string, keyPrefix: string): ReactNode[] {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-accent underline"
+          className="text-accent-strong underline"
         >
           {link}
         </a>,
@@ -30,7 +30,7 @@ export function renderInline(text: string, keyPrefix: string): ReactNode[] {
       nodes.push(<strong key={key}>{bold.slice(2, -2)}</strong>);
     } else if (citation !== undefined) {
       nodes.push(
-        <sup key={key} className="text-accent">
+        <sup key={key} className="text-accent-strong">
           {citation.slice(1, -1)}
         </sup>,
       );

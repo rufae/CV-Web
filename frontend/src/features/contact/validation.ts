@@ -1,18 +1,21 @@
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+export type ValidationError = 'name' | 'email' | 'message';
+
+/** Devuelve el código de error para que el componente lo traduzca. */
 export function validateForm(formData: {
   name: string;
   email: string;
   message: string;
-}): string | null {
+}): ValidationError | null {
   if (formData.name.trim() === '' || formData.name.length > 100) {
-    return 'Indica tu nombre (máximo 100 caracteres).';
+    return 'name';
   }
   if (!EMAIL_PATTERN.test(formData.email)) {
-    return 'El email no parece válido.';
+    return 'email';
   }
   if (formData.message.trim() === '' || formData.message.length > 2000) {
-    return 'Escribe un mensaje (máximo 2000 caracteres).';
+    return 'message';
   }
   return null;
 }

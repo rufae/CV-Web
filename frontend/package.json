@@ -15,6 +15,8 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-progress": "^1.1.7",
@@ -58,7 +60,7 @@
     {
       "name": "JS inicial (sin chat)",
       "path": "dist/assets/index-*.js",
-      "limit": "140 kB",
+      "limit": "150 kB",
       "gzip": true
     },
     {

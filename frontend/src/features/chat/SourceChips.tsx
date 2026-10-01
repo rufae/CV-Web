@@ -13,7 +13,10 @@ export function SourceChips({ sources }: SourceChipsProps) {
   return (
     <div className="mt-2 flex flex-wrap gap-1.5" aria-label={t.chat.sources}>
       {sources.map((source) => (
-        <span key={source.n} className="rounded-full bg-accent/15 px-2 py-0.5 text-xs text-accent">
+        <span
+          key={source.n}
+          className="rounded-full bg-accent-soft px-2 py-0.5 font-mono text-xs text-accent-strong"
+        >
           [{source.n}] {source.title}
           {source.section !== '' ? ` › ${source.section}` : ''}
         </span>

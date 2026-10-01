@@ -37,7 +37,7 @@ export function ChatStatus({ chat, retryAfter, llm }: ChatStatusProps) {
   return (
     <div>
       {view.offline && (
-        <p className="flex flex-wrap items-center gap-1.5 bg-amber-500/10 px-4 py-2 text-sm text-amber-700 dark:text-amber-400">
+        <p className="flex flex-wrap items-center gap-1.5 bg-warning/10 px-4 py-2 text-sm text-warning">
           <WifiOff className="h-4 w-4" />
           {t.chat.offline}{' '}
           <a href="#contact" className="underline">
@@ -47,27 +47,25 @@ export function ChatStatus({ chat, retryAfter, llm }: ChatStatusProps) {
         </p>
       )}
       {view.degraded && !view.offline && (
-        <p className="bg-amber-500/10 px-4 py-2 text-sm text-amber-700 dark:text-amber-400">
-          {t.chat.degraded}
-        </p>
+        <p className="bg-warning/10 px-4 py-2 text-sm text-warning">{t.chat.degraded}</p>
       )}
       {view.rateLimited && (
-        <p className="bg-amber-500/10 px-4 py-2 text-sm text-amber-700 dark:text-amber-400">
+        <p className="bg-warning/10 px-4 py-2 text-sm text-warning">
           {remaining > 0
             ? `${t.chat.limit} ${t.chat.limitRetry.replace('{seconds}', String(remaining))}`
             : t.chat.retry}
         </p>
       )}
       {chat === 'error' && (
-        <p className="flex items-center gap-1.5 bg-red-500/10 px-4 py-2 text-sm text-red-600">
+        <p className="flex items-center gap-1.5 bg-danger/10 px-4 py-2 text-sm text-danger">
           <AlertTriangle className="h-4 w-4" />
           {t.chat.offline}
         </p>
       )}
       {chat === 'refused' && (
-        <p className="bg-muted px-4 py-2 text-sm text-muted-foreground">
+        <p className="bg-surface-subtle px-4 py-2 text-sm text-muted-foreground">
           {t.chat.refused}{' '}
-          <a href="#contact" className="text-accent underline">
+          <a href="#contact" className="text-accent-strong underline">
             {t.chat.contact}
           </a>
           .

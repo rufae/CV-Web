@@ -94,4 +94,8 @@ export interface FeedbackPayload {
 export interface ApiStatus {
   llm: 'online' | 'degraded' | 'offline';
   tier: Tier;
+  /** Latencia al primer token (ms) de las ultimas 24 h; null si aun no hay muestras. */
+  p50_ms?: number | null;
+  p95_ms?: number | null;
+  samples?: number;
 }

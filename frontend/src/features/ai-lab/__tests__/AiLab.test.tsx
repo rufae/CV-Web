@@ -52,8 +52,8 @@ describe('AiLab', () => {
 
     await render(<AiLab />);
 
-    expect(container.textContent).toContain('0.950');
-    expect(container.textContent).toContain('0.970');
+    expect(container.textContent).toContain('0,950');
+    expect(container.textContent).toContain('97,0 %');
     expect(container.textContent).toContain('En línea');
     expect(container.textContent).toContain('bge-m3:latest');
   });
@@ -65,7 +65,7 @@ describe('AiLab', () => {
 
     await render(<AiLab />);
 
-    expect(container.textContent).toContain('1.000');
+    expect(container.textContent).toContain('1,000');
     expect(container.textContent).toContain('Sin conexión');
     expect(container.textContent).toContain('bge-m3');
   });

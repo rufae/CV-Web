@@ -1,128 +1,93 @@
 /*
- * Estilos globales del portfolio: tipografía base, animaciones y utilidades.
- * Los tokens de diseño viven en `src/index.css` (única fuente).
+ * Estilos globales del portfolio: tipografía base, utilidades de fondo y
+ * accesibilidad. Los tokens de diseño viven en `src/index.css` (única fuente).
  */
 
-/* Typography (no se aplica a elementos con un ancestro con clase text-*) */
-:where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) h1 {
-  font-size: var(--text-2xl);
-  font-weight: 500;
-  line-height: 1.5;
-}
-
-:where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) h2 {
-  font-size: var(--text-xl);
-  font-weight: 500;
-  line-height: 1.5;
-}
-
-:where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) h3 {
-  font-size: var(--text-lg);
-  font-weight: 500;
-  line-height: 1.5;
-}
-
-:where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) h4 {
-  font-size: var(--text-base);
-  font-weight: 500;
-  line-height: 1.5;
-}
-
-:where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) p {
-  font-size: var(--text-base);
-  font-weight: 400;
-  line-height: 1.5;
-}
-
-:where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) label {
-  font-size: var(--text-base);
-  font-weight: 500;
-  line-height: 1.5;
-}
-
-:where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) button {
-  font-size: var(--text-base);
-  font-weight: 500;
-  line-height: 1.5;
-}
-
-:where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) input {
-  font-size: var(--text-base);
-  font-weight: 400;
-  line-height: 1.5;
-}
-
 html {
-  font-size: var(--font-size);
   scroll-behavior: smooth;
 }
 
 body {
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+/* ---------- Fondo del hero: rejilla sutil + halo ---------- */
+
+.hero-grid {
+  background-image:
+    linear-gradient(hsl(var(--foreground) / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--foreground) / 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%);
+}
+
+.hero-halo {
+  background: radial-gradient(circle at 85% 15%, hsl(var(--accent) / 0.08) 0%, transparent 55%);
+}
+
+.dark .hero-halo {
+  background: radial-gradient(circle at 85% 15%, hsl(var(--accent) / 0.14) 0%, transparent 55%);
+}
+
+/* ---------- Etiquetas técnicas ---------- */
+
+.eyebrow {
   font-family:
-    'Inter',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    'Roboto',
-    sans-serif;
+    'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: hsl(var(--accent-strong));
 }
 
-/* Custom animations */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
+.mono-label {
+  font-family:
+    'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas,
+    monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
 }
 
-@keyframes pulse-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 20px hsl(var(--accent) / 0.4);
-  }
-  50% {
-    box-shadow: 0 0 40px hsl(var(--accent) / 0.8);
-  }
+.tabular {
+  font-variant-numeric: tabular-nums;
 }
 
-.float-animation {
-  animation: float 6s ease-in-out infinite;
-}
+/* ---------- Foco visible coherente en ambos temas ---------- */
 
-.glow-pulse {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-/* Gradient backgrounds */
-.hero-gradient {
-  background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--accent) / 0.05) 100%);
-}
-
-.dark .hero-gradient {
-  background: linear-gradient(135deg, hsl(var(--background)) 0%, hsl(var(--accent) / 0.1) 100%);
-}
-
-/* Text gradients */
-.text-gradient {
-  background: linear-gradient(135deg, #1e90ff, #dc2626);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Foco visible coherente en ambos temas */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
-textarea:focus-visible {
-  outline: 2px solid hsl(var(--accent));
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid hsl(var(--accent-strong));
   outline-offset: 2px;
 }
 
-/* Accesibilidad: menos movimiento si el usuario lo prefiere */
+/* ---------- Estado "en línea" ---------- */
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* ---------- Accesibilidad: menos movimiento ---------- */
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -134,10 +99,13 @@ textarea:focus-visible {
   }
 }
 
-/* Hoja de impresión para el CV */
+/* ---------- Hoja de impresión ---------- */
+
 @media print {
+  header,
   nav,
   footer,
+  .chat-window,
   .fixed {
     display: none !important;
   }

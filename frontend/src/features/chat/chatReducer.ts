@@ -11,6 +11,7 @@ export interface ChatMessage {
   promptVersion?: string;
   tier?: Tier;
   refused?: boolean;
+  firstTokenMs?: number | null;
 }
 
 export interface ChatState {
@@ -99,7 +100,13 @@ export function chatReducer(state: ChatState, action: ChatAction): ChatState {
       };
 
     case 'done':
-      return { ...state, status: state.status === 'refused' ? 'refused' : 'idle' };
+      return {
+        ...updateLastAssistant(state, (message) => ({
+          ...message,
+          firstTokenMs: action.firstTokenMs,
+        })),
+        status: state.status === 'refused' ? 'refused' : 'idle',
+      };
 
     case 'error': {
       const limited =

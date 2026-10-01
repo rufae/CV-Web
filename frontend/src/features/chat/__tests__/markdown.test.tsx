@@ -17,7 +17,7 @@ describe('renderMarkdown', () => {
   });
 
   it('convierte citas [n] en superíndices', () => {
-    expect(html('Trabaja en AePTIC [1].')).toContain('<sup class="text-accent">1</sup>');
+    expect(html('Trabaja en AePTIC [1].')).toContain('<sup class="text-accent-strong">1</sup>');
   });
 
   it('renderiza enlaces http(s) seguros con rel', () => {

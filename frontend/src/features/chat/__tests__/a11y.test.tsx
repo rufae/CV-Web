@@ -54,6 +54,7 @@ describe('accesibilidad del chat', () => {
   it('el panel abierto no tiene violaciones graves', async () => {
     await render(
       <ChatPanel
+        mode="floating"
         state={initialChatState}
         onClose={() => undefined}
         onSend={async () => undefined}

@@ -21,7 +21,9 @@ describe('diccionarios i18n', () => {
 
   it('los arrays tienen la misma longitud', () => {
     expect(EN.chat.starters).toHaveLength(ES.chat.starters.length);
-    expect(EN.about.facts).toHaveLength(ES.about.facts.length);
+    expect(EN.projects.items).toHaveLength(ES.projects.items.length);
+    expect(EN.experience.roles).toHaveLength(ES.experience.roles.length);
+    expect(EN.stack.groups).toHaveLength(ES.stack.groups.length);
   });
 });
 
