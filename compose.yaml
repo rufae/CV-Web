@@ -1,0 +1,37 @@
+# Rafita / CV Web en el nodo HP.
+# Construye la imagen completa (frontend + backend) y deja el puerto 8086 en el
+# host para que nginx-proxy-manager (o Caddy) publique http://cv-web.home/.
+#
+#   docker compose up -d --build
+#
+# El estado (Chroma, DBS) y la bóveda van por volumen; los secretos, en .env.
+
+services:
+  cvweb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cvweb/api:latest
+    container_name: cvweb_api
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8086:8000"
+    volumes:
+      - ./data:/data
+      # Aislamiento FS: SOLO la carpeta publica del baul, en solo lectura.
+      # CVWEB no puede ver el resto del vault (Privado, Reuniones...).
+      # En produccion: <baul-oficial>/Public:/vault/Public:ro
+      - ../rafita/mi_boveda_obsidian/Public:/vault/Public:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=5)",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
