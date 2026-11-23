@@ -68,7 +68,11 @@ jobs:
       - run: pip install -r ../backend/requirements.lock
       - run: npm ci
       - run: npx playwright install --with-deps chromium
+      # VITE_* se hornea en el build: la app debe apuntar al backend en
+      # absoluto (sin proxy) para que /api no vaya al servidor estático.
       - run: npm run build
+        env:
+          VITE_API_URL: http://127.0.0.1:8010
       # vite preview se cuelga en el runner (ni 'Local:' ni error en 4 min);
       # se sirve dist con el servidor estático de Python: arranca al instante.
       # La app apunta al backend por VITE_API_URL absoluto (sin proxy).
