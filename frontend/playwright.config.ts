@@ -24,14 +24,19 @@ export default defineConfig({
         DATA_PATH: '/tmp/cvweb-e2e-data',
         RATE_LIMIT_CHAT: '100/minute',
         RATE_LIMIT_CONTACT: '100/hour',
+        // El preview sirve en :4173; el backend debe permitir ese origen
+        // (por defecto sólo admite :5173, el dev server).
+        ALLOWED_ORIGINS: 'http://localhost:4173,http://127.0.0.1:4173,http://localhost:5173,http://127.0.0.1:5173',
       },
     },
     {
-      command: 'npm run preview -- --port 4173 --strictPort',
+      // vite preview no hereda el proxy del dev server: la app apunta al
+      // backend en absoluto y hay que construir dist antes de servirlo.
+      command: 'npm run build && npm run preview -- --port 4173 --strictPort',
       port: 4173,
       reuseExistingServer: false,
       env: {
-        VITE_API_URL: '',
+        VITE_API_URL: 'http://127.0.0.1:8010',
       },
     },
   ],

@@ -37,7 +37,9 @@ test('el tema oscuro persiste en el documento', async ({ page }) => {
 
 test('el formulario valida antes de enviar', async ({ page }) => {
   await page.goto('/#contact');
-  await page.getByRole('button', { name: 'Enviar mensaje' }).click();
+  // Hay dos 'Enviar mensaje' en la página (botón deshabilitado del hero y el
+  // submit del formulario): se acota al formulario de contacto.
+  await page.locator('form:has(#name) button[type="submit"]').click();
 
   const nameIsInvalid = await page
     .locator('#name')
