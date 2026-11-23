@@ -35,7 +35,9 @@ export default defineConfig({
       command: 'npm run preview -- --port 4173 --strictPort',
       port: 4173,
       timeout: 60_000,
-      reuseExistingServer: false,
+      // En CI el preview lo levanta el propio job (con health check) y aquí
+      // sólo se reutiliza; en local lo arranca Playwright.
+      reuseExistingServer: true,
       env: {
         VITE_API_URL: 'http://127.0.0.1:8010',
       },

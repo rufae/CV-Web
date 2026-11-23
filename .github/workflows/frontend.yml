@@ -69,4 +69,12 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run build
+      - name: Preview en background (Playwright no lo arranca en el runner)
+        run: |
+          nohup npm run preview -- --port 4173 --strictPort > /tmp/preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:4173/ > /dev/null && break
+            sleep 1
+          done
+          curl -sf http://127.0.0.1:4173/ > /dev/null || { cat /tmp/preview.log; exit 1; }
       - run: npm run test:e2e
