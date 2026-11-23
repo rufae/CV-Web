@@ -34,6 +34,8 @@ export default defineConfig({
       // backend en absoluto y hay que construir dist antes de servirlo.
       command: 'npm run build && npm run preview -- --port 4173 --strictPort',
       port: 4173,
+      // build en frío en CI: hasta 3 min antes de que el preview escuche
+      timeout: 180_000,
       reuseExistingServer: false,
       env: {
         VITE_API_URL: 'http://127.0.0.1:8010',
