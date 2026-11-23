@@ -71,8 +71,8 @@ jobs:
       - run: npm run build
       - name: Preview en background (Playwright no lo arranca en el runner)
         run: |
-          nohup npm run preview -- --port 4173 --strictPort > /tmp/preview.log 2>&1 &
-          for i in $(seq 1 30); do
+          nohup npx vite preview --port 4173 --strictPort > /tmp/preview.log 2>&1 &
+          for i in $(seq 1 90); do
             curl -sf http://127.0.0.1:4173/ > /dev/null && break
             sleep 1
           done
