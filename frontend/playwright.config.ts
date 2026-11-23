@@ -30,12 +30,11 @@ export default defineConfig({
       },
     },
     {
-      // vite preview no hereda el proxy del dev server: la app apunta al
-      // backend en absoluto y hay que construir dist antes de servirlo.
-      command: 'npm run build && npm run preview -- --port 4173 --strictPort',
+      // vite preview sirve dist (lo construye el paso `npm run build` del
+      // job); la app apunta al backend en absoluto (sin proxy de preview).
+      command: 'npm run preview -- --port 4173 --strictPort',
       port: 4173,
-      // build en frío en CI: hasta 3 min antes de que el preview escuche
-      timeout: 180_000,
+      timeout: 60_000,
       reuseExistingServer: false,
       env: {
         VITE_API_URL: 'http://127.0.0.1:8010',
