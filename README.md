@@ -33,6 +33,12 @@ nginx-proxy-manager o Caddy (TLS, cabeceras, SSE sin buffering) → FastAPI en e
 nodo HP (estáticos + API + Chroma) → Ollama en la torre/Dell por Tailscale
 (LLM nunca expuesto).
 
+## Cómo se ve
+
+<p align="center">
+  <img src="frontend/public/og-image.png" width="760" alt="Portfolio con el asistente Rafita respondiendo sobre el segundo cerebro" />
+</p>
+
 ## Quickstart local
 
 Los LLM viven en la tailnet (torre GPU y nodo Dell, ambos con
